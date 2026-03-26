@@ -90,6 +90,12 @@ export default function SettingsPage() {
   const [hasGmb, setHasGmb] = useState(false);
   const [hasAds, setHasAds] = useState(false);
 
+  // AI Provider
+  const [iaProvider, setIaProvider] = useState("lovable");
+  const [iaApiKey, setIaApiKey] = useState("");
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [aiSaving, setAiSaving] = useState(false);
+
   // Notifications
   const [notifs, setNotifs] = useState<NotifSettings>(DEFAULT_NOTIFS);
 
