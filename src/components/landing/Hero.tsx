@@ -25,16 +25,16 @@ function MetricMini({ icon: Icon, label, value, change, delay }: { icon: typeof 
 
 export function Hero() {
   return (
-    <section className="pt-40 pb-32 md:pt-52 md:pb-44 bg-background relative overflow-hidden">
-      {/* Single restrained gradient — Stripe-style */}
+    <section className="pt-28 pb-20 md:pt-36 md:pb-28 lg:pt-40 lg:pb-32 bg-background relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_-10%,hsl(var(--primary)/0.07),transparent)]" />
 
-      <div className="container grid lg:grid-cols-2 gap-16 lg:gap-24 items-center relative">
+      <div className="container grid lg:grid-cols-[1fr_minmax(0,420px)] gap-12 lg:gap-16 items-center relative">
+        {/* Left — copy */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease }}
-          className="space-y-8 text-center lg:text-left"
+          className="space-y-6 text-center lg:text-left"
         >
           <motion.div
             initial={{ opacity: 0 }}
@@ -50,7 +50,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15, ease }}
-            className="text-[2.5rem] md:text-5xl lg:text-[3.5rem] font-heading font-extrabold leading-[1.08] text-foreground tracking-tight"
+            className="text-[2.25rem] md:text-[2.75rem] lg:text-5xl font-heading font-extrabold leading-[1.1] text-foreground tracking-tight"
           >
             Seu negócio local no{" "}
             <span className="text-primary">topo do Google</span>
@@ -61,7 +61,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.35, duration: 0.6 }}
-            className="text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-[1.7]"
+            className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-[1.7]"
           >
             Posts automáticos, respostas com IA, campanhas otimizadas.
             O LocalAI gerencia seu Google Meu Negócio enquanto{" "}
@@ -98,7 +98,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex items-center gap-6 justify-center lg:justify-start text-[13px] text-muted-foreground"
+            className="flex flex-wrap items-center gap-x-6 gap-y-2 justify-center lg:justify-start text-[13px] text-muted-foreground"
           >
             {["Sem cartão de crédito", "Setup em 5 minutos"].map((text) => (
               <span key={text} className="flex items-center gap-1.5">
@@ -130,16 +130,14 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Dashboard — clean, still, confident */}
+        {/* Right — Dashboard card */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.25, ease }}
-          className="relative mx-auto w-full max-w-md lg:max-w-none"
+          className="relative mx-auto w-full max-w-sm lg:max-w-none hidden md:block"
         >
-          <div className="absolute -inset-px rounded-2xl bg-gradient-to-b from-border/80 to-border/20" />
-          
-          <div className="relative rounded-2xl bg-card p-6 space-y-4">
+          <div className="rounded-2xl bg-card border border-border/60 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
