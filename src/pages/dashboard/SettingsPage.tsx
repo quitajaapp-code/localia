@@ -485,6 +485,80 @@ export default function SettingsPage() {
             </Card>
           ))}
 
+          {/* AI PROVIDER CONFIG */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Brain className="h-4 w-4" /> Provedor de IA
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Escolha qual provedor de IA será usado para gerar posts, respostas e campanhas.
+                Usar sua própria chave pode reduzir custos no seu plano.
+              </p>
+              <div>
+                <Label className="text-sm">Provedor</Label>
+                <Select value={iaProvider} onValueChange={(v) => { setIaProvider(v); if (v === "lovable") setIaApiKey(""); }}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lovable">LocalAI (incluso no plano)</SelectItem>
+                    <SelectItem value="openai">OpenAI (sua chave)</SelectItem>
+                    <SelectItem value="anthropic">Anthropic / Claude (sua chave)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {iaProvider !== "lovable" && (
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm flex items-center gap-1">
+                      <Key className="h-3 w-3" /> Chave de API
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        type={showApiKey ? "text" : "password"}
+                        value={iaApiKey}
+                        onChange={(e) => setIaApiKey(e.target.value)}
+                        placeholder={iaProvider === "openai" ? "sk-..." : "sk-ant-..."}
+                      />
+                      <button
+                        onClick={() => setShowApiKey(!showApiKey)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                      >
+                        {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {iaProvider === "openai"
+                        ? "Obtenha em platform.openai.com → API keys"
+                        : "Obtenha em console.anthropic.com → API keys"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg bg-warning/10 border border-warning/20 p-3">
+                    <p className="text-xs text-warning-foreground">
+                      <strong>⚠️ Importante:</strong> Ao usar sua própria chave, os custos de uso da IA serão cobrados diretamente pelo provedor escolhido, não pelo LocalAI. Sua chave é armazenada de forma segura.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {iaProvider === "lovable" && (
+                <div className="rounded-lg bg-primary/5 border border-primary/10 p-3">
+                  <p className="text-xs text-muted-foreground">
+                    ✨ Usando IA inclusa no seu plano. Sem configuração adicional necessária.
+                  </p>
+                </div>
+              )}
+
+              <Button onClick={saveAiConfig} disabled={aiSaving} size="sm">
+                {aiSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                Salvar configuração de IA
+              </Button>
+            </CardContent>
+          </Card>
+
           {plano === "agencia" && (
             <Card>
               <CardHeader><CardTitle className="text-base">Webhooks</CardTitle></CardHeader>
