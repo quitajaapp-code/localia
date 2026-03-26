@@ -172,7 +172,7 @@ export default function MaterialsPage() {
           .eq("tipo", "foto");
         if (mats) setPhotos(mats.map(m => ({ id: m.id, url: m.url || "", nome: m.nome || "" })));
       }
-    } catch (e) { console.error(e); }
+    } catch { /* silently fail */ }
     finally { setLoading(false); }
   };
 
