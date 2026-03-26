@@ -12,45 +12,55 @@ const plans = [
 
 export function PricingPreview() {
   return (
-    <section id="precos" className="py-24 bg-background">
-      <div className="container space-y-14">
+    <section id="precos" className="py-28 bg-background relative">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_100%,hsl(var(--primary)/0.05),transparent)]" />
+      <div className="container space-y-16 relative">
         <Reveal className="text-center space-y-4 max-w-2xl mx-auto">
           <p className="text-sm font-semibold text-primary uppercase tracking-wider">Preços</p>
-          <h2 className="text-3xl md:text-4xl font-heading font-bold">Planos para cada fase do seu negócio</h2>
-          <p className="text-muted-foreground text-lg">14 dias grátis em todos os planos. Cancele quando quiser.</p>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight">Planos para cada fase do seu negócio</h2>
+          <p className="text-muted-foreground text-lg leading-relaxed">14 dias grátis em todos os planos. Cancele quando quiser.</p>
         </Reveal>
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {plans.map((p, i) => (
             <Reveal key={i} delay={i * 100}>
               <div
                 className={cn(
-                  "rounded-2xl border p-7 space-y-6 h-full flex flex-col transition-all duration-300",
+                  "rounded-2xl border p-8 space-y-6 h-full flex flex-col transition-all duration-300",
                   p.popular
-                    ? "border-primary bg-primary/[0.03] ring-2 ring-primary/20 shadow-md scale-[1.02]"
-                    : "border-border bg-card shadow-soft card-hover"
+                    ? "border-primary/30 bg-gradient-to-b from-primary/[0.04] to-transparent ring-1 ring-primary/15 shadow-medium scale-[1.03] relative"
+                    : "border-border/50 bg-card hover:shadow-medium hover:-translate-y-1 hover:border-border"
                 )}
               >
                 {p.popular && (
-                  <span className="self-start text-xs font-bold text-primary-foreground bg-primary px-3 py-1 rounded-full">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold text-primary-foreground bg-primary px-4 py-1.5 rounded-full shadow-soft">
                     Mais popular
                   </span>
                 )}
-                <div>
+                <div className="pt-1">
                   <h3 className="text-lg font-heading font-bold">{p.name}</h3>
-                  <p className="mt-2">
-                    <span className="text-4xl font-heading font-extrabold">R${p.price}</span>
-                    <span className="text-sm text-muted-foreground">/mês</span>
+                  <p className="mt-3">
+                    <span className="text-4xl font-heading font-extrabold tracking-tight">R${p.price}</span>
+                    <span className="text-sm text-muted-foreground ml-1">/mês</span>
                   </p>
                 </div>
-                <ul className="space-y-3 flex-1">
+                <ul className="space-y-3.5 flex-1">
                   {p.features.map((f, j) => (
-                    <li key={j} className="flex items-start gap-2.5 text-sm">
-                      <Check className="h-4 w-4 mt-0.5 text-success shrink-0" />
+                    <li key={j} className="flex items-start gap-3 text-sm">
+                      <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <Check className="h-3 w-3 text-success" />
+                      </div>
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" variant={p.popular ? "default" : "outline"} asChild>
+                <Button
+                  className={cn(
+                    "w-full rounded-full transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
+                    p.popular ? "shadow-soft" : ""
+                  )}
+                  variant={p.popular ? "default" : "outline"}
+                  asChild
+                >
                   <Link to="/pricing">Começar grátis</Link>
                 </Button>
               </div>
@@ -58,9 +68,9 @@ export function PricingPreview() {
           ))}
         </div>
         <Reveal className="text-center">
-          <Button variant="link" asChild className="text-base">
+          <Button variant="link" asChild className="text-base group">
             <Link to="/pricing">
-              Ver planos completos <ArrowRight className="ml-1 h-4 w-4" />
+              Ver planos completos <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
             </Link>
           </Button>
         </Reveal>
