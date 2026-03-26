@@ -39,9 +39,11 @@ const App = () => (
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/onboarding/connect" element={<ConnectGoogle />} />
-            <Route path="/onboarding/business" element={<BusinessInfo />} />
-            <Route path="/onboarding/materials" element={<MaterialsOnboarding />} />
+            <Route path="/onboarding" element={<OnboardingLayout />}>
+              <Route path="connect" element={<ConnectGoogle />} />
+              <Route path="business" element={<BusinessInfo />} />
+              <Route path="materials" element={<MaterialsOnboarding />} />
+            </Route>
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="reviews" element={<Reviews />} />
