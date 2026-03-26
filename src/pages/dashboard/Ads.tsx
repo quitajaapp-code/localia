@@ -7,10 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { OnboardingTooltip } from "@/components/shared/OnboardingTooltip";
+import { MetricSkeleton } from "@/components/shared/LoadingStates";
 import {
   Plus, AlertTriangle, Eye, MousePointerClick, DollarSign, TrendingUp,
   BarChart3, Pause, Play, Sparkles, Megaphone, Target, Zap, ArrowRight
-} from "lucide-react";
+}from "lucide-react";
 
 type Campaign = {
   id: string;
