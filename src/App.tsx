@@ -8,6 +8,7 @@ import Landing from "./pages/Landing";
 import Pricing from "./pages/Pricing";
 import Auth from "./pages/Auth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import OnboardingLayout from "./pages/onboarding/OnboardingLayout";
 import ConnectGoogle from "./pages/onboarding/ConnectGoogle";
 import BusinessInfo from "./pages/onboarding/BusinessInfo";
 import MaterialsOnboarding from "./pages/onboarding/Materials";
@@ -38,9 +39,11 @@ const App = () => (
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/onboarding/connect" element={<ConnectGoogle />} />
-            <Route path="/onboarding/business" element={<BusinessInfo />} />
-            <Route path="/onboarding/materials" element={<MaterialsOnboarding />} />
+            <Route path="/onboarding" element={<OnboardingLayout />}>
+              <Route path="connect" element={<ConnectGoogle />} />
+              <Route path="business" element={<BusinessInfo />} />
+              <Route path="materials" element={<MaterialsOnboarding />} />
+            </Route>
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="reviews" element={<Reviews />} />
