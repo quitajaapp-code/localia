@@ -191,6 +191,7 @@ export default function SettingsPage() {
     finally { setAiSaving(false); }
   };
 
+  const changePassword = async () => {
     if (newPwd.length < 8) { toast.error("Senha deve ter no mínimo 8 caracteres"); return; }
     if (newPwd !== confirmPwd) { toast.error("Senhas não coincidem"); return; }
     setPwdLoading(true);
