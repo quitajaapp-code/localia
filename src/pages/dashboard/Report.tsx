@@ -323,7 +323,7 @@ export default function Report() {
                   <span className="text-xs font-medium text-muted-foreground">{a.dia}</span>
                   <p className="text-sm text-foreground">{a.acao}</p>
                 </div>
-                <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-1" />
+                <CheckCircle className="h-4 w-4 text-success shrink-0 mt-1" />
               </div>
             ))}
           </CardContent></Card>

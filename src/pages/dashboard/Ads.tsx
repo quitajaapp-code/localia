@@ -100,8 +100,8 @@ export default function Ads() {
         .maybeSingle();
 
       setMetrics(met);
-    } catch (e) {
-      console.error(e);
+    } catch {
+      /* silently fail */
     } finally {
       setLoading(false);
     }
