@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
 import Landing from "./pages/Landing";
 import Pricing from "./pages/Pricing";
@@ -27,41 +28,42 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/auth" element={<Auth />} />
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/auth" element={<Auth />} />
 
-          {/* Protected routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/onboarding" element={<OnboardingLayout />}>
-              <Route path="connect" element={<ConnectGoogle />} />
-              <Route path="business" element={<BusinessInfo />} />
-              <Route path="materials" element={<MaterialsOnboarding />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/onboarding" element={<OnboardingLayout />}>
+                <Route path="connect" element={<ConnectGoogle />} />
+                <Route path="business" element={<BusinessInfo />} />
+                <Route path="materials" element={<MaterialsOnboarding />} />
+              </Route>
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="reviews" element={<Reviews />} />
+                <Route path="posts" element={<Posts />} />
+                <Route path="ads" element={<Ads />} />
+                <Route path="ads/new" element={<NewCampaign />} />
+                <Route path="ads/:id" element={<CampaignDetail />} />
+                <Route path="materials" element={<MaterialsPage />} />
+                <Route path="report" element={<Report />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
             </Route>
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="reviews" element={<Reviews />} />
-              <Route path="posts" element={<Posts />} />
-              <Route path="ads" element={<Ads />} />
-              <Route path="ads/new" element={<NewCampaign />} />
-              <Route path="ads/:id" element={<CampaignDetail />} />
-              <Route path="materials" element={<MaterialsPage />} />
-              <Route path="report" element={<Report />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
-          </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

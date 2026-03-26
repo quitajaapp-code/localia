@@ -89,3 +89,42 @@
     @apply font-heading;
   }
 }
+
+@layer components {
+  /* Button press effect */
+  .btn-press {
+    @apply transition-transform duration-100 active:scale-[0.98];
+  }
+
+  /* Card hover lift */
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-medium hover:-translate-y-0.5;
+  }
+
+  /* Pulsating dot for active status */
+  .dot-pulse {
+    @apply relative;
+  }
+  .dot-pulse::after {
+    content: "";
+    @apply absolute inset-0 rounded-full bg-inherit animate-ping opacity-75;
+  }
+
+  /* Print styles */
+  @media print {
+    .print\:hidden { display: none !important; }
+    body { background: white !important; }
+  }
+
+  /* Scrollbar styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+}

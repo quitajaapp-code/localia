@@ -7,10 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { OnboardingTooltip } from "@/components/shared/OnboardingTooltip";
+import { MetricSkeleton } from "@/components/shared/LoadingStates";
 import {
   Plus, AlertTriangle, Eye, MousePointerClick, DollarSign, TrendingUp,
   BarChart3, Pause, Play, Sparkles, Megaphone, Target, Zap, ArrowRight
-} from "lucide-react";
+}from "lucide-react";
 
 type Campaign = {
   id: string;
@@ -40,6 +43,7 @@ const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondar
 };
 
 export default function Ads() {
+  usePageTitle("Anúncios Google");
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [metrics, setMetrics] = useState<AdsMetrics | null>(null);
@@ -115,8 +119,11 @@ export default function Ads() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="space-y-6">
+        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {Array.from({ length: 5 }).map((_, i) => <MetricSkeleton key={i} />)}
+        </div>
       </div>
     );
   }
@@ -126,11 +133,15 @@ export default function Ads() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-heading font-bold text-foreground">Anúncios Google</h1>
-        <Button onClick={() => navigate("/dashboard/ads/new")}>
+        <Button onClick={() => navigate("/dashboard/ads/new")} className="btn-press">
           <Plus className="h-4 w-4 mr-2" />
           Nova campanha
         </Button>
       </div>
+
+      <OnboardingTooltip id="ads-ai">
+        Nossa IA pesquisa as melhores palavras-chave para o seu negócio
+      </OnboardingTooltip>
 
       {!hasAdsAccount && (
         <Alert className="mb-6 border-warning/40 bg-warning/5">
