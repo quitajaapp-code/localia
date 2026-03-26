@@ -448,7 +448,7 @@ export default function SettingsPage() {
             <Card key={i}>
               <CardContent className="py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  {int.connected ? <CheckCircle className="h-5 w-5 text-green-500" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
+                  {int.connected ? <CheckCircle className="h-5 w-5 text-success" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
                   <div>
                     <p className="font-medium text-sm text-foreground">{int.name}</p>
                     <p className="text-xs text-muted-foreground">{int.desc}</p>
