@@ -144,7 +144,7 @@ export default function Report() {
               <div>
                 <div className="flex items-center gap-3 mb-3">
                   <h2 className="font-heading font-bold text-lg text-foreground">Resumo Executivo</h2>
-                  <Badge className="bg-green-100 text-green-700">Bom</Badge>
+                  <Badge className="bg-success/10 text-success">Bom</Badge>
                 </div>
                 <p className="text-foreground leading-relaxed">
                   Essa semana seu negócio foi visto <strong>{gmbData.busca.toLocaleString("pt-BR")} vezes na Busca</strong> e{" "}
