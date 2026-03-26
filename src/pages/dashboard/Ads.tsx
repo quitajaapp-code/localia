@@ -43,6 +43,7 @@ const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondar
 };
 
 export default function Ads() {
+  usePageTitle("Anúncios Google");
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [metrics, setMetrics] = useState<AdsMetrics | null>(null);
