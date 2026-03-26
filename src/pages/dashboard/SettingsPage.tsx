@@ -428,7 +428,7 @@ export default function SettingsPage() {
                       <span className="text-sm font-medium">{f.valor}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-green-100 text-green-700 text-xs">{f.status}</Badge>
+                      <Badge className="bg-success/10 text-success text-xs">{f.status}</Badge>
                     </div>
                   </div>
                 ))}
