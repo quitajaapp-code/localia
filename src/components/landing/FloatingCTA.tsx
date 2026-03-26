@@ -19,19 +19,19 @@ export function FloatingCTA() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ y: 100, opacity: 0 }}
+          initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 md:hidden"
+          exit={{ y: 80, opacity: 0 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 md:hidden"
         >
           <Button
             size="lg"
             asChild
-            className="rounded-full px-8 shadow-medium text-base hover:shadow-lg transition-all duration-300 active:scale-[0.97] animate-glow-pulse"
+            className="rounded-xl px-6 h-11 shadow-medium text-sm active:scale-[0.97]"
           >
             <Link to="/pricing">
-              Começar grátis <ArrowRight className="ml-2 h-4 w-4" />
+              Começar grátis <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </Link>
           </Button>
         </motion.div>
