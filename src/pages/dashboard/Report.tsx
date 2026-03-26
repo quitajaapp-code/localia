@@ -286,7 +286,7 @@ export default function Report() {
             </Card>
             <Card>
               <CardHeader><CardTitle className="text-sm">Top 5 Keywords</CardTitle></CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="p-0 overflow-x-auto">
                 <Table>
                   <TableHeader><TableRow>
                     <TableHead className="text-xs">Keyword</TableHead>
