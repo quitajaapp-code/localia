@@ -175,7 +175,22 @@ export default function SettingsPage() {
     finally { setSaving(false); }
   };
 
-  const changePassword = async () => {
+  const saveAiConfig = async () => {
+    if (iaProvider !== "lovable" && !iaApiKey.trim()) {
+      toast.error("Insira sua chave de API para usar um provedor externo");
+      return;
+    }
+    setAiSaving(true);
+    try {
+      await supabase.from("businesses").update({
+        ia_provider: iaProvider,
+        ia_api_key: iaProvider === "lovable" ? null : iaApiKey.trim(),
+      } as any).eq("id", bizId);
+      toast.success("Configuração de IA atualizada!");
+    } catch { toast.error("Erro ao salvar"); }
+    finally { setAiSaving(false); }
+  };
+
     if (newPwd.length < 8) { toast.error("Senha deve ter no mínimo 8 caracteres"); return; }
     if (newPwd !== confirmPwd) { toast.error("Senhas não coincidem"); return; }
     setPwdLoading(true);
