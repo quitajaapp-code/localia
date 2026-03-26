@@ -55,10 +55,9 @@ Deno.serve(async (req) => {
       const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
       });
-      const token = authHeader.replace("Bearer ", "");
-      const { data } = await supabase.auth.getClaims(token);
-      if (data?.claims) {
-        userId = data.claims.sub as string;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        userId = user.id;
       }
     }
 
