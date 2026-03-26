@@ -42,24 +42,25 @@ export function SocialProof() {
           {testimonials.map((t, i) => (
             <Reveal key={i} delay={i * 120}>
               <div className="group rounded-2xl border border-border/30 bg-card/80 backdrop-blur-sm p-8 space-y-5 hover:shadow-medium hover:-translate-y-1.5 hover:border-primary/12 transition-all duration-400 h-full flex flex-col relative overflow-hidden">
-                {/* Hover glow */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
-                {/* Quote visual anchor */}
+                {/* Visual anchor — quote mark creates "testimonial" pattern recognition */}
                 <Quote className="absolute top-6 right-6 h-8 w-8 text-primary/[0.06] group-hover:text-primary/10 transition-colors duration-400" />
                 
-                {/* Result metric */}
+                {/* RESULT FIRST — number catches eye before text (value perception trigger) */}
                 <div className="pb-5 border-b border-border/30 relative z-10">
                   <span className="text-3xl font-heading font-extrabold text-primary">{t.metric}</span>
                   <p className="text-xs text-muted-foreground mt-1">{t.metricLabel}</p>
                 </div>
 
+                {/* Stars — instant trust signal, universally understood */}
                 <div className="flex gap-0.5 relative z-10">
                   {[...Array(5)].map((_, j) => (
                     <Star key={j} className="h-4 w-4 fill-warning text-warning" />
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed flex-1 italic relative z-10">"{t.text}"</p>
+                {/* Person — faces build trust (even as initials) */}
                 <div className="flex items-center gap-3 pt-5 border-t border-border/30 relative z-10">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center text-sm font-bold text-primary border border-primary/8">
                     {t.initials}
