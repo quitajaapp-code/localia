@@ -213,7 +213,7 @@ export default function Report() {
             <Card><CardContent className="pt-5 pb-4 text-center">
               <p className="text-3xl font-bold text-foreground">86%</p>
               <p className="text-xs text-muted-foreground">Respondidas</p>
-              <Badge className="bg-green-100 text-green-700 text-xs mt-1">Ótimo</Badge>
+              <Badge className="bg-success/10 text-success text-xs mt-1">Ótimo</Badge>
             </CardContent></Card>
             <Card><CardContent className="pt-5 pb-4">
               <p className="text-xs text-muted-foreground mb-1 text-center">Evolução</p>
