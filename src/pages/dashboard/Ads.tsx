@@ -133,11 +133,15 @@ export default function Ads() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-heading font-bold text-foreground">Anúncios Google</h1>
-        <Button onClick={() => navigate("/dashboard/ads/new")}>
+        <Button onClick={() => navigate("/dashboard/ads/new")} className="btn-press">
           <Plus className="h-4 w-4 mr-2" />
           Nova campanha
         </Button>
       </div>
+
+      <OnboardingTooltip id="ads-ai">
+        Nossa IA pesquisa as melhores palavras-chave para o seu negócio
+      </OnboardingTooltip>
 
       {!hasAdsAccount && (
         <Alert className="mb-6 border-warning/40 bg-warning/5">
