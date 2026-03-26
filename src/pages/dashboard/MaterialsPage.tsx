@@ -59,7 +59,7 @@ const EMPTY: BizData = {
 type PhotoItem = { id: string; url: string; nome: string };
 
 function ScoreGauge({ score }: { score: number }) {
-  const color = score <= 40 ? "hsl(0, 84%, 60%)" : score <= 70 ? "hsl(38, 92%, 50%)" : "hsl(160, 84%, 39%)";
+  const color = score <= 40 ? "hsl(var(--destructive))" : score <= 70 ? "hsl(var(--warning))" : "hsl(var(--success))";
   const radius = 70;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
@@ -172,7 +172,7 @@ export default function MaterialsPage() {
           .eq("tipo", "foto");
         if (mats) setPhotos(mats.map(m => ({ id: m.id, url: m.url || "", nome: m.nome || "" })));
       }
-    } catch (e) { console.error(e); }
+    } catch { /* silently fail */ }
     finally { setLoading(false); }
   };
 

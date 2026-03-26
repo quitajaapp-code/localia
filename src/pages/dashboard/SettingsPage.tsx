@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ const NOTIF_LABELS: Record<NotifKey, { label: string; emailOnly?: boolean }> = {
 };
 
 export default function SettingsPage() {
+  usePageTitle("Configurações");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -131,7 +133,7 @@ export default function SettingsPage() {
         setHasGmb(!!biz.gmb_location_id);
         setHasAds(!!biz.ads_customer_id);
       }
-    } catch (e) { console.error(e); }
+    } catch { /* silently fail */ }
     finally { setLoading(false); }
   };
 
@@ -322,7 +324,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-3">
-                  {hasGmb ? <CheckCircle className="h-5 w-5 text-green-500" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
+                  {hasGmb ? <CheckCircle className="h-5 w-5 text-success" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
                   <div>
                     <p className="text-sm font-medium">Google Meu Negócio</p>
                     <p className="text-xs text-muted-foreground">{hasGmb ? "Conectado" : "Não conectado"}</p>
@@ -332,7 +334,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-3">
-                  {hasAds ? <CheckCircle className="h-5 w-5 text-green-500" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
+                  {hasAds ? <CheckCircle className="h-5 w-5 text-success" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
                   <div>
                     <p className="text-sm font-medium">Google Ads</p>
                     <p className="text-xs text-muted-foreground">{hasAds ? "Conectado" : "Não conectado"}</p>
@@ -395,7 +397,7 @@ export default function SettingsPage() {
               <ul className="space-y-2 mb-6">
                 {planInfo.features.map((f, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-foreground">
-                    <CheckCircle className="h-4 w-4 text-green-500 shrink-0" /> {f}
+                    <CheckCircle className="h-4 w-4 text-success shrink-0" /> {f}
                   </li>
                 ))}
               </ul>
@@ -426,7 +428,7 @@ export default function SettingsPage() {
                       <span className="text-sm font-medium">{f.valor}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-green-100 text-green-700 text-xs">{f.status}</Badge>
+                      <Badge className="bg-success/10 text-success text-xs">{f.status}</Badge>
                     </div>
                   </div>
                 ))}
@@ -446,7 +448,7 @@ export default function SettingsPage() {
             <Card key={i}>
               <CardContent className="py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  {int.connected ? <CheckCircle className="h-5 w-5 text-green-500" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
+                  {int.connected ? <CheckCircle className="h-5 w-5 text-success" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
                   <div>
                     <p className="font-medium text-sm text-foreground">{int.name}</p>
                     <p className="text-xs text-muted-foreground">{int.desc}</p>

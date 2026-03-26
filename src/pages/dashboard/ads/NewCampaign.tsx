@@ -82,9 +82,9 @@ type CampaignData = {
 };
 
 const INTENT_COLORS: Record<string, string> = {
-  alta: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  moderada: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  branding: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  alta: "bg-success/10 text-success",
+  moderada: "bg-warning/10 text-warning",
+  branding: "bg-primary/10 text-primary",
 };
 
 const MATCH_LABELS: Record<string, string> = {
@@ -177,7 +177,6 @@ export default function NewCampaign() {
       setCampaignData({ ...data, negative_keywords: negGroups });
       setStep(3);
     } catch (e: any) {
-      console.error(e);
       toast.error(e.message || "Erro ao gerar campanha. Tente novamente.");
       setStep(1);
     }

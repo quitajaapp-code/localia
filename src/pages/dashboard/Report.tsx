@@ -89,7 +89,7 @@ function MetricCard({ icon: Icon, label, value, change, positive }: {
           <span className="text-xs text-muted-foreground">{label}</span>
         </div>
         <p className="text-2xl font-bold text-foreground">{value}</p>
-        <div className={`flex items-center gap-1 mt-1 text-xs font-medium ${positive ? "text-green-600" : "text-red-500"}`}>
+        <div className={`flex items-center gap-1 mt-1 text-xs font-medium ${positive ? "text-success" : "text-destructive"}`}>
           {positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           {change}
         </div>
@@ -144,7 +144,7 @@ export default function Report() {
               <div>
                 <div className="flex items-center gap-3 mb-3">
                   <h2 className="font-heading font-bold text-lg text-foreground">Resumo Executivo</h2>
-                  <Badge className="bg-green-100 text-green-700">Bom</Badge>
+                  <Badge className="bg-success/10 text-success">Bom</Badge>
                 </div>
                 <p className="text-foreground leading-relaxed">
                   Essa semana seu negócio foi visto <strong>{gmbData.busca.toLocaleString("pt-BR")} vezes na Busca</strong> e{" "}
@@ -206,14 +206,14 @@ export default function Report() {
               <p className="text-3xl font-bold text-foreground">7</p>
               <p className="text-xs text-muted-foreground">Novas</p>
               <div className="flex justify-center gap-1 mt-1">
-                <Badge className="bg-green-100 text-green-700 text-xs">5+</Badge>
+                <Badge className="bg-success/10 text-success text-xs">5+</Badge>
                 <Badge variant="destructive" className="text-xs">2-</Badge>
               </div>
             </CardContent></Card>
             <Card><CardContent className="pt-5 pb-4 text-center">
               <p className="text-3xl font-bold text-foreground">86%</p>
               <p className="text-xs text-muted-foreground">Respondidas</p>
-              <Badge className="bg-green-100 text-green-700 text-xs mt-1">Ótimo</Badge>
+              <Badge className="bg-success/10 text-success text-xs mt-1">Ótimo</Badge>
             </CardContent></Card>
             <Card><CardContent className="pt-5 pb-4">
               <p className="text-xs text-muted-foreground mb-1 text-center">Evolução</p>
@@ -286,7 +286,7 @@ export default function Report() {
             </Card>
             <Card>
               <CardHeader><CardTitle className="text-sm">Top 5 Keywords</CardTitle></CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="p-0 overflow-x-auto">
                 <Table>
                   <TableHeader><TableRow>
                     <TableHead className="text-xs">Keyword</TableHead>
@@ -323,7 +323,7 @@ export default function Report() {
                   <span className="text-xs font-medium text-muted-foreground">{a.dia}</span>
                   <p className="text-sm text-foreground">{a.acao}</p>
                 </div>
-                <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-1" />
+                <CheckCircle className="h-4 w-4 text-success shrink-0 mt-1" />
               </div>
             ))}
           </CardContent></Card>
