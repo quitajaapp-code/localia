@@ -206,7 +206,7 @@ export default function Report() {
               <p className="text-3xl font-bold text-foreground">7</p>
               <p className="text-xs text-muted-foreground">Novas</p>
               <div className="flex justify-center gap-1 mt-1">
-                <Badge className="bg-green-100 text-green-700 text-xs">5+</Badge>
+                <Badge className="bg-success/10 text-success text-xs">5+</Badge>
                 <Badge variant="destructive" className="text-xs">2-</Badge>
               </div>
             </CardContent></Card>
