@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { toast } from "sonner";
 import {
   User, Building2, Bell, CreditCard, Plug, Save, Upload, Loader2,
-  AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff
+  AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff, Brain, Key
 } from "lucide-react";
 
 const TOM_OPTIONS = [
