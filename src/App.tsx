@@ -8,6 +8,7 @@ import Landing from "./pages/Landing";
 import Pricing from "./pages/Pricing";
 import Auth from "./pages/Auth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import OnboardingLayout from "./pages/onboarding/OnboardingLayout";
 import ConnectGoogle from "./pages/onboarding/ConnectGoogle";
 import BusinessInfo from "./pages/onboarding/BusinessInfo";
 import MaterialsOnboarding from "./pages/onboarding/Materials";
