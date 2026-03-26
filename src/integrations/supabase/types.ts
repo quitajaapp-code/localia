@@ -125,7 +125,9 @@ export type Database = {
           estado: string | null
           faq: string | null
           gmb_location_id: string | null
+          ia_api_key: string | null
           ia_nunca_mencionar: string | null
+          ia_provider: string | null
           ia_sempre_mencionar: string | null
           id: string
           instagram: string | null
@@ -158,7 +160,9 @@ export type Database = {
           estado?: string | null
           faq?: string | null
           gmb_location_id?: string | null
+          ia_api_key?: string | null
           ia_nunca_mencionar?: string | null
+          ia_provider?: string | null
           ia_sempre_mencionar?: string | null
           id?: string
           instagram?: string | null
@@ -191,7 +195,9 @@ export type Database = {
           estado?: string | null
           faq?: string | null
           gmb_location_id?: string | null
+          ia_api_key?: string | null
           ia_nunca_mencionar?: string | null
+          ia_provider?: string | null
           ia_sempre_mencionar?: string | null
           id?: string
           instagram?: string | null
