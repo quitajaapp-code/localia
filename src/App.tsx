@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "./pages/Landing";
 import Pricing from "./pages/Pricing";
 import Auth from "./pages/Auth";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import ConnectGoogle from "./pages/onboarding/ConnectGoogle";
 import BusinessInfo from "./pages/onboarding/BusinessInfo";
 import MaterialsOnboarding from "./pages/onboarding/Materials";
@@ -34,20 +35,25 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/onboarding/connect" element={<ConnectGoogle />} />
-          <Route path="/onboarding/business" element={<BusinessInfo />} />
-          <Route path="/onboarding/materials" element={<MaterialsOnboarding />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="reviews" element={<Reviews />} />
-            <Route path="posts" element={<Posts />} />
-            <Route path="ads" element={<Ads />} />
-            <Route path="ads/new" element={<NewCampaign />} />
-            <Route path="ads/:id" element={<CampaignDetail />} />
-            <Route path="materials" element={<MaterialsPage />} />
-            <Route path="report" element={<Report />} />
-            <Route path="settings" element={<SettingsPage />} />
+
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/onboarding/connect" element={<ConnectGoogle />} />
+            <Route path="/onboarding/business" element={<BusinessInfo />} />
+            <Route path="/onboarding/materials" element={<MaterialsOnboarding />} />
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="reviews" element={<Reviews />} />
+              <Route path="posts" element={<Posts />} />
+              <Route path="ads" element={<Ads />} />
+              <Route path="ads/new" element={<NewCampaign />} />
+              <Route path="ads/:id" element={<CampaignDetail />} />
+              <Route path="materials" element={<MaterialsPage />} />
+              <Route path="report" element={<Report />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
           </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
