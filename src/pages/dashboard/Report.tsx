@@ -99,6 +99,7 @@ function MetricCard({ icon: Icon, label, value, change, positive }: {
 }
 
 export default function Report() {
+  usePageTitle("Relatório");
   const navigate = useNavigate();
   const [period, setPeriod] = useState("atual");
   const { start, end } = getWeekRange(period);
