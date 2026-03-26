@@ -138,6 +138,8 @@ export default function SettingsPage() {
         setBizEstado(biz.estado || "");
         setHasGmb(!!biz.gmb_location_id);
         setHasAds(!!biz.ads_customer_id);
+        setIaProvider((biz as any).ia_provider || "lovable");
+        setIaApiKey((biz as any).ia_api_key || "");
       }
     } catch { /* silently fail */ }
     finally { setLoading(false); }
