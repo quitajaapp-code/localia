@@ -332,7 +332,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-3">
-                  {hasAds ? <CheckCircle className="h-5 w-5 text-green-500" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
+                  {hasAds ? <CheckCircle className="h-5 w-5 text-success" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
                   <div>
                     <p className="text-sm font-medium">Google Ads</p>
                     <p className="text-xs text-muted-foreground">{hasAds ? "Conectado" : "Não conectado"}</p>
