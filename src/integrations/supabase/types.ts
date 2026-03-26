@@ -14,7 +14,554 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ads: {
+        Row: {
+          ads_ad_id: string | null
+          campaign_id: string
+          cliques: number | null
+          cpc: number | null
+          created_at: string | null
+          ctr: number | null
+          descriptions: Json | null
+          headlines: Json | null
+          id: string
+          impressoes: number | null
+          status: string | null
+        }
+        Insert: {
+          ads_ad_id?: string | null
+          campaign_id: string
+          cliques?: number | null
+          cpc?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          descriptions?: Json | null
+          headlines?: Json | null
+          id?: string
+          impressoes?: number | null
+          status?: string | null
+        }
+        Update: {
+          ads_ad_id?: string | null
+          campaign_id?: string
+          cliques?: number | null
+          cpc?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          descriptions?: Json | null
+          headlines?: Json | null
+          id?: string
+          impressoes?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads_metrics: {
+        Row: {
+          business_id: string
+          cliques: number | null
+          conversoes: number | null
+          cpc_medio: number | null
+          created_at: string | null
+          ctr: number | null
+          gasto_total: number | null
+          id: string
+          impressoes: number | null
+          semana_ref: string | null
+        }
+        Insert: {
+          business_id: string
+          cliques?: number | null
+          conversoes?: number | null
+          cpc_medio?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          gasto_total?: number | null
+          id?: string
+          impressoes?: number | null
+          semana_ref?: string | null
+        }
+        Update: {
+          business_id?: string
+          cliques?: number | null
+          conversoes?: number | null
+          cpc_medio?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          gasto_total?: number | null
+          id?: string
+          impressoes?: number | null
+          semana_ref?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_metrics_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      businesses: {
+        Row: {
+          ads_customer_id: string | null
+          cidade: string | null
+          config_posts: Json | null
+          created_at: string | null
+          estado: string | null
+          gmb_location_id: string | null
+          id: string
+          nicho: string | null
+          nome: string
+          score_materiais: number | null
+          tom_de_voz: string | null
+          user_id: string
+          website_url: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          ads_customer_id?: string | null
+          cidade?: string | null
+          config_posts?: Json | null
+          created_at?: string | null
+          estado?: string | null
+          gmb_location_id?: string | null
+          id?: string
+          nicho?: string | null
+          nome: string
+          score_materiais?: number | null
+          tom_de_voz?: string | null
+          user_id: string
+          website_url?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          ads_customer_id?: string | null
+          cidade?: string | null
+          config_posts?: Json | null
+          created_at?: string | null
+          estado?: string | null
+          gmb_location_id?: string | null
+          id?: string
+          nicho?: string | null
+          nome?: string
+          score_materiais?: number | null
+          tom_de_voz?: string | null
+          user_id?: string
+          website_url?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      campaigns: {
+        Row: {
+          ads_campaign_id: string | null
+          business_id: string
+          created_at: string | null
+          id: string
+          nome: string
+          status: string | null
+          tipo: string | null
+          verba_mensal: number | null
+          verba_restante: number | null
+        }
+        Insert: {
+          ads_campaign_id?: string | null
+          business_id: string
+          created_at?: string | null
+          id?: string
+          nome: string
+          status?: string | null
+          tipo?: string | null
+          verba_mensal?: number | null
+          verba_restante?: number | null
+        }
+        Update: {
+          ads_campaign_id?: string | null
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          nome?: string
+          status?: string | null
+          tipo?: string | null
+          verba_mensal?: number | null
+          verba_restante?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gmb_metrics: {
+        Row: {
+          business_id: string
+          cliques_site: number | null
+          created_at: string | null
+          fotos_views: number | null
+          id: string
+          ligacoes: number | null
+          rotas: number | null
+          semana_ref: string | null
+          views_busca: number | null
+          views_maps: number | null
+        }
+        Insert: {
+          business_id: string
+          cliques_site?: number | null
+          created_at?: string | null
+          fotos_views?: number | null
+          id?: string
+          ligacoes?: number | null
+          rotas?: number | null
+          semana_ref?: string | null
+          views_busca?: number | null
+          views_maps?: number | null
+        }
+        Update: {
+          business_id?: string
+          cliques_site?: number | null
+          created_at?: string | null
+          fotos_views?: number | null
+          id?: string
+          ligacoes?: number | null
+          rotas?: number | null
+          semana_ref?: string | null
+          views_busca?: number | null
+          views_maps?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gmb_metrics_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gmb_snapshots: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          dados_json: Json | null
+          id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          dados_json?: Json | null
+          id?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          dados_json?: Json | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gmb_snapshots_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      keywords: {
+        Row: {
+          campaign_id: string
+          cliques: number | null
+          conversoes: number | null
+          cpc_atual: number | null
+          created_at: string | null
+          id: string
+          impressoes: number | null
+          match_type: string | null
+          status: string | null
+          termo: string
+        }
+        Insert: {
+          campaign_id: string
+          cliques?: number | null
+          conversoes?: number | null
+          cpc_atual?: number | null
+          created_at?: string | null
+          id?: string
+          impressoes?: number | null
+          match_type?: string | null
+          status?: string | null
+          termo: string
+        }
+        Update: {
+          campaign_id?: string
+          cliques?: number | null
+          conversoes?: number | null
+          cpc_atual?: number | null
+          created_at?: string | null
+          id?: string
+          impressoes?: number | null
+          match_type?: string | null
+          status?: string | null
+          termo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "keywords_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      materials: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          id: string
+          nome: string | null
+          status: string | null
+          tipo: string
+          url: string | null
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          id?: string
+          nome?: string | null
+          status?: string | null
+          tipo: string
+          url?: string | null
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          nome?: string | null
+          status?: string | null
+          tipo?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "materials_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      negative_keywords: {
+        Row: {
+          campaign_id: string
+          created_at: string | null
+          id: string
+          match_type: string | null
+          termo: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string | null
+          id?: string
+          match_type?: string | null
+          termo: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string | null
+          id?: string
+          match_type?: string | null
+          termo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "negative_keywords_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      oauth_tokens: {
+        Row: {
+          access_token: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          provider: string
+          refresh_token: string | null
+          scope: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          provider: string
+          refresh_token?: string | null
+          scope?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          provider?: string
+          refresh_token?: string | null
+          scope?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          agendado_para: string | null
+          business_id: string
+          created_at: string | null
+          gmb_post_id: string | null
+          id: string
+          imagem_url: string | null
+          publicado_em: string | null
+          status: string | null
+          texto: string | null
+          tipo: string | null
+        }
+        Insert: {
+          agendado_para?: string | null
+          business_id: string
+          created_at?: string | null
+          gmb_post_id?: string | null
+          id?: string
+          imagem_url?: string | null
+          publicado_em?: string | null
+          status?: string | null
+          texto?: string | null
+          tipo?: string | null
+        }
+        Update: {
+          agendado_para?: string | null
+          business_id?: string
+          created_at?: string | null
+          gmb_post_id?: string | null
+          id?: string
+          imagem_url?: string | null
+          publicado_em?: string | null
+          status?: string | null
+          texto?: string | null
+          tipo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          nome: string | null
+          notif_settings: Json | null
+          plano: string | null
+          stripe_customer_id: string | null
+          trial_ends_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome?: string | null
+          notif_settings?: Json | null
+          plano?: string | null
+          stripe_customer_id?: string | null
+          trial_ends_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome?: string | null
+          notif_settings?: Json | null
+          plano?: string | null
+          stripe_customer_id?: string | null
+          trial_ends_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          autor: string | null
+          business_id: string
+          created_at: string | null
+          id: string
+          rating: number | null
+          respondido: boolean | null
+          respondido_em: string | null
+          resposta_sugerida_ia: string | null
+          review_id_google: string | null
+          texto: string | null
+        }
+        Insert: {
+          autor?: string | null
+          business_id: string
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          respondido?: boolean | null
+          respondido_em?: string | null
+          resposta_sugerida_ia?: string | null
+          review_id_google?: string | null
+          texto?: string | null
+        }
+        Update: {
+          autor?: string | null
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          respondido?: boolean | null
+          respondido_em?: string | null
+          resposta_sugerida_ia?: string | null
+          review_id_google?: string | null
+          texto?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
