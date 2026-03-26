@@ -54,6 +54,7 @@ const NOTIF_LABELS: Record<NotifKey, { label: string; emailOnly?: boolean }> = {
 };
 
 export default function SettingsPage() {
+  usePageTitle("Configurações");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
