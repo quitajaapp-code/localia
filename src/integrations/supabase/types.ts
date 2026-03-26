@@ -114,49 +114,100 @@ export type Database = {
       businesses: {
         Row: {
           ads_customer_id: string | null
+          anos_experiencia: string | null
           cidade: string | null
           config_posts: Json | null
+          cor_primaria: string | null
+          cor_secundaria: string | null
           created_at: string | null
+          depoimentos: string | null
+          diferenciais: string | null
           estado: string | null
+          faq: string | null
           gmb_location_id: string | null
+          ia_nunca_mencionar: string | null
+          ia_sempre_mencionar: string | null
           id: string
+          instagram: string | null
+          logo_url: string | null
           nicho: string | null
           nome: string
+          num_clientes: string | null
+          outras_redes: string | null
+          premios: string | null
+          produtos: string | null
+          promocoes: string | null
+          publico_alvo: string | null
           score_materiais: number | null
           tom_de_voz: string | null
           user_id: string
+          video_url: string | null
           website_url: string | null
           whatsapp: string | null
         }
         Insert: {
           ads_customer_id?: string | null
+          anos_experiencia?: string | null
           cidade?: string | null
           config_posts?: Json | null
+          cor_primaria?: string | null
+          cor_secundaria?: string | null
           created_at?: string | null
+          depoimentos?: string | null
+          diferenciais?: string | null
           estado?: string | null
+          faq?: string | null
           gmb_location_id?: string | null
+          ia_nunca_mencionar?: string | null
+          ia_sempre_mencionar?: string | null
           id?: string
+          instagram?: string | null
+          logo_url?: string | null
           nicho?: string | null
           nome: string
+          num_clientes?: string | null
+          outras_redes?: string | null
+          premios?: string | null
+          produtos?: string | null
+          promocoes?: string | null
+          publico_alvo?: string | null
           score_materiais?: number | null
           tom_de_voz?: string | null
           user_id: string
+          video_url?: string | null
           website_url?: string | null
           whatsapp?: string | null
         }
         Update: {
           ads_customer_id?: string | null
+          anos_experiencia?: string | null
           cidade?: string | null
           config_posts?: Json | null
+          cor_primaria?: string | null
+          cor_secundaria?: string | null
           created_at?: string | null
+          depoimentos?: string | null
+          diferenciais?: string | null
           estado?: string | null
+          faq?: string | null
           gmb_location_id?: string | null
+          ia_nunca_mencionar?: string | null
+          ia_sempre_mencionar?: string | null
           id?: string
+          instagram?: string | null
+          logo_url?: string | null
           nicho?: string | null
           nome?: string
+          num_clientes?: string | null
+          outras_redes?: string | null
+          premios?: string | null
+          produtos?: string | null
+          promocoes?: string | null
+          publico_alvo?: string | null
           score_materiais?: number | null
           tom_de_voz?: string | null
           user_id?: string
+          video_url?: string | null
           website_url?: string | null
           whatsapp?: string | null
         }
