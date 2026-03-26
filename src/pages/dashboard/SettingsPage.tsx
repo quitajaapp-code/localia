@@ -322,7 +322,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-3">
-                  {hasGmb ? <CheckCircle className="h-5 w-5 text-green-500" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
+                  {hasGmb ? <CheckCircle className="h-5 w-5 text-success" /> : <XCircle className="h-5 w-5 text-muted-foreground" />}
                   <div>
                     <p className="text-sm font-medium">Google Meu Negócio</p>
                     <p className="text-xs text-muted-foreground">{hasGmb ? "Conectado" : "Não conectado"}</p>
