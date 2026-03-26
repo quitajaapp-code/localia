@@ -89,7 +89,7 @@ function MetricCard({ icon: Icon, label, value, change, positive }: {
           <span className="text-xs text-muted-foreground">{label}</span>
         </div>
         <p className="text-2xl font-bold text-foreground">{value}</p>
-        <div className={`flex items-center gap-1 mt-1 text-xs font-medium ${positive ? "text-green-600" : "text-red-500"}`}>
+        <div className={`flex items-center gap-1 mt-1 text-xs font-medium ${positive ? "text-success" : "text-destructive"}`}>
           {positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           {change}
         </div>
