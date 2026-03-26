@@ -131,7 +131,7 @@ export default function SettingsPage() {
         setHasGmb(!!biz.gmb_location_id);
         setHasAds(!!biz.ads_customer_id);
       }
-    } catch (e) { console.error(e); }
+    } catch { /* silently fail */ }
     finally { setLoading(false); }
   };
 
