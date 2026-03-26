@@ -11,20 +11,28 @@ export function Reveal({ children, className, delay = 0 }: { children: React.Rea
       ([entry]) => {
         if (entry.isIntersecting) {
           setTimeout(() => {
-            el.classList.add("animate-fade-in");
-            el.classList.remove("opacity-0", "translate-y-6");
+            el.style.opacity = "1";
+            el.style.transform = "translateY(0)";
           }, delay);
           io.unobserve(el);
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
     io.observe(el);
     return () => io.disconnect();
   }, [delay]);
 
   return (
-    <div ref={ref} className={cn("opacity-0 translate-y-6 transition-all duration-700 ease-out will-change-transform", className)}>
+    <div
+      ref={ref}
+      className={cn("will-change-transform", className)}
+      style={{
+        opacity: 0,
+        transform: "translateY(24px)",
+        transition: "opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
+      }}
+    >
       {children}
     </div>
   );
