@@ -8,6 +8,7 @@ import { SocialProof } from "@/components/landing/SocialProof";
 import { PricingPreview } from "@/components/landing/PricingPreview";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
+import { FloatingCTA } from "@/components/landing/FloatingCTA";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 const Landing = () => {
@@ -17,14 +18,22 @@ const Landing = () => {
     <div className="min-h-screen">
       <Header />
       <Hero />
+      {/* Trust immediately after hero — reduces anxiety at first decision point */}
       <TrustLogos />
+      {/* Problem agitation — creates urgency before showing solution */}
       <ProblemSection />
+      {/* Solution framing — low cognitive load, 3 steps */}
       <HowItWorks />
-      <Features />
+      {/* Social proof right before features — validates before detail */}
       <SocialProof />
+      {/* Features after social proof — reader is already primed */}
+      <Features />
+      {/* Pricing after features — value established before price reveal */}
       <PricingPreview />
       <FinalCTA />
       <Footer />
+      {/* Sticky mobile CTA — always accessible conversion path */}
+      <FloatingCTA />
     </div>
   );
 };
