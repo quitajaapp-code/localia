@@ -103,8 +103,8 @@ export default function CampaignDetail() {
       if (kwRes.data) setKeywords(kwRes.data);
       if (adRes.data) setAds(adRes.data);
       if (negRes.data) setNegKeywords(negRes.data);
-    } catch (e) {
-      console.error(e);
+    } catch {
+      /* silently fail */
     } finally {
       setLoading(false);
     }

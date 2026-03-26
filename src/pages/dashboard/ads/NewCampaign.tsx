@@ -177,7 +177,6 @@ export default function NewCampaign() {
       setCampaignData({ ...data, negative_keywords: negGroups });
       setStep(3);
     } catch (e: any) {
-      console.error(e);
       toast.error(e.message || "Erro ao gerar campanha. Tente novamente.");
       setStep(1);
     }
