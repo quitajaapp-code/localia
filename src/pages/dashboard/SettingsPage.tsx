@@ -397,7 +397,7 @@ export default function SettingsPage() {
               <ul className="space-y-2 mb-6">
                 {planInfo.features.map((f, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-foreground">
-                    <CheckCircle className="h-4 w-4 text-green-500 shrink-0" /> {f}
+                    <CheckCircle className="h-4 w-4 text-success shrink-0" /> {f}
                   </li>
                 ))}
               </ul>
