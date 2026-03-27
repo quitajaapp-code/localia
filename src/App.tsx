@@ -24,6 +24,8 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import NewCampaign from "./pages/dashboard/ads/NewCampaign";
 import CampaignDetail from "./pages/dashboard/ads/CampaignDetail";
 import NotFound from "./pages/NotFound";
+import WebsitePage from "./pages/dashboard/Website";
+import PublicSite from "./pages/PublicSite";
 
 const queryClient = new QueryClient();
 
@@ -55,9 +57,11 @@ const App = () => (
                 <Route path="materials" element={<MaterialsPage />} />
                 <Route path="report" element={<Report />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="website" element={<WebsitePage />} />
               </Route>
             </Route>
 
+            <Route path="/site/:slug" element={<PublicSite />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

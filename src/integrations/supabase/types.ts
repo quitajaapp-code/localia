@@ -619,6 +619,106 @@ export type Database = {
           },
         ]
       }
+      website_visits: {
+        Row: {
+          id: string
+          referrer: string | null
+          user_agent: string | null
+          visited_at: string | null
+          website_id: string | null
+        }
+        Insert: {
+          id?: string
+          referrer?: string | null
+          user_agent?: string | null
+          visited_at?: string | null
+          website_id?: string | null
+        }
+        Update: {
+          id?: string
+          referrer?: string | null
+          user_agent?: string | null
+          visited_at?: string | null
+          website_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_visits_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
+            referencedRelation: "websites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      websites: {
+        Row: {
+          business_id: string | null
+          config: Json | null
+          created_at: string | null
+          custom_domain: string | null
+          id: string
+          primary_color: string | null
+          published: boolean | null
+          published_at: string | null
+          seo_descricao: string | null
+          seo_og_image: string | null
+          seo_titulo: string | null
+          slug: string
+          theme: string | null
+          total_visitas: number | null
+          updated_at: string | null
+          user_id: string | null
+          visitas_semana: number | null
+        }
+        Insert: {
+          business_id?: string | null
+          config?: Json | null
+          created_at?: string | null
+          custom_domain?: string | null
+          id?: string
+          primary_color?: string | null
+          published?: boolean | null
+          published_at?: string | null
+          seo_descricao?: string | null
+          seo_og_image?: string | null
+          seo_titulo?: string | null
+          slug: string
+          theme?: string | null
+          total_visitas?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          visitas_semana?: number | null
+        }
+        Update: {
+          business_id?: string | null
+          config?: Json | null
+          created_at?: string | null
+          custom_domain?: string | null
+          id?: string
+          primary_color?: string | null
+          published?: boolean | null
+          published_at?: string | null
+          seo_descricao?: string | null
+          seo_og_image?: string | null
+          seo_titulo?: string | null
+          slug?: string
+          theme?: string | null
+          total_visitas?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          visitas_semana?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "websites_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
