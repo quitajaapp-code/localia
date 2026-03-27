@@ -49,11 +49,16 @@ const Auth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+        // Only react to actual sign-in events, not cached sessions
+        if (event === "SIGNED_IN" && session?.user) {
+          // Validate session is real by calling getUser (server-side check)
+          const { data: { user }, error } = await supabase.auth.getUser();
+          if (error || !user) return;
+
           const { data: biz } = await supabase
             .from("businesses")
             .select("id")
-            .eq("user_id", session.user.id)
+            .eq("user_id", user.id)
             .limit(1);
           if (biz && biz.length > 0) {
             navigate("/dashboard", { replace: true });
