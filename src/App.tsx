@@ -29,6 +29,11 @@ import PublicSite from "./pages/PublicSite";
 
 const queryClient = new QueryClient();
 
+const isSubdomainSite = () => {
+  const h = window.location.hostname;
+  return h.endsWith('.localai.app.br') && h !== 'localai.app.br' && h !== 'www.localai.app.br';
+};
+
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
