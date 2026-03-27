@@ -260,6 +260,8 @@ export default function BusinessInfo() {
         </button>
       </div>
     );
+  }
+
   if (pageState === "manual-gmb" || pageState === "no-gmb") {
     return (
       <div className="space-y-6">
