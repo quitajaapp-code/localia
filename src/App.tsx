@@ -24,6 +24,8 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import NewCampaign from "./pages/dashboard/ads/NewCampaign";
 import CampaignDetail from "./pages/dashboard/ads/CampaignDetail";
 import NotFound from "./pages/NotFound";
+import WebsitePage from "./pages/dashboard/Website";
+import PublicSite from "./pages/PublicSite";
 
 const queryClient = new QueryClient();
 
