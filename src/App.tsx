@@ -26,6 +26,7 @@ import CampaignDetail from "./pages/dashboard/ads/CampaignDetail";
 import NotFound from "./pages/NotFound";
 import WebsitePage from "./pages/dashboard/Website";
 import PublicSite from "./pages/PublicSite";
+import OAuthDiag from "./pages/OAuthDiag";
 
 const queryClient = new QueryClient();
 
@@ -44,7 +45,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/oauth-diag" element={<OAuthDiag />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="/onboarding" element={<OnboardingLayout />}>
