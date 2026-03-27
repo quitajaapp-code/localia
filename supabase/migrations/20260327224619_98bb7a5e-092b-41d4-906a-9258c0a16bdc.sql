@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Users can read active coupons" ON public.coupons;

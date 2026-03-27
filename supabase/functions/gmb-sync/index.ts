@@ -6,10 +6,28 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function decryptToken(
+  supabase: ReturnType<typeof createClient>,
+  encryptedData: string,
+  encryptionKey: string,
+): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.rpc("decrypt_token", {
+      encrypted_data: encryptedData,
+      secret_key: encryptionKey,
+    });
+    if (error || !data) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 async function refreshAccessToken(
   refreshToken: string,
   supabase: ReturnType<typeof createClient>,
   userId: string,
+  encryptionKey: string,
 ): Promise<string | null> {
   const GOOGLE_CLIENT_ID = Deno.env.get("GOOGLE_CLIENT_ID");
   const GOOGLE_CLIENT_SECRET = Deno.env.get("GOOGLE_CLIENT_SECRET");
@@ -41,11 +59,18 @@ async function refreshAccessToken(
     const newAccessToken = data.access_token;
     const expiresIn = data.expires_in || 3600;
 
-    // Update token in DB
+    // Encrypt new access token
+    const { data: encryptedToken } = await supabase.rpc("encrypt_token", {
+      plain_text: newAccessToken,
+      secret_key: encryptionKey,
+    });
+
+    // Update token in DB (encrypted only, clear plaintext)
     await supabase
       .from("oauth_tokens")
       .update({
-        access_token: newAccessToken,
+        access_token: null,
+        access_token_encrypted: encryptedToken,
         expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
       })
       .eq("user_id", userId)
@@ -67,6 +92,7 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const ENCRYPTION_KEY = Deno.env.get("TOKEN_ENCRYPTION_KEY") || "";
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Fetch all businesses with GMB connected
@@ -87,28 +113,38 @@ Deno.serve(async (req) => {
 
     for (const biz of businesses) {
       try {
-        // Get OAuth token for this user
+        // Get OAuth token (encrypted) for this user
         const { data: tokenRow } = await supabase
           .from("oauth_tokens")
-          .select("access_token, refresh_token, expires_at")
+          .select("access_token_encrypted, refresh_token_encrypted, expires_at")
           .eq("user_id", biz.user_id)
           .eq("provider", "google")
           .single();
 
-        if (!tokenRow) {
+        if (!tokenRow?.access_token_encrypted) {
           results.push({ business_id: biz.id, status: "no_token" });
           continue;
         }
 
-        let accessToken = tokenRow.access_token;
+        // Decrypt access token
+        let accessToken = await decryptToken(supabase, tokenRow.access_token_encrypted, ENCRYPTION_KEY);
+        if (!accessToken) {
+          results.push({ business_id: biz.id, status: "decrypt_error" });
+          continue;
+        }
 
         // Check if token expired
         if (tokenRow.expires_at && new Date(tokenRow.expires_at) < new Date()) {
-          if (!tokenRow.refresh_token) {
+          if (!tokenRow.refresh_token_encrypted) {
             results.push({ business_id: biz.id, status: "token_expired_no_refresh" });
             continue;
           }
-          const newToken = await refreshAccessToken(tokenRow.refresh_token, supabase, biz.user_id);
+          const refreshToken = await decryptToken(supabase, tokenRow.refresh_token_encrypted, ENCRYPTION_KEY);
+          if (!refreshToken) {
+            results.push({ business_id: biz.id, status: "refresh_decrypt_error" });
+            continue;
+          }
+          const newToken = await refreshAccessToken(refreshToken, supabase, biz.user_id, ENCRYPTION_KEY);
           if (!newToken) {
             results.push({ business_id: biz.id, status: "token_refresh_failed" });
             continue;
@@ -131,7 +167,7 @@ Deno.serve(async (req) => {
             : statusCode === 403 ? "gmb_forbidden"
             : `gmb_error_${statusCode}`;
           console.error(`GMB API error for ${biz.id}: ${statusCode} - ${errDetail}`);
-          results.push({ business_id: biz.id, status: statusLabel, error_detail: errDetail });
+          results.push({ business_id: biz.id, status: statusLabel });
           continue;
         }
 
@@ -142,7 +178,6 @@ Deno.serve(async (req) => {
         for (const review of reviews) {
           const googleReviewId = review.reviewId || review.name;
 
-          // Check if already exists
           const { data: existing } = await supabase
             .from("reviews")
             .select("id")
