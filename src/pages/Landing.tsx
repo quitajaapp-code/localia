@@ -338,7 +338,7 @@ export default function Landing() {
                   ))}
                 </div>
                 <div style={{ marginTop: 32 }}>
-                  <Link to="/auth" className="cta-primary inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "12px 24px", borderRadius: 10, fontWeight: 500, fontSize: 14, boxShadow: "0 0 30px rgba(99,102,241,0.3)" }}>
+                  <Link to="/demos" className="cta-primary inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "12px 24px", borderRadius: 10, fontWeight: 500, fontSize: 14, boxShadow: "0 0 30px rgba(99,102,241,0.3)" }}>
                     Ver exemplo de mini site <ArrowRight size={14} />
                   </Link>
                 </div>

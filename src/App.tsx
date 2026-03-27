@@ -32,6 +32,7 @@ import CampaignDetail from "./pages/dashboard/ads/CampaignDetail";
 import NotFound from "./pages/NotFound";
 import WebsitePage from "./pages/dashboard/Website";
 import PublicSite from "./pages/PublicSite";
+import Demos from "./pages/Demos";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/demos" element={<Demos />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="/onboarding" element={<OnboardingLayout />}>
