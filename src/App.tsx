@@ -29,6 +29,11 @@ import PublicSite from "./pages/PublicSite";
 
 const queryClient = new QueryClient();
 
+const isSubdomainSite = () => {
+  const h = window.location.hostname;
+  return h.endsWith('.localai.app.br') && h !== 'localai.app.br' && h !== 'www.localai.app.br';
+};
+
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
@@ -62,7 +67,8 @@ const App = () => (
             </Route>
 
             <Route path="/site/:slug" element={<PublicSite />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/" element={isSubdomainSite() ? <PublicSite /> : <Landing />} />
+            <Route path="*" element={isSubdomainSite() ? <PublicSite /> : <NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

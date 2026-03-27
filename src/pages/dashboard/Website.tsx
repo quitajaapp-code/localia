@@ -188,8 +188,10 @@ export default function Website() {
     else toast.success("Site criado!");
   };
 
+  const siteUrl = (slug: string) => `https://${slug}.localai.app.br`;
+
   const copyUrl = () => {
-    const url = website?.custom_domain || `${window.location.origin}/site/${website?.slug}`;
+    const url = website?.custom_domain ? `https://${website.custom_domain}` : siteUrl(website?.slug || '');
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -227,10 +229,10 @@ export default function Website() {
           <p className="text-muted-foreground">Um site profissional no ar em menos de 5 minutos. Os dados do seu Google Meu Negócio serão importados automaticamente.</p>
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground whitespace-nowrap">localai.app/</span>
               <Input value={slugInput} onChange={e => setSlugInput(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="seu-negocio" />
+              <span className="text-sm text-muted-foreground whitespace-nowrap">.localai.app.br</span>
             </div>
-            {slugInput && <p className="text-xs text-muted-foreground">Seu site ficará em: {window.location.origin}/site/{slugInput}</p>}
+            {slugInput && <p className="text-xs text-muted-foreground">Seu site ficará em: <strong>https://{slugInput}.localai.app.br</strong></p>}
             <Button onClick={handleCreate} className="w-full">
               <Sparkles className="h-4 w-4 mr-2" /> Criar e importar dados
             </Button>
@@ -278,7 +280,7 @@ export default function Website() {
           {website.published && (
             <button onClick={copyUrl} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted px-3 py-1.5 rounded-lg transition-colors">
               {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-              {website.custom_domain || `/site/${website.slug}`}
+              {website.custom_domain || `${website.slug}.localai.app.br`}
             </button>
           )}
           <Button variant="outline" size="sm" asChild>
@@ -685,26 +687,29 @@ function TabDominio({ website, saveWebsite }: { website: any; saveWebsite: any }
       <Card title="Subdomínio LocalAI">
         <div className="p-4 bg-green-500/5 border border-green-500/20 rounded-lg space-y-3">
           <p className="text-sm">Seu site está disponível em:</p>
-          <p className="text-lg font-mono font-medium">{window.location.origin}/site/{website.slug}</p>
+          <a href={`https://${website.slug}.localai.app.br`} target="_blank" rel="noopener" className="text-lg font-mono font-medium text-primary hover:underline block">
+            {website.slug}.localai.app.br
+          </a>
           {website.published && <span className="text-xs text-green-600">✓ Ativo</span>}
         </div>
         <Field label="Editar endereço" hint="Alterar o endereço pode quebrar links existentes">
           <div className="flex gap-2">
             <Input value={newSlug} onChange={e => setNewSlug(e.target.value)} />
+            <span className="text-sm text-muted-foreground whitespace-nowrap self-center">.localai.app.br</span>
             <Button size="sm" onClick={updateSlug}>Atualizar</Button>
           </div>
         </Field>
       </Card>
       <Card title="Domínio próprio ✨">
-        <p className="text-sm text-muted-foreground">Configure seu domínio para apontar para o seu site.</p>
+        <p className="text-sm text-muted-foreground">Configure seu domínio personalizado para apontar para o seu mini site.</p>
         <Field label="Seu domínio"><Input value={domain} onChange={e => setDomain(e.target.value)} placeholder="www.seudominio.com.br" /></Field>
         <div className="p-4 bg-muted rounded-lg space-y-2">
-          <p className="text-xs font-medium">Configure o DNS:</p>
+          <p className="text-xs font-medium">Configure o DNS no seu provedor:</p>
           <div className="font-mono text-xs space-y-1">
             <p>Tipo: <strong>CNAME</strong></p>
-            <p>Nome: <strong>www</strong></p>
-            <p>Valor: <strong>sites.localai.app</strong></p>
-            <p>TTL: <strong>3600</strong></p>
+            <p>Nome: <strong>www</strong> (ou subdomínio desejado)</p>
+            <p>Valor: <strong>{website.slug}.localai.app.br</strong></p>
+            <p>TTL: <strong>Auto</strong></p>
           </div>
         </div>
         <Button size="sm" onClick={async () => {
