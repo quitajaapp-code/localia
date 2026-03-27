@@ -687,26 +687,29 @@ function TabDominio({ website, saveWebsite }: { website: any; saveWebsite: any }
       <Card title="Subdomínio LocalAI">
         <div className="p-4 bg-green-500/5 border border-green-500/20 rounded-lg space-y-3">
           <p className="text-sm">Seu site está disponível em:</p>
-          <p className="text-lg font-mono font-medium">{window.location.origin}/site/{website.slug}</p>
+          <a href={`https://${website.slug}.localai.app.br`} target="_blank" rel="noopener" className="text-lg font-mono font-medium text-primary hover:underline block">
+            {website.slug}.localai.app.br
+          </a>
           {website.published && <span className="text-xs text-green-600">✓ Ativo</span>}
         </div>
         <Field label="Editar endereço" hint="Alterar o endereço pode quebrar links existentes">
           <div className="flex gap-2">
             <Input value={newSlug} onChange={e => setNewSlug(e.target.value)} />
+            <span className="text-sm text-muted-foreground whitespace-nowrap self-center">.localai.app.br</span>
             <Button size="sm" onClick={updateSlug}>Atualizar</Button>
           </div>
         </Field>
       </Card>
       <Card title="Domínio próprio ✨">
-        <p className="text-sm text-muted-foreground">Configure seu domínio para apontar para o seu site.</p>
+        <p className="text-sm text-muted-foreground">Configure seu domínio personalizado para apontar para o seu mini site.</p>
         <Field label="Seu domínio"><Input value={domain} onChange={e => setDomain(e.target.value)} placeholder="www.seudominio.com.br" /></Field>
         <div className="p-4 bg-muted rounded-lg space-y-2">
-          <p className="text-xs font-medium">Configure o DNS:</p>
+          <p className="text-xs font-medium">Configure o DNS no seu provedor:</p>
           <div className="font-mono text-xs space-y-1">
             <p>Tipo: <strong>CNAME</strong></p>
-            <p>Nome: <strong>www</strong></p>
-            <p>Valor: <strong>sites.localai.app</strong></p>
-            <p>TTL: <strong>3600</strong></p>
+            <p>Nome: <strong>www</strong> (ou subdomínio desejado)</p>
+            <p>Valor: <strong>{website.slug}.localai.app.br</strong></p>
+            <p>TTL: <strong>Auto</strong></p>
           </div>
         </div>
         <Button size="sm" onClick={async () => {

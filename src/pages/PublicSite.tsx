@@ -47,11 +47,23 @@ function isOpenNow(horarios: WebsiteConfig['horarios']): boolean {
   return time >= h.abre && time <= h.fecha;
 }
 
+function getSubdomainSlug(): string | null {
+  const hostname = window.location.hostname;
+  // Detect slug.localai.app.br pattern
+  if (hostname.endsWith('.localai.app.br')) {
+    const sub = hostname.replace('.localai.app.br', '');
+    if (sub && sub !== 'www' && !sub.includes('.')) return sub;
+  }
+  return null;
+}
+
 export default function PublicSite() {
-  const { slug } = useParams();
+  const { slug: routeSlug } = useParams();
   const [searchParams] = useSearchParams();
   const isPreview = searchParams.get('preview') === 'true';
-  const { website, loading, notFound } = usePublicSite(slug || '');
+  const subdomainSlug = getSubdomainSlug();
+  const slug = subdomainSlug || routeSlug || '';
+  const { website, loading, notFound } = usePublicSite(slug);
 
   useEffect(() => {
     if (website) {

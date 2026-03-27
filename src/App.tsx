@@ -62,6 +62,14 @@ const App = () => (
             </Route>
 
             <Route path="/site/:slug" element={<PublicSite />} />
+            {/* Catch-all: if accessed via subdomain (slug.localai.app.br), render PublicSite */}
+            <Route path="/" element={
+              window.location.hostname.endsWith('.localai.app.br') && 
+              window.location.hostname !== 'localai.app.br' && 
+              window.location.hostname !== 'www.localai.app.br' 
+                ? <PublicSite /> 
+                : <Landing />
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
