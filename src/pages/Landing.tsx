@@ -158,7 +158,7 @@ export default function Landing() {
       <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", paddingTop: 80, paddingBottom: 80, position: "relative", zIndex: 10 }}>
         <div className="max-w-4xl mx-auto text-center px-6">
           <Reveal>
-            <span className="inline-flex items-center gap-2" style={{ border: "1px solid rgba(99,102,241,0.4)", background: "rgba(99,102,241,0.1)", padding: "6px 16px", borderRadius: 999, fontSize: 13, color: "#A5B4FC" }}>✦ Novo — Agora com Gestão de Google Ads com IA</span>
+            <span className="inline-flex items-center gap-2" style={{ border: "1px solid rgba(99,102,241,0.4)", background: "rgba(99,102,241,0.1)", padding: "6px 16px", borderRadius: 999, fontSize: 13, color: "#A5B4FC" }}>✦ Novo — Mini Site incluso no plano Presença + Ads</span>
           </Reveal>
           <Reveal delay={100}>
             <h1 className="font-heading" style={{ fontSize: "clamp(40px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", marginTop: 32 }}>
