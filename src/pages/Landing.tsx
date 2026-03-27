@@ -1,508 +1,431 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
-  MapPin, Bot, TrendingUp, FileText, MessageSquare, Megaphone,
-  Gauge, BarChart3, ShieldAlert, ArrowRight, Check, Lock, Play,
-  Home, Star, Settings, Bell, Users, PieChart, Phone, Route, MousePointerClick,
-  Sparkles, UtensilsCrossed, HeartPulse, Scissors, Dumbbell
+  MapPin, Star, TrendingUp, Bot, Zap, BarChart3,
+  Shield, Bell, Check, ArrowRight,
+  MessageSquare, Image, Target, FileText, Play
 } from "lucide-react";
 
-/* ───── Intersection Observer hook ───── */
-function useInView() {
+/* ─── Scroll animation hook ─── */
+function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { el.classList.add("visible"); obs.unobserve(el); } },
-      { threshold: 0.15 }
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
-  return ref;
+  }, [threshold]);
+  return { ref, visible };
 }
 
-function AnimateIn({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useInView();
+function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const { ref, visible } = useInView();
   return (
-    <div ref={ref} className={`animate-on-scroll ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+    <div ref={ref} className={`reveal ${visible ? "show" : ""} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
       {children}
     </div>
   );
 }
 
-/* ───── Data ───── */
+/* ─── Data ─── */
 const steps = [
-  { icon: MapPin, title: "Conecte seu Google", desc: "Vincule sua conta em 2 cliques. Sem configuração técnica.", num: "01" },
-  { icon: Bot, title: "Configure seu negócio", desc: "Informe o nicho, tom de voz e envie materiais.", num: "02" },
-  { icon: TrendingUp, title: "A IA cuida do resto", desc: "Posts, respostas, ads e relatórios — tudo automático.", num: "03" },
+  { icon: MapPin, num: "01", title: "Conecte seu Google", desc: "Autorize em 1 clique. Conectamos seu Google Meu Negócio e Google Ads de forma segura." },
+  { icon: Bot, num: "02", title: "Configure uma vez", desc: "Informe seu nicho, tom de voz e verba de ads. A IA aprende como falar pelo seu negócio." },
+  { icon: TrendingUp, num: "03", title: "Resultados no piloto", desc: "Posts publicados, avaliações respondidas, ads otimizados. Você só acompanha os resultados." },
 ];
 
 const features = [
-  { icon: FileText, title: "Posts automáticos", desc: "A IA cria e publica conteúdo relevante no Google Meu Negócio toda semana." },
-  { icon: MessageSquare, title: "Respostas com IA", desc: "Cada avaliação respondida com empatia e profissionalismo em segundos." },
-  { icon: Megaphone, title: "Gestão de Ads", desc: "Campanhas criadas pela IA com keywords, negativações e otimização semanal." },
-  { icon: Gauge, title: "Score de eficiência", desc: "Gamificação que mostra o quão completo está seu perfil para máxima performance." },
-  { icon: BarChart3, title: "Relatório unificado", desc: "GMB + Ads em um relatório semanal em linguagem simples para leigos." },
-  { icon: ShieldAlert, title: "Alerta de edições", desc: "Detecta alterações não autorizadas no seu perfil e avisa imediatamente." },
+  { icon: FileText, title: "Posts automáticos", desc: "4 posts/semana no Google Meu Negócio, criados pela IA com base no seu nicho." },
+  { icon: MessageSquare, title: "Respostas com IA", desc: "Toda avaliação respondida em minutos — empática, profissional e com a sua voz." },
+  { icon: Target, title: "Gestor de Google Ads", desc: "A IA cria sua campanha, escolhe palavras-chave e otimiza a verba toda semana." },
+  { icon: Zap, title: "Score de eficiência", desc: "Acompanhe o índice de aproveitamento do seu perfil e saiba exatamente o que melhorar." },
+  { icon: BarChart3, title: "Relatório unificado", desc: "GMB + Ads em um relatório semanal simples, sem jargão técnico." },
+  { icon: Shield, title: "Alerta de edições", desc: "Se alguém alterar seu perfil no Google sem autorização, você recebe um alerta imediato." },
 ];
 
 const niches = [
-  { name: "Restaurante", icon: UtensilsCrossed, img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80" },
-  { name: "Clínica / Saúde", icon: HeartPulse, img: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80" },
-  { name: "Salão / Beleza", icon: Scissors, img: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" },
-  { name: "Academia", icon: Dumbbell, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80" },
+  { name: "Restaurante", icon: MapPin, img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80" },
+  { name: "Clínica", icon: Shield, img: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80" },
+  { name: "Salão de Beleza", icon: Star, img: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" },
+  { name: "Academia", icon: Zap, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80" },
 ];
 
 const testimonials = [
-  { text: "Antes eu ficava com raiva quando via uma avaliação ruim e não sabia o que responder. Agora a IA responde em minutos, melhor do que eu faria.", name: "Marcos Oliveira", role: "Dono | Pizzaria Don Marco", city: "São Paulo", initials: "MO", color: "#6366F1" },
-  { text: "Meu perfil no Google subiu de 4.1 para 4.7 em 2 meses. Os anúncios trouxeram 40% mais ligações com o mesmo investimento.", name: "Dra. Fernanda Costa", role: "Clínica Odontológica", city: "Belo Horizonte", initials: "FC", color: "#22D3EE" },
-  { text: "Nunca tive tempo para postar no Google. O LocalAI posta 4x por semana e eu nem precisei configurar nada. Simplesmente funciona.", name: "Renata Alves", role: "Studio de Pilates", city: "Curitiba", initials: "RA", color: "#8B5CF6" },
+  { initial: "M", bg: "#6366F1", text: "Antes ficava com raiva ao ver uma avaliação ruim e não sabia o que responder. Agora a IA responde em minutos, melhor do que eu faria.", name: "Marcos Oliveira", sub: "Pizzaria Don Marco, São Paulo" },
+  { initial: "F", bg: "#0891B2", text: "Meu perfil no Google subiu de 4.1 para 4.7 estrelas em 2 meses. Os anúncios trouxeram 40% mais ligações com o mesmo investimento.", name: "Dra. Fernanda Costa", sub: "Clínica Odontológica, Belo Horizonte" },
+  { initial: "R", bg: "#7C3AED", text: "Nunca tive tempo para postar no Google. O LocalAI posta 4x por semana e eu nem precisei configurar nada. Simplesmente funciona.", name: "Renata Alves", sub: "Studio de Pilates, Curitiba" },
 ];
 
 const plans = [
-  { name: "Presença", price: "97", features: ["1 negócio", "Posts automáticos 4x/sem", "Respostas com IA", "Score de otimização", "Relatório mensal"] },
-  { name: "Presença + Ads", price: "197", popular: true, features: ["3 negócios", "Tudo do Presença", "Gestão de Google Ads com IA", "Otimização semanal", "Relatório unificado GMB+Ads"] },
-  { name: "Agência", price: "397", features: ["10 negócios", "Tudo do Presença+Ads", "Painel multi-cliente", "White-label", "Suporte prioritário"] },
+  { name: "PRESENÇA", price: "R$97", desc: "Para quem quer aparecer no Google com consistência.", features: ["Posts automáticos 4x/semana", "Respostas com IA às avaliações", "Score de eficiência", "Relatório semanal", "Alerta de edições"], highlight: false },
+  { name: "PRESENÇA + ADS", price: "R$197", desc: "Tudo do Presença + gestão inteligente de anúncios.", features: ["Tudo do plano Presença", "Campanha Google Ads com IA", "Otimização semanal de keywords", "Negativação automática", "Relatório Ads unificado"], highlight: true },
+  { name: "AGÊNCIA", price: "R$397", desc: "Para agências que gerenciam múltiplos negócios.", features: ["Tudo do plano Presença + Ads", "Até 10 negócios", "Painel multi-conta", "Relatórios white-label", "Suporte prioritário"], highlight: false },
 ];
+
+const avatarColors = ["#6366F1", "#22D3EE", "#8B5CF6", "#EC4899", "#F59E0B"];
+const avatarLetters = ["A", "C", "J", "R", "M"];
+const barHeights = ["45%", "60%", "38%", "75%", "55%", "90%", "65%"];
 
 const sidebarItems = [
-  { icon: Home, label: "Dashboard" },
-  { icon: BarChart3, label: "Relatórios" },
-  { icon: FileText, label: "Posts" },
-  { icon: Star, label: "Avaliações" },
-  { icon: Megaphone, label: "Campanhas" },
-  { icon: Settings, label: "Configurações" },
+  { icon: BarChart3, label: "Dashboard", active: true },
+  { icon: Star, label: "Avaliações", active: false },
+  { icon: FileText, label: "Posts", active: false },
+  { icon: Target, label: "Ads", active: false },
+  { icon: Image, label: "Materiais", active: false },
+  { icon: TrendingUp, label: "Relatório", active: false },
 ];
 
-const chartHeights = [40, 65, 50, 80, 60, 90, 75];
+const metricCards = [
+  { icon: MapPin, label: "Views", value: "2.847", change: "+18%", yellow: false },
+  { icon: Bell, label: "Ligações", value: "143", change: "+12%", yellow: false },
+  { icon: TrendingUp, label: "Rotas", value: "89", change: "+9%", yellow: false },
+  { icon: Star, label: "Nota", value: "4.8 ★", change: "+0.3", yellow: true },
+];
 
-/* ───── Component ───── */
-const Landing = () => {
-  usePageTitle("Seu negócio local no topo do Google");
+export default function Landing() {
+  usePageTitle("LocalAI — Seu negócio local no topo do Google");
   const [scrolled, setScrolled] = useState(false);
+  const [mockupTilt, setMockupTilt] = useState(true);
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", h, { passive: true });
-    return () => window.removeEventListener("scroll", h);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <div className="min-h-screen" style={{ background: "#020817", color: "#F8FAFC", fontFamily: "'Inter', sans-serif" }}>
-      {/* Google Fonts */}
+    <div style={{ background: "#020817", color: "#F8FAFC", minHeight: "100vh" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap');
-        .font-heading { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .animate-on-scroll { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
-        @keyframes float1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px,-40px); } }
-        @keyframes float2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-40px,30px); } }
-        @keyframes float3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(20px,40px); } }
-        @keyframes border-rotate { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .hero-fade-in { animation: heroFade 0.7s ease forwards; opacity: 0; }
-        @keyframes heroFade { to { opacity: 1; transform: translateY(0); } }
-        .hero-fade-in { transform: translateY(20px); }
-        .niche-card:hover img { transform: scale(1.05); }
-        .mockup-3d { perspective: 1000px; }
-        .mockup-3d > div { transform: rotateX(8deg); transition: transform 0.6s ease; }
-        .mockup-3d:hover > div { transform: rotateX(0deg); }
-        @media (max-width: 768px) { .mockup-3d > div { transform: rotateX(0deg); } }
+        .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+        .reveal.show{opacity:1;transform:translateY(0)}
+        @keyframes orb-float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.97)}}
+        @keyframes border-glow{0%,100%{opacity:.5}50%{opacity:1}}
+        @keyframes count-pulse{0%,100%{opacity:1}50%{opacity:.7}}
+        .niche-card img{transition:transform .6s ease}.niche-card:hover img{transform:scale(1.07)}
+        .step-card{transition:all .3s ease}.step-card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.4)!important}
+        .feature-card{transition:all .3s ease}.feature-card:hover{transform:translateY(-3px);border-color:rgba(99,102,241,.35)!important;box-shadow:0 8px 32px rgba(99,102,241,.1)}
+        .testimonial-card{transition:all .3s ease}.testimonial-card:hover{transform:translateY(-3px);border-color:rgba(99,102,241,.3)!important}
+        .plan-card{transition:all .3s ease}.plan-card:hover{transform:translateY(-3px)}
+        .cta-primary{transition:all .25s ease}.cta-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(99,102,241,.45),0 4px 20px rgba(0,0,0,.4)!important}
+        .cta-ghost{transition:all .25s ease}.cta-ghost:hover{color:#F8FAFC!important;border-color:rgba(255,255,255,.3)!important}
+        .logo-text{transition:color .3s ease}.logo-text:hover{color:rgba(255,255,255,.5)!important}
+        .nav-link{transition:color .2s ease}.nav-link:hover{color:#F8FAFC!important}
       `}</style>
 
-      {/* Mesh gradient orbs */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div style={{ position: "absolute", top: "-10%", left: "-10%", width: 500, height: 500, borderRadius: "50%", background: "rgba(99,102,241,0.15)", filter: "blur(120px)", animation: "float1 25s linear infinite" }} />
-        <div style={{ position: "absolute", bottom: "-10%", right: "-10%", width: 400, height: 400, borderRadius: "50%", background: "rgba(34,211,238,0.1)", filter: "blur(120px)", animation: "float2 30s linear infinite" }} />
-        <div style={{ position: "absolute", top: "40%", right: "20%", width: 350, height: 350, borderRadius: "50%", background: "rgba(139,92,246,0.08)", filter: "blur(120px)", animation: "float3 35s linear infinite" }} />
+      {/* Background Orbs */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: -200, left: -200, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%)", filter: "blur(120px)", animation: "orb-float 25s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", bottom: -200, right: -200, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,211,238,0.12), transparent 70%)", filter: "blur(120px)", animation: "orb-float 32s ease-in-out infinite reverse" }} />
+        <div style={{ position: "absolute", top: "40%", left: "40%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,92,246,0.10), transparent 70%)", filter: "blur(120px)", animation: "orb-float 20s ease-in-out infinite 5s" }} />
       </div>
 
-      {/* Noise overlay */}
-      <div className="fixed inset-0 z-[1] pointer-events-none" style={{ opacity: 0.03, mixBlendMode: "overlay", backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
+      {/* Noise */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", opacity: 0.025, mixBlendMode: "overlay" as const, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }} />
 
-      {/* Top decorative line */}
-      <div className="fixed top-0 left-0 right-0 z-[60]" style={{ height: 1, background: "linear-gradient(90deg, transparent, #6366F1, #22D3EE, transparent)", boxShadow: "0 0 20px rgba(99,102,241,0.3)" }} />
+      {/* Top line */}
+      <div style={{ position: "relative", zIndex: 10 }}>
+        <div style={{ height: 1, width: "100%", background: "linear-gradient(90deg, transparent 0%, #6366F1 30%, #22D3EE 70%, transparent 100%)" }} />
+        <div style={{ height: 40, background: "linear-gradient(to bottom, rgba(99,102,241,0.08), transparent)" }} />
+      </div>
 
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 transition-shadow duration-300" style={{ background: "rgba(2,8,23,0.8)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255,255,255,0.06)", boxShadow: scrolled ? "0 4px 30px rgba(0,0,0,0.3)" : "none" }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <nav style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(2,8,23,0.85)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.06)", boxShadow: scrolled ? "0 8px 32px rgba(0,0,0,0.4)" : "none", transition: "box-shadow 0.3s ease" }}>
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" style={{ height: 64 }}>
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "rgba(99,102,241,0.15)" }}>
-              <MapPin className="w-4 h-4" style={{ color: "#6366F1" }} />
-            </div>
-            <span className="font-heading text-lg font-bold">Local<span style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>AI</span></span>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 2C8.48 2 4 6.48 4 12c0 7.5 10 14 10 14s10-6.5 10-14c0-5.52-4.48-10-10-10z" fill="#6366F1" /><circle cx="14" cy="11" r="4" fill="#020817" /></svg>
+            <span style={{ fontWeight: 700, fontSize: 20 }} className="font-heading">Local<span style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>AI</span></span>
           </Link>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#como-funciona" className="text-sm transition-colors duration-200" style={{ color: "#94A3B8" }} onMouseEnter={e => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={e => (e.currentTarget.style.color = "#94A3B8")}>Como funciona</a>
-            <a href="#funcionalidades" className="text-sm transition-colors duration-200" style={{ color: "#94A3B8" }} onMouseEnter={e => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={e => (e.currentTarget.style.color = "#94A3B8")}>Funcionalidades</a>
-            <a href="#precos" className="text-sm transition-colors duration-200" style={{ color: "#94A3B8" }} onMouseEnter={e => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={e => (e.currentTarget.style.color = "#94A3B8")}>Preços</a>
+          <div className="hidden md:flex gap-8">
+            {[["Como funciona", "#como-funciona"], ["Recursos", "#recursos"], ["Preços", "#precos"]].map(([label, href]) => (
+              <a key={label} href={href} className="nav-link" style={{ color: "#94A3B8", fontSize: 14 }}>{label}</a>
+            ))}
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/auth" className="hidden sm:inline-flex text-sm px-4 py-2 rounded-lg border transition-colors duration-200" style={{ color: "#94A3B8", borderColor: "rgba(255,255,255,0.1)" }}>Entrar</Link>
-            <Link to="/pricing" className="text-sm px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 group" style={{ background: "#6366F1", color: "#fff" }}>
-              Começar grátis <ArrowRight className="w-3.5 h-3.5 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
-            </Link>
+            <Link to="/auth" className="cta-ghost hidden sm:inline-flex items-center" style={{ border: "1px solid rgba(255,255,255,0.15)", color: "#94A3B8", padding: "8px 16px", borderRadius: 8, fontSize: 14 }}>Entrar</Link>
+            <Link to="/auth" className="cta-primary inline-flex items-center" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "8px 16px", borderRadius: 8, fontSize: 14, fontWeight: 500, boxShadow: "0 0 20px rgba(99,102,241,0.3)" }}>Começar grátis</Link>
           </div>
         </div>
       </nav>
 
-      <div className="relative z-10">
-        {/* ═══ HERO ═══ */}
-        <section className="pt-24 sm:pt-32 lg:pt-40 pb-8">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-            {/* Badge */}
-            <div className="hero-fade-in inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium mb-8" style={{ border: "1px solid rgba(99,102,241,0.4)", background: "rgba(99,102,241,0.1)", animationDelay: "0ms" }}>
-              <Sparkles className="w-3.5 h-3.5" style={{ color: "#6366F1" }} />
-              <span style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Novo — Gestão de Google Ads com IA</span>
-            </div>
-
-            {/* Headline */}
-            <h1 className="font-heading font-bold hero-fade-in" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 1.1, letterSpacing: "-0.03em", animationDelay: "100ms" }}>
-              Seu negócio local no topo do Google.{" "}
-              <span className="block" style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>No piloto automático.</span>
+      {/* Hero */}
+      <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", paddingTop: 80, paddingBottom: 80, position: "relative", zIndex: 10 }}>
+        <div className="max-w-4xl mx-auto text-center px-6">
+          <Reveal>
+            <span className="inline-flex items-center gap-2" style={{ border: "1px solid rgba(99,102,241,0.4)", background: "rgba(99,102,241,0.1)", padding: "6px 16px", borderRadius: 999, fontSize: 13, color: "#A5B4FC" }}>✦ Novo — Agora com Gestão de Google Ads com IA</span>
+          </Reveal>
+          <Reveal delay={100}>
+            <h1 className="font-heading" style={{ fontSize: "clamp(40px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", marginTop: 32 }}>
+              Seu negócio local no topo do Google.<br />
+              <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>No piloto automático.</span>
             </h1>
-
-            {/* Sub */}
-            <p className="mt-6 text-lg hero-fade-in mx-auto" style={{ color: "#94A3B8", maxWidth: 560, animationDelay: "200ms" }}>
-              A IA gerencia seu Google Meu Negócio e anúncios. Posts automáticos, respostas com IA, campanhas otimizadas.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8 hero-fade-in" style={{ animationDelay: "300ms" }}>
-              <Link to="/pricing" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-medium text-white transition-all duration-200 hover:-translate-y-0.5" style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)", boxShadow: "0 0 40px rgba(99,102,241,0.3)" }}>
-                Começar grátis por 14 dias <ArrowRight className="w-4 h-4" />
+          </Reveal>
+          <Reveal delay={200}>
+            <p style={{ maxWidth: 560, margin: "24px auto 0", fontSize: 18, color: "#94A3B8", lineHeight: 1.6 }}>A IA gerencia seu Google Meu Negócio e anúncios. Posts automáticos, respostas com IA e campanhas otimizadas — tudo sem você precisar fazer nada.</p>
+          </Reveal>
+          <Reveal delay={300}>
+            <div className="flex gap-4 justify-center flex-wrap" style={{ marginTop: 40 }}>
+              <Link to="/auth" className="cta-primary inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "14px 28px", borderRadius: 10, fontWeight: 600, fontSize: 16, boxShadow: "0 0 40px rgba(99,102,241,0.35), 0 4px 16px rgba(0,0,0,0.3)" }}>
+                Começar grátis por 14 dias <ArrowRight size={16} />
               </Link>
-              <a href="#como-funciona" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-medium transition-colors duration-200" style={{ color: "#94A3B8", border: "1px solid rgba(255,255,255,0.1)" }}>
-                <div className="w-6 h-6 rounded-full border flex items-center justify-center" style={{ borderColor: "rgba(255,255,255,0.2)" }}><Play className="w-3 h-3 ml-0.5" /></div>
-                Ver demonstração
+              <a href="#como-funciona" className="cta-ghost inline-flex items-center gap-2" style={{ border: "1px solid rgba(255,255,255,0.15)", color: "#94A3B8", padding: "14px 28px", borderRadius: 10, fontSize: 16 }}>
+                <Play size={16} /> Ver demonstração
               </a>
             </div>
-
-            {/* Social proof */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 hero-fade-in" style={{ animationDelay: "400ms" }}>
-              <div className="flex -space-x-2">
-                {["MO", "FC", "RA", "CS", "JP"].map((i, idx) => (
-                  <div key={idx} className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2" style={{ background: ["#6366F1", "#22D3EE", "#8B5CF6", "#F59E0B", "#10B981"][idx], borderColor: "#020817" }}>{i}</div>
+          </Reveal>
+          <Reveal delay={400}>
+            <div className="flex items-center justify-center gap-3 flex-wrap" style={{ marginTop: 48 }}>
+              <div className="flex">
+                {avatarLetters.map((l, i) => (
+                  <div key={i} style={{ width: 32, height: 32, borderRadius: "50%", border: "2px solid #020817", background: avatarColors[i], display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#fff", marginLeft: i === 0 ? 0 : -8, position: "relative", zIndex: 5 - i }}>{l}</div>
                 ))}
               </div>
-              <div className="flex items-center gap-2">
-                <div className="flex">{[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />)}</div>
-                <span className="text-sm" style={{ color: "#94A3B8" }}>Mais de 500 negócios crescendo</span>
+              <span style={{ fontSize: 14, color: "#94A3B8" }}>Mais de 500 negócios crescendo</span>
+              <span style={{ fontSize: 14, color: "#F59E0B" }}>★★★★★</span>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Mockup */}
+      <section style={{ paddingBottom: 96, position: "relative", zIndex: 10 }}>
+        <div className="max-w-5xl mx-auto px-6" style={{ perspective: 1200 }}>
+          <div style={{ transform: mockupTilt ? "rotateX(6deg)" : "rotateX(0deg)", transition: "transform 0.8s ease", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, overflow: "hidden", boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 50px 100px -20px rgba(0,0,0,0.9), 0 0 80px rgba(99,102,241,0.1)" }} onMouseEnter={() => setMockupTilt(false)} onMouseLeave={() => setMockupTilt(true)}>
+            {/* Window bar */}
+            <div style={{ height: 40, background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", padding: "0 16px", gap: 8 }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#EF4444" }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#F59E0B" }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#22C55E" }} />
+              <div style={{ flex: 1, maxWidth: 280, margin: "0 auto", height: 24, borderRadius: 6, background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#475569" }}>app.localai.com.br</div>
+            </div>
+            {/* Desktop dashboard */}
+            <div className="hidden md:flex" style={{ background: "#0F172A", height: 480 }}>
+              <div style={{ width: 200, background: "rgba(0,0,0,0.3)", borderRight: "1px solid rgba(255,255,255,0.06)", padding: 16, flexShrink: 0 }}>
+                <div className="flex items-center gap-2 mb-6"><MapPin size={16} style={{ color: "#6366F1" }} /><span className="font-heading" style={{ fontSize: 13 }}>LocalAI</span></div>
+                {sidebarItems.map((item, i) => (
+                  <div key={i} className="flex items-center gap-2" style={{ padding: "8px 12px", borderRadius: 8, fontSize: 13, marginBottom: 2, background: item.active ? "rgba(99,102,241,0.2)" : "transparent", color: item.active ? "#A5B4FC" : "#475569" }}>
+                    <item.icon size={14} style={{ color: item.active ? "#6366F1" : "#334155" }} />{item.label}
+                  </div>
+                ))}
+              </div>
+              <div style={{ flex: 1, padding: 24, overflow: "hidden" }}>
+                <div className="flex items-center gap-3">
+                  <span className="font-heading" style={{ fontSize: 18, fontWeight: 600 }}>Dashboard</span>
+                  <span style={{ fontSize: 11, color: "#22C55E", display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22C55E", animation: "count-pulse 2s infinite", display: "inline-block" }} /> Ativo</span>
+                </div>
+                <div className="grid grid-cols-4 gap-3" style={{ marginTop: 16 }}>
+                  {metricCards.map((m, i) => (
+                    <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 12 }}>
+                      <div className="flex items-center gap-1" style={{ marginBottom: 4 }}><m.icon size={14} style={{ color: "#6366F1" }} /><span style={{ fontSize: 10, color: "#475569" }}>{m.label}</span></div>
+                      <div style={{ fontSize: 20, fontWeight: 600 }}>{m.value}</div>
+                      <span style={{ fontSize: 10, color: m.yellow ? "#F59E0B" : "#22C55E" }}>{m.change}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-end gap-1.5" style={{ height: 80, marginTop: 16 }}>
+                  {barHeights.map((h, i) => (
+                    <div key={i} style={{ flex: 1, height: h, borderRadius: "4px 4px 0 0", background: "linear-gradient(to top, #6366F1, #818CF8)", opacity: i === 5 ? 1 : 0.7 }} />
+                  ))}
+                </div>
+                <div className="flex items-center gap-3" style={{ marginTop: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 12 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#6366F1", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 600, color: "#fff", flexShrink: 0 }}>M</div>
+                  <span style={{ fontSize: 11, color: "#F59E0B" }}>★★★★★</span>
+                  <span style={{ fontSize: 11, color: "#94A3B8", flex: 1 }}>Ótimo atendimento!</span>
+                  <span style={{ background: "rgba(34,197,94,0.1)", color: "#22C55E", fontSize: 10, padding: "2px 8px", borderRadius: 999 }}>✓ Respondida pela IA</span>
+                </div>
+              </div>
+            </div>
+            {/* Mobile fallback */}
+            <div className="md:hidden" style={{ background: "#0F172A", padding: 24, minHeight: 200 }}>
+              <div className="grid grid-cols-2 gap-3">
+                {metricCards.map((m, i) => (
+                  <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 12 }}>
+                    <div className="flex items-center gap-1 mb-1"><m.icon size={14} style={{ color: "#6366F1" }} /><span style={{ fontSize: 10, color: "#475569" }}>{m.label}</span></div>
+                    <div style={{ fontSize: 18, fontWeight: 600 }}>{m.value}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ═══ MOCKUP ═══ */}
-        <section className="pb-20 sm:pb-28 pt-8">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 mockup-3d">
-            <AnimateIn>
-              <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 50px 100px -20px rgba(0,0,0,0.8), 0 0 80px rgba(99,102,241,0.15)" }}>
-                {/* Window bar */}
-                <div className="flex items-center gap-2 px-4 h-10" style={{ background: "rgba(255,255,255,0.04)" }}>
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full" style={{ background: "#EF4444" }} />
-                    <div className="w-3 h-3 rounded-full" style={{ background: "#F59E0B" }} />
-                    <div className="w-3 h-3 rounded-full" style={{ background: "#22C55E" }} />
-                  </div>
-                  <div className="flex-1 flex justify-center">
-                    <div className="px-8 py-1 rounded-md text-xs" style={{ background: "rgba(255,255,255,0.05)", color: "#64748B" }}>app.localai.com.br/dashboard</div>
-                  </div>
+      {/* Logos */}
+      <section style={{ paddingTop: 48, paddingBottom: 48, position: "relative", zIndex: 10 }}>
+        <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)" }} />
+        <div className="text-center" style={{ marginTop: 32 }}><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#475569" }}>INTEGRADO COM</span></div>
+        <div className="flex justify-center gap-12 items-center flex-wrap" style={{ marginTop: 32 }}>
+          {["Google", "Google Ads", "Claude AI"].map((name) => (
+            <span key={name} className="logo-text" style={{ fontSize: 22, fontWeight: 700, color: "rgba(255,255,255,0.2)", cursor: "default", userSelect: "none" }}>{name}</span>
+          ))}
+        </div>
+        <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)", marginTop: 32 }} />
+      </section>
+
+      {/* How it works */}
+      <section id="como-funciona" style={{ paddingTop: 96, paddingBottom: 96, position: "relative", zIndex: 10 }}>
+        <div className="text-center">
+          <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>COMO FUNCIONA</span></Reveal>
+          <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 64 }}>Conecte uma vez. A IA trabalha para sempre.</h2></Reveal>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto px-6">
+          {steps.map((s, i) => (
+            <Reveal key={i} delay={i * 100}>
+              <div className="step-card" style={{ position: "relative", overflow: "hidden", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, padding: 32 }}>
+                <span style={{ position: "absolute", top: -10, right: 16, fontSize: 96, fontWeight: 800, color: "rgba(99,102,241,0.06)", lineHeight: 1 }}>{s.num}</span>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(99,102,241,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}><s.icon size={22} style={{ color: "#6366F1" }} /></div>
+                <h3 className="font-heading" style={{ fontSize: 18, fontWeight: 600, marginTop: 16, marginBottom: 12 }}>{s.title}</h3>
+                <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.7 }}>{s.desc}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Features */}
+      <section id="recursos" style={{ paddingTop: 96, paddingBottom: 96, position: "relative", zIndex: 10, background: "rgba(99,102,241,0.02)" }}>
+        <div className="text-center">
+          <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>RECURSOS</span></Reveal>
+          <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 64 }}>Tudo que um gestor de marketing faz. Automaticamente.</h2></Reveal>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4 max-w-5xl mx-auto px-6">
+          {features.map((f, i) => (
+            <Reveal key={i} delay={i * 80}>
+              <div className="feature-card" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 24 }}>
+                <div style={{ width: 42, height: 42, borderRadius: 10, background: "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(34,211,238,0.1))", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}><f.icon size={20} style={{ color: "#818CF8" }} /></div>
+                <h3 className="font-heading" style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>{f.title}</h3>
+                <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.6 }}>{f.desc}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Niches */}
+      <section style={{ paddingTop: 96, paddingBottom: 96, position: "relative", zIndex: 10 }}>
+        <div className="text-center">
+          <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>PARA QUALQUER NEGÓCIO LOCAL</span></Reveal>
+          <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 64 }}>Do restaurante à clínica. Do salão à academia.</h2></Reveal>
+        </div>
+        <div className="grid grid-cols-2 gap-4 max-w-5xl mx-auto px-6">
+          {niches.map((n, i) => (
+            <Reveal key={i} delay={i * 80}>
+              <div className="niche-card" style={{ height: 280, borderRadius: 16, overflow: "hidden", position: "relative", cursor: "default" }}>
+                <img src={n.img} alt={n.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(2,8,23,0.92) 0%, rgba(2,8,23,0.4) 50%, transparent 100%)" }} />
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 20 }}>
+                  <n.icon size={20} style={{ color: "#6366F1", marginBottom: 8 }} />
+                  <div className="font-heading" style={{ fontSize: 18, fontWeight: 600 }}>{n.name}</div>
+                  <span style={{ display: "inline-block", marginTop: 4, background: "rgba(34,197,94,0.15)", color: "#22C55E", fontSize: 11, border: "1px solid rgba(34,197,94,0.3)", padding: "2px 8px", borderRadius: 999 }}>✓ Suportado</span>
                 </div>
-                {/* Dashboard content */}
-                <div className="flex" style={{ background: "rgba(255,255,255,0.02)", minHeight: 380 }}>
-                  {/* Sidebar */}
-                  <div className="hidden md:flex flex-col w-52 p-4 gap-1 shrink-0" style={{ borderRight: "1px solid rgba(255,255,255,0.06)" }}>
-                    <div className="flex items-center gap-2 mb-6">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(99,102,241,0.15)" }}><MapPin className="w-3.5 h-3.5" style={{ color: "#6366F1" }} /></div>
-                      <span className="font-heading text-sm font-semibold">LocalAI</span>
-                    </div>
-                    {sidebarItems.map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs" style={{ background: idx === 0 ? "rgba(99,102,241,0.1)" : "transparent", color: idx === 0 ? "#A5B4FC" : "#64748B" }}>
-                        <item.icon className="w-3.5 h-3.5" />{item.label}
-                      </div>
-                    ))}
-                  </div>
-                  {/* Main */}
-                  <div className="flex-1 p-4 sm:p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-heading font-semibold text-sm sm:text-base">Dashboard</h3>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1.5" style={{ background: "rgba(34,197,94,0.1)", color: "#22C55E" }}>
-                        <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22C55E" }} />Ativo
-                      </span>
-                    </div>
-                    {/* Metrics */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-                      {[
-                        { icon: MapPin, label: "Views Maps", value: "2.847", change: "+18%" },
-                        { icon: Phone, label: "Ligações", value: "143", change: "+24%" },
-                        { icon: Route, label: "Pedidos rota", value: "89", change: "+9%" },
-                        { icon: Star, label: "Nota Google", value: "4.8", change: "+0.3" },
-                      ].map((m, idx) => (
-                        <div key={idx} className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                          <div className="flex items-center gap-1 mb-1"><m.icon className="w-3 h-3" style={{ color: "#64748B" }} /><span className="text-[10px]" style={{ color: "#64748B" }}>{m.label}</span></div>
-                          <p className="text-lg font-heading font-bold">{m.value}</p>
-                          <span className="text-[10px] font-medium" style={{ color: "#22C55E" }}>{m.change}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {/* Chart + Review */}
-                    <div className="grid md:grid-cols-2 gap-3">
-                      <div className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                        <p className="text-[10px] mb-3" style={{ color: "#64748B" }}>Visualizações — últimos 7 dias</p>
-                        <div className="flex items-end gap-1.5 h-24">
-                          {chartHeights.map((h, i) => (
-                            <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: `linear-gradient(180deg, #6366F1, rgba(99,102,241,0.3))` }} />
-                          ))}
-                        </div>
-                      </div>
-                      <div className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                        <p className="text-[10px] mb-3" style={{ color: "#64748B" }}>Última avaliação</p>
-                        <div className="flex items-start gap-2.5">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0" style={{ background: "#6366F1" }}>MO</div>
-                          <div>
-                            <div className="flex gap-0.5 mb-1">{[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />)}</div>
-                            <p className="text-xs leading-relaxed" style={{ color: "#CBD5E1" }}>"Excelente atendimento! Voltarei com certeza."</p>
-                            <span className="inline-flex items-center gap-1 text-[9px] mt-2 px-2 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)", color: "#22C55E" }}>
-                              <Check className="w-2.5 h-2.5" /> Respondida pela IA
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section style={{ paddingTop: 96, paddingBottom: 96, position: "relative", zIndex: 10, background: "rgba(99,102,241,0.02)" }}>
+        <div className="text-center">
+          <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>DEPOIMENTOS</span></Reveal>
+          <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 64 }}>Negócios reais. Resultados reais.</h2></Reveal>
+        </div>
+        <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto px-6">
+          {testimonials.map((t, i) => (
+            <Reveal key={i} delay={i * 100}>
+              <div className="testimonial-card" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
+                <span style={{ fontSize: 64, lineHeight: 1, color: "#6366F1", opacity: 0.6, fontFamily: "Georgia, serif", marginBottom: -8, display: "block" }}>"</span>
+                <p style={{ fontSize: 15, color: "#CBD5E1", lineHeight: 1.7, fontStyle: "italic", marginBottom: 24 }}>{t.text}</p>
+                <div style={{ fontSize: 13, color: "#F59E0B", marginBottom: 24 }}>★★★★★</div>
+                <div className="flex items-center gap-3">
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: t.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 600, color: "#fff", flexShrink: 0 }}>{t.initial}</div>
+                  <div>
+                    <div className="font-heading" style={{ fontSize: 14, fontWeight: 600 }}>{t.name}</div>
+                    <div style={{ fontSize: 12, color: "#64748B" }}>{t.sub}</div>
                   </div>
                 </div>
               </div>
-            </AnimateIn>
-          </div>
-        </section>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
-        {/* ═══ LOGOS ═══ */}
-        <section className="py-12">
-          <AnimateIn className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <div className="h-px mx-auto mb-10" style={{ maxWidth: 400, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)" }} />
-            <p className="text-[11px] font-medium tracking-[0.15em] uppercase mb-6" style={{ color: "#64748B" }}>Integrado com</p>
-            <div className="flex items-center justify-center gap-10 sm:gap-16">
-              {["Google", "Google Ads", "Claude AI"].map((name) => (
-                <span key={name} className="text-sm sm:text-base font-medium transition-colors duration-200 cursor-default" style={{ color: "rgba(255,255,255,0.25)" }} onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}>{name}</span>
-              ))}
-            </div>
-            <div className="h-px mx-auto mt-10" style={{ maxWidth: 400, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)" }} />
-          </AnimateIn>
-        </section>
-
-        {/* ═══ COMO FUNCIONA ═══ */}
-        <section id="como-funciona" className="py-20 sm:py-28">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <AnimateIn className="text-center mb-16">
-              <p className="text-[11px] font-semibold tracking-[0.12em] uppercase mb-4" style={{ color: "#6366F1" }}>Como funciona</p>
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl" style={{ letterSpacing: "-0.02em" }}>Conecte uma vez. A IA trabalha para sempre.</h2>
-            </AnimateIn>
-            <div className="grid md:grid-cols-3 gap-6 relative">
-              {/* Connector line (desktop) */}
-              <div className="hidden md:block absolute top-16 left-[20%] right-[20%] border-t border-dashed" style={{ borderColor: "rgba(99,102,241,0.2)" }} />
-              {steps.map((s, i) => (
-                <AnimateIn key={i} delay={i * 120}>
-                  <div className="relative p-6 rounded-2xl text-center transition-all duration-300 hover:-translate-y-0.5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(99,102,241,0.3)", boxShadow: "0 0 0 1px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.05)" }}>
-                    <span className="absolute top-3 left-4 font-heading font-extrabold text-6xl select-none" style={{ color: "rgba(99,102,241,0.07)" }}>{s.num}</span>
-                    <div className="w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center relative z-10" style={{ background: "rgba(99,102,241,0.15)" }}>
-                      <s.icon className="w-6 h-6" style={{ color: "#6366F1" }} />
-                    </div>
-                    <h3 className="font-heading font-bold text-lg mb-2">{s.title}</h3>
-                    <p className="text-sm leading-relaxed" style={{ color: "#94A3B8" }}>{s.desc}</p>
-                  </div>
-                </AnimateIn>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ FEATURES ═══ */}
-        <section id="funcionalidades" className="py-20 sm:py-28">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <AnimateIn className="text-center mb-16 max-w-xl mx-auto">
-              <p className="text-[11px] font-semibold tracking-[0.12em] uppercase mb-4" style={{ color: "#6366F1" }}>Funcionalidades</p>
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl" style={{ letterSpacing: "-0.02em" }}>Tudo que um gestor de marketing faz. Automaticamente.</h2>
-            </AnimateIn>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {features.map((f, i) => (
-                <AnimateIn key={i} delay={i * 80}>
-                  <div className="p-6 rounded-2xl h-full transition-all duration-300 hover:-translate-y-0.5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)" }}>
-                    <div className="w-10 h-10 rounded-xl mb-4 flex items-center justify-center" style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(34,211,238,0.1))" }}>
-                      <f.icon className="w-5 h-5" style={{ color: "#A5B4FC" }} />
-                    </div>
-                    <h3 className="font-heading font-semibold text-[15px] mb-2">{f.title}</h3>
-                    <p className="text-[13px] leading-relaxed" style={{ color: "#94A3B8" }}>{f.desc}</p>
-                  </div>
-                </AnimateIn>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ NICHES ═══ */}
-        <section className="py-20 sm:py-28">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <AnimateIn className="text-center mb-16">
-              <p className="text-[11px] font-semibold tracking-[0.12em] uppercase mb-4" style={{ color: "#6366F1" }}>Segmentos</p>
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl" style={{ letterSpacing: "-0.02em" }}>Para qualquer negócio local</h2>
-            </AnimateIn>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {niches.map((n, i) => (
-                <AnimateIn key={i} delay={i * 80}>
-                  <div className="niche-card relative h-64 sm:h-72 rounded-2xl overflow-hidden group cursor-default" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <img src={n.img} alt={n.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500" />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(2,8,23,0.9) 0%, transparent 60%)" }} />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <n.icon className="w-4 h-4" style={{ color: "#A5B4FC" }} />
-                        <span className="font-heading font-semibold text-sm">{n.name}</span>
-                      </div>
-                      <span className="text-[10px] flex items-center gap-1" style={{ color: "#22C55E" }}><Check className="w-3 h-3" /> Suportado</span>
-                    </div>
-                  </div>
-                </AnimateIn>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ TESTIMONIALS ═══ */}
-        <section id="depoimentos" className="py-20 sm:py-28">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <AnimateIn className="text-center mb-16">
-              <p className="text-[11px] font-semibold tracking-[0.12em] uppercase mb-4" style={{ color: "#6366F1" }}>Depoimentos</p>
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl" style={{ letterSpacing: "-0.02em" }}>Quem usa, recomenda</h2>
-            </AnimateIn>
-            <div className="grid md:grid-cols-3 gap-4">
-              {testimonials.map((t, i) => (
-                <AnimateIn key={i} delay={i * 100}>
-                  <div className="p-6 rounded-2xl h-full flex flex-col transition-all duration-300 hover:-translate-y-0.5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <span className="font-heading text-4xl leading-none mb-3" style={{ color: "#6366F1" }}>"</span>
-                    <p className="text-[15px] italic leading-relaxed flex-1 mb-6" style={{ color: "#CBD5E1" }}>{t.text}</p>
-                    <div className="flex gap-0.5 mb-4">{[...Array(5)].map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />)}</div>
-                    <div className="flex items-center gap-3 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                      <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ background: t.color }}>{t.initials}</div>
-                      <div>
-                        <p className="text-sm font-medium">{t.name}</p>
-                        <p className="text-xs" style={{ color: "#64748B" }}>{t.role}, {t.city}</p>
-                      </div>
-                    </div>
-                  </div>
-                </AnimateIn>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ PRICING ═══ */}
-        <section id="precos" className="py-20 sm:py-28" style={{ background: "rgba(99,102,241,0.03)" }}>
-          <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <AnimateIn className="text-center mb-16">
-              <p className="text-[11px] font-semibold tracking-[0.12em] uppercase mb-4" style={{ color: "#6366F1" }}>Planos</p>
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl" style={{ letterSpacing: "-0.02em" }}>Planos para cada fase do seu negócio</h2>
-              <p className="mt-4 text-base" style={{ color: "#94A3B8" }}>14 dias grátis em todos os planos. Cancele quando quiser.</p>
-            </AnimateIn>
-            <div className="grid md:grid-cols-3 gap-4 items-start">
-              {plans.map((p, i) => (
-                <AnimateIn key={i} delay={i * 80}>
-                  <div className="p-6 rounded-2xl relative transition-all duration-300" style={{
-                    background: "rgba(255,255,255,0.04)",
-                    border: p.popular ? "1px solid rgba(99,102,241,0.5)" : "1px solid rgba(255,255,255,0.08)",
-                    boxShadow: p.popular ? "0 0 60px rgba(99,102,241,0.2)" : "none",
-                    transform: p.popular ? "scale(1.02)" : "none",
-                  }}>
-                    {p.popular && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold px-3 py-1 rounded-full text-white" style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)" }}>Mais popular</span>
-                    )}
-                    <p className="text-xs font-medium uppercase tracking-wider mb-4" style={{ color: "#94A3B8" }}>{p.name}</p>
-                    <div className="mb-6">
-                      <span className="font-heading text-3xl font-bold">R${p.price}</span>
-                      <span className="text-sm ml-1" style={{ color: "#64748B" }}>/mês</span>
-                    </div>
-                    <div className="h-px mb-6" style={{ background: "rgba(255,255,255,0.06)" }} />
-                    <ul className="space-y-3 mb-6">
-                      {p.features.map((f, j) => (
-                        <li key={j} className="flex items-start gap-2.5 text-sm">
-                          <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#22C55E" }} />
-                          <span style={{ color: "#CBD5E1" }}>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Link to="/pricing" className="block w-full text-center py-2.5 rounded-xl text-sm font-medium transition-all duration-200" style={{
-                      background: p.popular ? "#6366F1" : "transparent",
-                      color: p.popular ? "#fff" : "#94A3B8",
-                      border: p.popular ? "none" : "1px solid rgba(255,255,255,0.1)",
-                    }}>
-                      Começar grátis
-                    </Link>
-                  </div>
-                </AnimateIn>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ FINAL CTA ═══ */}
-        <section className="py-20 sm:py-28">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6">
-            <AnimateIn>
-              <div className="text-center p-8 sm:p-12 rounded-2xl relative" style={{ background: "radial-gradient(ellipse at center, rgba(99,102,241,0.15), transparent)", border: "1px solid rgba(99,102,241,0.3)" }}>
-                <h2 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl mb-4" style={{ letterSpacing: "-0.02em" }}>Pronto para aparecer mais no Google?</h2>
-                <p className="mb-8" style={{ color: "#94A3B8" }}>14 dias grátis. Sem cartão de crédito. Cancele quando quiser.</p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Link to="/pricing" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-medium text-white transition-all duration-200 hover:-translate-y-0.5" style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)", boxShadow: "0 0 40px rgba(99,102,241,0.3)" }}>
-                    Criar minha conta grátis <ArrowRight className="w-4 h-4" />
-                  </Link>
-                  <a href="mailto:contato@localai.com.br" className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-medium transition-colors duration-200" style={{ color: "#94A3B8", border: "1px solid rgba(255,255,255,0.1)" }}>
-                    Falar com a equipe
-                  </a>
-                </div>
-                <div className="flex items-center justify-center gap-2 mt-6">
-                  <Lock className="w-3.5 h-3.5" style={{ color: "#64748B" }} />
-                  <span className="text-xs" style={{ color: "#64748B" }}>Pagamento seguro via Stripe</span>
-                </div>
-              </div>
-            </AnimateIn>
-          </div>
-        </section>
-
-        {/* ═══ FOOTER ═══ */}
-        <footer style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-            <div className="grid sm:grid-cols-3 gap-8 mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(99,102,241,0.15)" }}><MapPin className="w-3.5 h-3.5" style={{ color: "#6366F1" }} /></div>
-                  <span className="font-heading text-sm font-bold">Local<span style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>AI</span></span>
-                </div>
-                <p className="text-xs leading-relaxed" style={{ color: "#64748B" }}>Inteligência artificial para negócios locais dominarem o Google.</p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#94A3B8" }}>Produto</p>
+      {/* Pricing */}
+      <section id="precos" style={{ paddingTop: 96, paddingBottom: 96, position: "relative", zIndex: 10 }}>
+        <div className="text-center">
+          <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>PREÇOS</span></Reveal>
+          <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16 }}>Simples e transparente. Sem surpresas.</h2></Reveal>
+          <Reveal delay={120}><p style={{ fontSize: 16, color: "#64748B", marginTop: 8, marginBottom: 64 }}>14 dias grátis em qualquer plano. Sem cartão de crédito.</p></Reveal>
+        </div>
+        <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto px-6 items-start">
+          {plans.map((p, i) => (
+            <Reveal key={i} delay={i * 100}>
+              <div className="plan-card" style={{ background: p.highlight ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${p.highlight ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.08)"}`, borderRadius: 16, padding: 28, boxShadow: p.highlight ? "0 0 60px rgba(99,102,241,0.15)" : "none" }}>
+                {p.highlight && <span style={{ display: "block", textAlign: "center", marginBottom: 16, background: "linear-gradient(135deg, #6366F1, #22D3EE)", color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: 999 }}>Mais popular</span>}
+                <div style={{ fontSize: 12, letterSpacing: "0.1em", color: "#64748B", fontWeight: 500, marginBottom: 16 }}>{p.name}</div>
+                <div className="font-heading" style={{ fontSize: 40, fontWeight: 700 }}>{p.price}<span style={{ fontSize: 16, fontWeight: 400, color: "#475569" }}>/mês</span></div>
+                <p style={{ fontSize: 14, color: "#64748B", marginTop: 8, marginBottom: 24 }}>{p.desc}</p>
+                <div style={{ height: 1, background: "rgba(255,255,255,0.08)", marginBottom: 24 }} />
                 <div className="space-y-2">
-                  <a href="#como-funciona" className="block text-xs" style={{ color: "#64748B" }}>Como funciona</a>
-                  <a href="#funcionalidades" className="block text-xs" style={{ color: "#64748B" }}>Funcionalidades</a>
-                  <a href="#precos" className="block text-xs" style={{ color: "#64748B" }}>Preços</a>
+                  {p.features.map((f, fi) => (
+                    <div key={fi} className="flex items-center gap-2" style={{ fontSize: 14, color: "#94A3B8" }}><Check size={14} style={{ color: "#22C55E", flexShrink: 0 }} /> {f}</div>
+                  ))}
                 </div>
+                <Link to="/pricing" className={p.highlight ? "cta-primary" : "cta-ghost"} style={{ display: "block", textAlign: "center", marginTop: 32, padding: "12px 0", borderRadius: 10, fontSize: 14, fontWeight: 500, ...(p.highlight ? { background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", boxShadow: "0 0 20px rgba(99,102,241,0.3)" } : { border: "1px solid rgba(255,255,255,0.2)", color: "#94A3B8" }) }}>Começar grátis</Link>
               </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#94A3B8" }}>Legal</p>
-                <div className="space-y-2">
-                  <span className="block text-xs" style={{ color: "#64748B" }}>Termos de uso</span>
-                  <span className="block text-xs" style={{ color: "#64748B" }}>Privacidade</span>
-                </div>
-              </div>
-            </div>
-            <div className="h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
-            <p className="text-xs mt-6 text-center" style={{ color: "#475569" }}>© 2026 LocalAI. Todos os direitos reservados.</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section style={{ paddingTop: 96, paddingBottom: 96, position: "relative", zIndex: 10, overflow: "hidden" }}>
+        <div className="max-w-3xl mx-auto px-6 text-center" style={{ background: "radial-gradient(ellipse at center, rgba(99,102,241,0.12) 0%, transparent 70%)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 24, padding: 64, position: "relative" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, #6366F1, #22D3EE, transparent)", animation: "border-glow 3s ease-in-out infinite" }} />
+          <h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, marginBottom: 16 }}>Pronto para aparecer mais no Google?</h2>
+          <p style={{ fontSize: 16, color: "#64748B", marginBottom: 40 }}>14 dias grátis. Sem cartão de crédito. Cancele quando quiser.</p>
+          <div className="flex justify-center gap-4 flex-wrap">
+            <Link to="/auth" className="cta-primary inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "14px 28px", borderRadius: 10, fontWeight: 600, fontSize: 16, boxShadow: "0 0 40px rgba(99,102,241,0.35), 0 4px 16px rgba(0,0,0,0.3)" }}>Criar minha conta grátis <ArrowRight size={16} /></Link>
+            <a href="mailto:contato@localai.com.br" className="cta-ghost inline-flex items-center" style={{ border: "1px solid rgba(255,255,255,0.15)", color: "#94A3B8", padding: "14px 28px", borderRadius: 10, fontSize: 16 }}>Falar com a equipe</a>
           </div>
-        </footer>
-      </div>
+          <div className="flex justify-center items-center gap-2" style={{ marginTop: 32, fontSize: 13, color: "#334155" }}>🔒 Pagamento seguro via Stripe</div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 48, paddingBottom: 48, position: "relative", zIndex: 10 }}>
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto px-6">
+          <div>
+            <Link to="/" className="flex items-center gap-2">
+              <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><path d="M14 2C8.48 2 4 6.48 4 12c0 7.5 10 14 10 14s10-6.5 10-14c0-5.52-4.48-10-10-10z" fill="#6366F1" /><circle cx="14" cy="11" r="4" fill="#020817" /></svg>
+              <span className="font-heading" style={{ fontWeight: 700, fontSize: 18 }}>Local<span style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>AI</span></span>
+            </Link>
+            <p style={{ fontSize: 13, color: "#334155", marginTop: 8, maxWidth: 220 }}>Automação de marketing local com IA para negócios brasileiros.</p>
+          </div>
+          <div>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Produto</span>
+            <div className="flex flex-col gap-2">
+              {[["Como funciona", "#como-funciona"], ["Recursos", "#recursos"], ["Preços", "#precos"]].map(([label, href]) => (
+                <a key={label} href={href} className="nav-link" style={{ fontSize: 13, color: "#475569" }}>{label}</a>
+              ))}
+            </div>
+          </div>
+          <div>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Empresa</span>
+            <div className="flex flex-col gap-2">
+              {["Blog", "Termos", "Privacidade", "Contato"].map((label) => (
+                <span key={label} style={{ fontSize: 13, color: "#475569", cursor: "default" }}>{label}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div style={{ textAlign: "center", marginTop: 40, paddingTop: 32, borderTop: "1px solid rgba(255,255,255,0.04)", fontSize: 13, color: "#334155" }}>© 2026 LocalAI. Todos os direitos reservados.</div>
+      </footer>
     </div>
   );
-};
-
-export default Landing;
+}
