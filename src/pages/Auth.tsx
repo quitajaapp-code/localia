@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Mail, Lock, User, Eye, EyeOff, Chrome } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Chrome, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 function translateError(msg: string): string {
   const map: Record<string, string> = {
