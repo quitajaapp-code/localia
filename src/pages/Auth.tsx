@@ -89,9 +89,12 @@ const Auth = () => {
 
   const handleGoogle = async () => {
     setGoogleLoading(true);
+    const redirectUrl = window.location.hostname === 'localhost' 
+      ? 'https://localai.app.br/auth' 
+      : `${window.location.origin}/auth`;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth` },
+      options: { redirectTo: redirectUrl },
     });
     if (error) {
       toast({ title: translateError(error.message), variant: "destructive" });
