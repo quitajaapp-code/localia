@@ -57,9 +57,11 @@ const App = () => (
                 <Route path="materials" element={<MaterialsPage />} />
                 <Route path="report" element={<Report />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="website" element={<WebsitePage />} />
               </Route>
             </Route>
 
+            <Route path="/site/:slug" element={<PublicSite />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

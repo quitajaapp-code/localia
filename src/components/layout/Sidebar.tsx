@@ -7,6 +7,7 @@ import {
   FolderOpen,
   BarChart3,
   Settings,
+  Globe,
   Sparkles,
   Menu,
   X,
@@ -21,6 +22,7 @@ const navItems = [
   { to: "/dashboard/ads", label: "Anúncios", icon: Megaphone },
   { to: "/dashboard/materials", label: "Materiais", icon: FolderOpen },
   { to: "/dashboard/report", label: "Relatório", icon: BarChart3 },
+  { to: "/dashboard/website", label: "Meu Site", icon: Globe, badge: "Novo" },
   { to: "/dashboard/settings", label: "Configurações", icon: Settings },
 ];
 
