@@ -11,9 +11,11 @@ import {
   Sparkles,
   Menu,
   X,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useAdmin } from "@/hooks/useAdmin";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
