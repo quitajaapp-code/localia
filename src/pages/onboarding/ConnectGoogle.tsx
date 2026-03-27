@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -23,14 +23,78 @@ const ConnectGoogle = () => {
   const [status, setStatus] = useState<ConnectionStatus>("idle");
   const [gmbEmail, setGmbEmail] = useState("");
   const [connectedEmail, setConnectedEmail] = useState("");
+  const [debugInfo, setDebugInfo] = useState<string>("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const handledRef = useRef(false);
 
-  // Check if already connected
+  const saveProviderToken = useCallback(async (
+    userId: string,
+    email: string,
+    providerToken: string,
+    providerRefreshToken: string | null,
+  ) => {
+    try {
+      console.log("[GMB] Saving provider token for user", userId);
+      setDebugInfo(prev => prev + "\nSalvando token...");
+
+      const { data: existingTokens } = await supabase
+        .from("oauth_tokens")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("provider", "google")
+        .order("created_at", { ascending: false });
+
+      const payload = {
+        user_id: userId,
+        provider: "google" as const,
+        access_token: providerToken,
+        refresh_token: providerRefreshToken,
+        scope: "business.manage",
+        expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
+      };
+
+      let error: unknown = null;
+      if (existingTokens && existingTokens.length > 0) {
+        const res = await supabase
+          .from("oauth_tokens")
+          .update(payload)
+          .eq("id", existingTokens[0].id);
+        error = res.error;
+      } else {
+        const res = await supabase.from("oauth_tokens").insert(payload);
+        error = res.error;
+      }
+
+      if (error) {
+        console.error("[GMB] DB error:", error);
+        setDebugInfo(prev => prev + `\nErro DB: ${JSON.stringify(error)}`);
+        throw error;
+      }
+
+      console.log("[GMB] Token saved successfully");
+      setDebugInfo(prev => prev + "\nToken salvo com sucesso!");
+      setConnectedEmail(email);
+      setStatus("connected");
+      toast({ title: "Google conectado com sucesso!" });
+
+      window.history.replaceState({}, "", "/onboarding/connect");
+      setTimeout(() => navigate("/onboarding/business"), 800);
+    } catch (err) {
+      console.error("[GMB] Save error:", err);
+      setStatus("error");
+      toast({ title: "Erro ao salvar token", variant: "destructive" });
+    }
+  }, [navigate, toast]);
+
+  // Main effect: listen for auth state changes to capture provider_token
   useEffect(() => {
+    let mounted = true;
+
+    // 1. Check if already connected
     const checkExisting = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user || !mounted) return;
 
       const { data: tokens } = await supabase
         .from("oauth_tokens")
@@ -40,114 +104,88 @@ const ConnectGoogle = () => {
         .order("created_at", { ascending: false })
         .limit(1);
 
-      if (tokens && tokens.length > 0) {
+      if (tokens && tokens.length > 0 && mounted) {
         setConnectedEmail(user.email || "");
         setStatus("connected");
       }
     };
+
     checkExisting();
-  }, []);
 
-  // Listen for OAuth callback return (from popup or redirect)
-  useEffect(() => {
-    const hash = window.location.hash;
-    const search = new URLSearchParams(window.location.search);
-    const hasOAuthReturn =
-      hash.includes("provider_token=") ||
-      hash.includes("access_token=") ||
-      search.has("code");
+    // 2. Listen for SIGNED_IN event which carries provider_token in PKCE flow
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted || handledRef.current) return;
 
-    if (hasOAuthReturn) {
-      handleOAuthReturn();
-    }
-  }, []);
+      console.log("[GMB] Auth event:", event, "provider_token:", session?.provider_token ? "YES" : "NO");
 
-  const handleOAuthReturn = async () => {
-    setStatus("connecting");
+      if (event === "SIGNED_IN" && session?.provider_token) {
+        handledRef.current = true;
+        setDebugInfo(`Evento: ${event}, Token: presente`);
+        await saveProviderToken(
+          session.user.id,
+          session.user.email || "",
+          session.provider_token,
+          session.provider_refresh_token || null,
+        );
+      }
+    });
 
-    try {
+    // 3. Also check current session immediately (in case event already fired)
+    const checkSession = async () => {
+      if (handledRef.current) return;
+
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        setStatus("error");
-        return;
+      if (!session || !mounted || handledRef.current) return;
+
+      // Check URL for OAuth return indicators
+      const hash = window.location.hash;
+      const search = window.location.search;
+      const isOAuthReturn = hash.includes("access_token") || hash.includes("provider_token") || search.includes("code=");
+
+      if (isOAuthReturn && session.provider_token) {
+        handledRef.current = true;
+        setDebugInfo(`Session check: Token presente`);
+        await saveProviderToken(
+          session.user.id,
+          session.user.email || "",
+          session.provider_token,
+          session.provider_refresh_token || null,
+        );
+      } else if (isOAuthReturn && !session.provider_token) {
+        console.log("[GMB] OAuth return detected but no provider_token in session");
+        setDebugInfo("OAuth retornou mas sem provider_token. Verifique se os escopos do Google estão corretos no Supabase Dashboard.");
+        // Don't set error immediately - the onAuthStateChange might fire later
+        setTimeout(() => {
+          if (!handledRef.current && mounted) {
+            setStatus("error");
+            toast({
+              title: "Token do Google não recebido",
+              description: "O Supabase não retornou o provider_token. Verifique a configuração do provider Google no Supabase Dashboard.",
+              variant: "destructive",
+            });
+          }
+        }, 3000);
       }
+    };
 
-      // Extract token from hash and/or session (PKCE callback can come as ?code=)
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const providerToken =
-        hashParams.get("provider_token") ||
-        (session as { provider_token?: string | null }).provider_token ||
-        null;
-      const providerRefreshToken =
-        hashParams.get("refresh_token") ||
-        (session as { provider_refresh_token?: string | null }).provider_refresh_token ||
-        null;
+    checkSession();
 
-      if (providerToken) {
-        // Save to oauth_tokens table (manual upsert, table has no unique(user_id, provider))
-        const { data: existingTokens, error: existingError } = await supabase
-          .from("oauth_tokens")
-          .select("id")
-          .eq("user_id", session.user.id)
-          .eq("provider", "google")
-          .order("created_at", { ascending: false });
-
-        if (existingError) throw existingError;
-
-        const payload = {
-          user_id: session.user.id,
-          provider: "google",
-          access_token: providerToken,
-          refresh_token: providerRefreshToken,
-          scope: "https://www.googleapis.com/auth/business.manage",
-          expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
-        };
-
-        let error: Error | null = null;
-        if (existingTokens && existingTokens.length > 0) {
-          const { error: updateError } = await supabase
-            .from("oauth_tokens")
-            .update(payload)
-            .eq("user_id", session.user.id)
-            .eq("provider", "google");
-          error = updateError;
-        } else {
-          const { error: insertError } = await supabase.from("oauth_tokens").insert(payload);
-          error = insertError;
-        }
-
-        if (error) throw error;
-
-        setConnectedEmail(session.user.email || "");
-        setStatus("connected");
-        toast({ title: "Google conectado com sucesso!" });
-
-        // Clean hash/query from URL and move to the next onboarding step
-        window.history.replaceState({}, "", "/onboarding/connect");
-        navigate("/onboarding/business");
-      } else {
-        setStatus("error");
-        toast({
-          title: "Conexão incompleta",
-          description: "O Google autenticou, mas não retornou permissão de negócio. Tente novamente e aceite todas as permissões.",
-          variant: "destructive",
-        });
-      }
-    } catch (err) {
-      console.error("GMB connect error:", err);
-      setStatus("error");
-      toast({ title: "Erro ao conectar conta Google", variant: "destructive" });
-    }
-  };
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [saveProviderToken, toast]);
 
   const handleConnect = async () => {
     setStatus("connecting");
+    setDebugInfo("Iniciando OAuth...");
+    handledRef.current = false;
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/onboarding/connect`,
-        scopes: "openid email profile https://www.googleapis.com/auth/business.manage",
+        scopes: "https://www.googleapis.com/auth/business.manage",
         queryParams: {
           prompt: "consent",
           access_type: "offline",
@@ -158,6 +196,8 @@ const ConnectGoogle = () => {
     });
 
     if (error) {
+      console.error("[GMB] OAuth start error:", error);
+      setDebugInfo(`Erro ao iniciar: ${error.message}`);
       setStatus("error");
       toast({ title: "Erro ao iniciar conexão", variant: "destructive" });
     }
@@ -175,7 +215,6 @@ const ConnectGoogle = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-foreground">
           Conectar Google Meu Negócio
@@ -185,7 +224,6 @@ const ConnectGoogle = () => {
         </p>
       </div>
 
-      {/* Benefits */}
       <div className="grid gap-3">
         {benefits.map((b, i) => (
           <motion.div
@@ -203,7 +241,6 @@ const ConnectGoogle = () => {
         ))}
       </div>
 
-      {/* Connection area */}
       <AnimatePresence mode="wait">
         {status === "idle" && (
           <motion.div
@@ -281,20 +318,29 @@ const ConnectGoogle = () => {
             exit={{ opacity: 0 }}
             className="space-y-3"
           >
-            <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
-              <p className="text-sm text-foreground">
-                Não foi possível conectar. Verifique se a conta tem acesso ao Google Meu Negócio e tente novamente.
-              </p>
+            <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-sm text-foreground">
+                  Não foi possível conectar. Verifique se a conta tem acesso ao Google Meu Negócio e tente novamente.
+                </p>
+                {debugInfo && (
+                  <p className="text-xs text-muted-foreground font-mono whitespace-pre-wrap">{debugInfo}</p>
+                )}
+              </div>
             </div>
-            <Button onClick={() => setStatus("idle")} variant="outline" size="sm">
+            <Button onClick={() => { setStatus("idle"); setDebugInfo(""); }} variant="outline" size="sm">
               Tentar novamente
             </Button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Skip option */}
+      {/* Debug info (visible during connecting too) */}
+      {debugInfo && status === "connecting" && (
+        <p className="text-xs text-muted-foreground font-mono whitespace-pre-wrap">{debugInfo}</p>
+      )}
+
       {status !== "connected" && (
         <button
           onClick={handleSkip}
