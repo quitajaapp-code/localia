@@ -107,8 +107,6 @@ Deno.serve(async (req) => {
     const payload: Record<string, unknown> = {
       user_id: userId,
       provider: "google",
-      access_token: null,
-      refresh_token: null,
       access_token_encrypted: accessTokenEnc,
       refresh_token_encrypted: refreshTokenEnc,
       scope: "business.manage",
