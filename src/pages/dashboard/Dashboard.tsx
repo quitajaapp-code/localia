@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -82,11 +82,38 @@ const MOCK_POSTS = [
 export default function Dashboard() {
   usePageTitle("Dashboard");
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState<{ nome: string | null; plano: string | null; trial_ends_at: string | null } | null>(null);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [hasBusiness, setHasBusiness] = useState(true);
+
+  const handleStartBusinessFlow = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    const { data: token, error } = await supabase
+      .from("oauth_tokens")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("provider", "google")
+      .maybeSingle();
+
+    if (error) {
+      toast({
+        title: "Não foi possível validar a conexão Google agora",
+        description: "Vamos abrir a etapa de conexão para você tentar novamente.",
+        variant: "destructive",
+      });
+      navigate("/onboarding/connect");
+      return;
+    }
+
+    navigate(token ? "/onboarding/business" : "/onboarding/connect");
+  };
 
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
@@ -144,7 +171,7 @@ export default function Dashboard() {
         description="Adicione as informações do seu negócio para começar a usar o LocalAI e turbinar sua presença no Google."
         actionLabel="Adicionar negócio"
         actionIcon={<Building2 className="h-5 w-5 mr-2" />}
-        onAction={() => window.location.href = "/onboarding/business"}
+        onAction={handleStartBusinessFlow}
       />
     );
   }
@@ -159,8 +186,8 @@ export default function Dashboard() {
           </h1>
           <p className="text-muted-foreground text-sm">Aqui está o resumo do seu negócio.</p>
         </div>
-        <Button asChild className="btn-press">
-          <Link to="/onboarding/business"><Plus className="h-4 w-4 mr-2" /> Adicionar negócio</Link>
+        <Button onClick={() => void handleStartBusinessFlow()} className="btn-press">
+          <Plus className="h-4 w-4 mr-2" /> Adicionar negócio
         </Button>
       </div>
 
