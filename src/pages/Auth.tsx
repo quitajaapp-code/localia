@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Mail, Lock, User, Eye, EyeOff, Chrome } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Chrome, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 function translateError(msg: string): string {
   const map: Record<string, string> = {
@@ -30,6 +30,8 @@ function translateError(msg: string): string {
   return msg;
 }
 
+type AuthPhase = "idle" | "verifying" | "authenticated" | "failed";
+
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -42,6 +44,8 @@ const Auth = () => {
   const [resetOpen, setResetOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
+  const [authPhase, setAuthPhase] = useState<AuthPhase>("idle");
+  const [authUserName, setAuthUserName] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -53,9 +57,26 @@ const Auth = () => {
       return hash.includes("access_token=") || search.has("code");
     };
 
+    // If we land on /auth with OAuth params, show verifying state immediately
+    if (hasOAuthCallbackParams()) {
+      setAuthPhase("verifying");
+    }
+
     const routeAfterSignIn = async () => {
+      setAuthPhase("verifying");
+
       const { data: { user }, error } = await supabase.auth.getUser();
-      if (error || !user) return;
+      if (error || !user) {
+        setAuthPhase("failed");
+        return;
+      }
+
+      const displayName = user.user_metadata?.full_name || user.user_metadata?.nome || user.email || "";
+      setAuthUserName(displayName);
+      setAuthPhase("authenticated");
+
+      // Brief pause to show success state
+      await new Promise((r) => setTimeout(r, 1500));
 
       const { data: biz } = await supabase
         .from("businesses")
@@ -104,15 +125,22 @@ const Auth = () => {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        // Check if user has business (onboarding complete)
+
+        setAuthPhase("verifying");
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
+          setAuthUserName(user.user_metadata?.nome || user.user_metadata?.full_name || user.email || "");
+          setAuthPhase("authenticated");
+          await new Promise((r) => setTimeout(r, 1200));
+
           const { data: biz } = await supabase.from("businesses").select("id").eq("user_id", user.id).limit(1);
           if (biz && biz.length > 0) {
             navigate("/dashboard");
           } else {
             navigate("/onboarding/connect");
           }
+        } else {
+          setAuthPhase("failed");
         }
       }
     } catch (err: unknown) {
@@ -163,6 +191,91 @@ const Auth = () => {
       setResetOpen(false);
     }
   };
+
+  // Visual auth validation overlay
+  if (authPhase !== "idle") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center max-w-sm mx-auto p-8"
+        >
+          <AnimatePresence mode="wait">
+            {authPhase === "verifying" && (
+              <motion.div
+                key="verifying"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">Verificando autenticação…</h2>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Validando sua conta com o Google
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  Conectando de forma segura
+                </div>
+              </motion.div>
+            )}
+
+            {authPhase === "authenticated" && (
+              <motion.div
+                key="authenticated"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full bg-green-500/10 flex items-center justify-center">
+                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">Autenticado com sucesso!</h2>
+                  {authUserName && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Bem-vindo, <span className="font-medium text-foreground">{authUserName}</span>
+                    </p>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">Redirecionando…</p>
+              </motion.div>
+            )}
+
+            {authPhase === "failed" && (
+              <motion.div
+                key="failed"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
+                  <XCircle className="h-8 w-8 text-destructive" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">Falha na autenticação</h2>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Não foi possível validar sua conta. Tente novamente.
+                  </p>
+                </div>
+                <Button onClick={() => { setAuthPhase("idle"); window.history.replaceState({}, "", "/auth"); }}>
+                  Voltar ao login
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-background">
