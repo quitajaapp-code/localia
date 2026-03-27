@@ -30,6 +30,8 @@ function translateError(msg: string): string {
   return msg;
 }
 
+type AuthPhase = "idle" | "verifying" | "authenticated" | "failed";
+
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -42,6 +44,8 @@ const Auth = () => {
   const [resetOpen, setResetOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
+  const [authPhase, setAuthPhase] = useState<AuthPhase>("idle");
+  const [authUserName, setAuthUserName] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -53,9 +57,26 @@ const Auth = () => {
       return hash.includes("access_token=") || search.has("code");
     };
 
+    // If we land on /auth with OAuth params, show verifying state immediately
+    if (hasOAuthCallbackParams()) {
+      setAuthPhase("verifying");
+    }
+
     const routeAfterSignIn = async () => {
+      setAuthPhase("verifying");
+
       const { data: { user }, error } = await supabase.auth.getUser();
-      if (error || !user) return;
+      if (error || !user) {
+        setAuthPhase("failed");
+        return;
+      }
+
+      const displayName = user.user_metadata?.full_name || user.user_metadata?.nome || user.email || "";
+      setAuthUserName(displayName);
+      setAuthPhase("authenticated");
+
+      // Brief pause to show success state
+      await new Promise((r) => setTimeout(r, 1500));
 
       const { data: biz } = await supabase
         .from("businesses")
