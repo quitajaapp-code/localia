@@ -316,18 +316,21 @@ export type Database = {
           created_at: string | null
           dados_json: Json | null
           id: string
+          synced_at: string | null
         }
         Insert: {
           business_id: string
           created_at?: string | null
           dados_json?: Json | null
           id?: string
+          synced_at?: string | null
         }
         Update: {
           business_id?: string
           created_at?: string | null
           dados_json?: Json | null
           id?: string
+          synced_at?: string | null
         }
         Relationships: [
           {
@@ -466,6 +469,7 @@ export type Database = {
           provider: string
           refresh_token: string | null
           scope: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -477,6 +481,7 @@ export type Database = {
           provider: string
           refresh_token?: string | null
           scope?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -488,6 +493,7 @@ export type Database = {
           provider?: string
           refresh_token?: string | null
           scope?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -580,6 +586,7 @@ export type Database = {
           autor: string | null
           business_id: string
           created_at: string | null
+          data_review: string | null
           id: string
           rating: number | null
           respondido: boolean | null
@@ -592,6 +599,7 @@ export type Database = {
           autor?: string | null
           business_id: string
           created_at?: string | null
+          data_review?: string | null
           id?: string
           rating?: number | null
           respondido?: boolean | null
@@ -604,6 +612,7 @@ export type Database = {
           autor?: string | null
           business_id?: string
           created_at?: string | null
+          data_review?: string | null
           id?: string
           rating?: number | null
           respondido?: boolean | null
