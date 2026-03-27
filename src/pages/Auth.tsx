@@ -45,8 +45,14 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Detect session after OAuth redirect
+  // Detect session only when returning from OAuth callback
   useEffect(() => {
+    const hasOAuthCallbackParams = () => {
+      const hash = window.location.hash;
+      const search = new URLSearchParams(window.location.search);
+      return hash.includes("access_token=") || search.has("code");
+    };
+
     const routeAfterSignIn = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error || !user) return;
@@ -65,8 +71,7 @@ const Auth = () => {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Only react to actual sign-in events, not cached sessions
-      if (event === "SIGNED_IN" && session?.user) {
+      if (event === "SIGNED_IN" && session?.user && hasOAuthCallbackParams()) {
         void routeAfterSignIn();
       }
     });
