@@ -118,10 +118,20 @@ const Auth = () => {
 
   const handleGoogle = async () => {
     setGoogleLoading(true);
+
+    // Prevent stale local sessions from bypassing OAuth flow
+    await supabase.auth.signOut({ scope: "local" });
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: "https://localai.app.br/auth" },
+      options: {
+        redirectTo: "https://localai.app.br/auth",
+        queryParams: {
+          prompt: "select_account",
+        },
+      },
     });
+
     if (error) {
       toast({ title: translateError(error.message), variant: "destructive" });
       setGoogleLoading(false);
