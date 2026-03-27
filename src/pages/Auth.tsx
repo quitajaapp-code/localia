@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,27 @@ const Auth = () => {
   const [resetLoading, setResetLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Detect session after OAuth redirect
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+          const { data: biz } = await supabase
+            .from("businesses")
+            .select("id")
+            .eq("user_id", session.user.id)
+            .limit(1);
+          if (biz && biz.length > 0) {
+            navigate("/dashboard", { replace: true });
+          } else {
+            navigate("/onboarding/connect", { replace: true });
+          }
+        }
+      }
+    );
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const passwordValid = password.length >= 8;
