@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${tokenRow.access_token}`,
+              Authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(gmbBody),
