@@ -111,7 +111,7 @@ const Pricing = () => {
   const handleCheckout = async (planId: string) => {
     setLoadingPlan(planId);
     try {
-      await createCheckoutSession(planId);
+      await createCheckoutSession(planId, undefined, annual);
     } catch {
       toast({ title: "Erro", description: "Não foi possível iniciar o checkout. Tente novamente.", variant: "destructive" });
     } finally {
