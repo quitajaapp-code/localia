@@ -125,10 +125,13 @@ Deno.serve(async (req) => {
 
         if (!reviewsRes.ok) {
           const statusCode = reviewsRes.status;
+          let errDetail = "";
+          try { errDetail = await reviewsRes.text(); } catch {}
           const statusLabel = statusCode === 401 ? "gmb_unauthorized"
             : statusCode === 403 ? "gmb_forbidden"
             : `gmb_error_${statusCode}`;
-          results.push({ business_id: biz.id, status: statusLabel });
+          console.error(`GMB API error for ${biz.id}: ${statusCode} - ${errDetail}`);
+          results.push({ business_id: biz.id, status: statusLabel, error_detail: errDetail });
           continue;
         }
 
