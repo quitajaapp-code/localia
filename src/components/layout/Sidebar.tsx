@@ -31,6 +31,7 @@ const navItems = [
 export function Sidebar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isAdmin } = useAdmin();
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";
