@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useAdmin } from "@/hooks/useAdmin";
+import localaiLogo from "@/assets/localai-logo.png";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
