@@ -380,7 +380,7 @@ const Auth = () => {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <div className="lg:hidden text-center mb-8">
-            <h1 className="text-3xl font-bold text-primary">LocalAI</h1>
+            <img src={localaiLogo} alt="LocalAI" className="h-8 mx-auto" />
           </div>
 
           {/* Toggle */}

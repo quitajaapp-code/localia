@@ -20,7 +20,7 @@ export default function OnboardingLayout() {
       {/* Header */}
       <header className="border-b bg-card px-6 py-4">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-lg font-bold text-primary">LocalAI</h1>
+          <img src={localaiLogo} alt="LocalAI" className="h-7" />
         </div>
       </header>
 
