@@ -185,10 +185,93 @@ const Auth = () => {
     }
   };
 
+  // Visual auth validation overlay
+  if (authPhase !== "idle") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center max-w-sm mx-auto p-8"
+        >
+          <AnimatePresence mode="wait">
+            {authPhase === "verifying" && (
+              <motion.div
+                key="verifying"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">Verificando autenticação…</h2>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Validando sua conta com o Google
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  Conectando de forma segura
+                </div>
+              </motion.div>
+            )}
+
+            {authPhase === "authenticated" && (
+              <motion.div
+                key="authenticated"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full bg-green-500/10 flex items-center justify-center">
+                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">Autenticado com sucesso!</h2>
+                  {authUserName && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Bem-vindo, <span className="font-medium text-foreground">{authUserName}</span>
+                    </p>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">Redirecionando…</p>
+              </motion.div>
+            )}
+
+            {authPhase === "failed" && (
+              <motion.div
+                key="failed"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
+                  <XCircle className="h-8 w-8 text-destructive" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">Falha na autenticação</h2>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Não foi possível validar sua conta. Tente novamente.
+                  </p>
+                </div>
+                <Button onClick={() => { setAuthPhase("idle"); window.history.replaceState({}, "", "/auth"); }}>
+                  Voltar ao login
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex bg-background">
-      {/* Left branding panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-cyan-500 relative overflow-hidden items-center justify-center p-12">
         <div className="relative z-10 text-primary-foreground max-w-md">
           <h1 className="text-4xl font-bold mb-4">LocalAI</h1>
           <p className="text-xl opacity-90 mb-6">
