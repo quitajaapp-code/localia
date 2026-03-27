@@ -6,21 +6,18 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PLANS: Record<string, { product_monthly: string; product_annual: string; monthly_cents: number }> = {
+const PLAN_PRICES: Record<string, { monthly: string; annual: string }> = {
   price_presenca: {
-    product_monthly: "prod_UDpLCHgb4KlHQy",
-    product_annual: "prod_UDpaq2vrXQCeVF",
-    monthly_cents: 9700, // R$97
+    monthly: "price_1TFNhFFHBDyIk4fcNj0uprWv",
+    annual: "price_1TFNvPFHBDyIk4fcUb0N6SWz",
   },
   price_ads: {
-    product_monthly: "prod_UDpMHnFKefJZ5C",
-    product_annual: "prod_UDpbXDNX6E9tNx",
-    monthly_cents: 19700, // R$197
+    monthly: "price_1TFNhyFHBDyIk4fcCOCS5Kk7",
+    annual: "price_1TFNvvFHBDyIk4fcVcgdJXCV",
   },
   price_agencia: {
-    product_monthly: "prod_UDpOk4mWphi9UT",
-    product_annual: "prod_UDpcB3ToZe7u3w",
-    monthly_cents: 39700, // R$397
+    monthly: "price_1TFNjHFHBDyIk4fcuGhKFWpp",
+    annual: "price_1TFNwuFHBDyIk4fcByfGK7DE",
   },
 };
 
@@ -37,19 +34,16 @@ Deno.serve(async (req) => {
 
     const { plan_id, email, annual } = await req.json();
 
-    if (!plan_id || !PLANS[plan_id]) {
+    if (!plan_id || !PLAN_PRICES[plan_id]) {
       return new Response(
         JSON.stringify({ error: "Plano inválido" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const plan = PLANS[plan_id];
-    const product = annual ? plan.product_annual : plan.product_monthly;
-    const unitAmount = annual
-      ? Math.round(plan.monthly_cents * 12 * 0.8) // 20% discount annual
-      : plan.monthly_cents;
-    const interval = annual ? "year" : "month";
+    const priceId = annual
+      ? PLAN_PRICES[plan_id].annual
+      : PLAN_PRICES[plan_id].monthly;
 
     // Authenticate user if possible
     const authHeader = req.headers.get("Authorization");
@@ -67,13 +61,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Create Stripe Checkout Session using price_data
+    // Create Stripe Checkout Session
     const params = new URLSearchParams();
     params.append("mode", "subscription");
-    params.append("line_items[0][price_data][product]", product);
-    params.append("line_items[0][price_data][currency]", "brl");
-    params.append("line_items[0][price_data][unit_amount]", unitAmount.toString());
-    params.append("line_items[0][price_data][recurring][interval]", interval);
+    params.append("line_items[0][price]", priceId);
     params.append("line_items[0][quantity]", "1");
     params.append("success_url", `${req.headers.get("origin") || "https://localhost"}/dashboard?checkout=success`);
     params.append("cancel_url", `${req.headers.get("origin") || "https://localhost"}/pricing`);
