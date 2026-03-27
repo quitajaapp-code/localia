@@ -44,7 +44,7 @@ const ESTADOS = [
   "PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO",
 ];
 
-type PageState = "loading" | "select-location" | "form" | "no-gmb";
+type PageState = "loading" | "select-location" | "form" | "no-gmb" | "manual-gmb";
 
 interface GmbLocation {
   name: string;
@@ -61,6 +61,7 @@ export default function BusinessInfo() {
   const [bizId, setBizId] = useState<string | null>(null);
   const [gmbLocations, setGmbLocations] = useState<GmbLocation[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<GmbLocation | null>(null);
+  const [manualGmbId, setManualGmbId] = useState("");
 
   const [nome, setNome] = useState("");
   const [nicho, setNicho] = useState("");
@@ -137,7 +138,7 @@ export default function BusinessInfo() {
         }
       }
 
-      setPageState("no-gmb");
+      setPageState("manual-gmb");
     };
     load();
   }, []);
@@ -188,7 +189,7 @@ export default function BusinessInfo() {
         tom_de_voz: tom,
         publico_alvo: publicoAlvo.trim(),
         diferenciais: diferenciais.trim(),
-        gmb_location_id: selectedLocation?.name ?? null,
+        gmb_location_id: selectedLocation?.name ?? (manualGmbId.trim() || null),
       };
 
       if (bizId) {
@@ -252,11 +253,61 @@ export default function BusinessInfo() {
         </div>
 
         <button
-          onClick={() => setPageState("no-gmb")}
+          onClick={() => setPageState("manual-gmb")}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           Cadastrar manualmente
         </button>
+      </div>
+    );
+  }
+
+  if (pageState === "manual-gmb" || pageState === "no-gmb") {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">Conectar ao Google Meu Negócio</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Cole o ID do seu local do Google Business Profile para conectar automaticamente.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="gmb-id">Location ID do Google Meu Negócio</Label>
+            <Input
+              id="gmb-id"
+              placeholder="Ex: locations/12345678901234567"
+              value={manualGmbId}
+              onChange={(e) => setManualGmbId(e.target.value)}
+            />
+          </div>
+
+          <div className="p-3 rounded-lg bg-muted/50 border border-border space-y-2">
+            <p className="text-xs font-medium text-foreground">Como encontrar seu Location ID:</p>
+            <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+              <li>Acesse <a href="https://business.google.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">business.google.com</a></li>
+              <li>Clique no negócio desejado</li>
+              <li>Na URL do navegador, copie o número após <code className="bg-muted px-1 rounded">/location/</code></li>
+              <li>Cole aqui no formato <code className="bg-muted px-1 rounded">locations/SEU_NUMERO</code></li>
+            </ol>
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <Button
+            onClick={() => {
+              if (manualGmbId.trim()) {
+                setPageState("form");
+              } else {
+                setPageState("form");
+              }
+            }}
+            className="flex-1"
+          >
+            {manualGmbId.trim() ? "Continuar com Location ID" : "Pular e preencher manualmente"}
+          </Button>
+        </div>
       </div>
     );
   }
