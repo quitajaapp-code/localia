@@ -1,6 +1,7 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import localaiLogo from "@/assets/localai-logo.png";
 
 const STEPS = [
   { path: "/onboarding/connect", label: "Conectar Google", step: 1 },
