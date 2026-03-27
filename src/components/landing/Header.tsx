@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Sparkles, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import localaiLogo from "@/assets/localai-logo.png";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,11 +31,8 @@ export function Header() {
       }`}
     >
       <div className="container flex items-center justify-between h-14 md:h-16">
-        <Link to="/" className="flex items-center gap-2 group">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <span className="text-base font-heading font-bold tracking-tight">
-            Local<span className="text-primary">AI</span>
-          </span>
+        <Link to="/" className="flex items-center group">
+          <img src={localaiLogo} alt="LocalAI" className="h-7" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-7 text-[13px] font-medium text-muted-foreground">

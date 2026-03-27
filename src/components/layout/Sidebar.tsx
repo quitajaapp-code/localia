@@ -8,7 +8,6 @@ import {
   BarChart3,
   Settings,
   Globe,
-  Sparkles,
   Menu,
   X,
   ShieldCheck,
@@ -16,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useAdmin } from "@/hooks/useAdmin";
+import localaiLogo from "@/assets/localai-logo.png";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -41,11 +41,8 @@ export function Sidebar() {
   const sidebarContent = (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-sidebar-border">
-        <Sparkles className="h-7 w-7 text-accent" />
-        <span className="text-xl font-heading font-bold text-sidebar-foreground">
-          Local<span className="text-primary">AI</span>
-        </span>
+      <div className="flex items-center px-6 py-5 border-b border-sidebar-border">
+        <img src={localaiLogo} alt="LocalAI" className="h-8" />
       </div>
 
       {/* Nav */}
