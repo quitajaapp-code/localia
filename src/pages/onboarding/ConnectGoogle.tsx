@@ -32,15 +32,16 @@ const ConnectGoogle = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: token } = await supabase
+      const { data: tokens } = await supabase
         .from("oauth_tokens")
         .select("id, scope")
         .eq("user_id", user.id)
         .eq("provider", "google")
-        .maybeSingle();
+        .order("created_at", { ascending: false })
+        .limit(1);
 
-      if (token) {
-        setConnectedEmail(user.user_metadata?.email || "");
+      if (tokens && tokens.length > 0) {
+        setConnectedEmail(user.email || "");
         setStatus("connected");
       }
     };
@@ -50,7 +51,13 @@ const ConnectGoogle = () => {
   // Listen for OAuth callback return (from popup or redirect)
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash.includes("provider_token=")) {
+    const search = new URLSearchParams(window.location.search);
+    const hasOAuthReturn =
+      hash.includes("provider_token=") ||
+      hash.includes("access_token=") ||
+      search.has("code");
+
+    if (hasOAuthReturn) {
       handleOAuthReturn();
     }
   }, []);
@@ -65,24 +72,49 @@ const ConnectGoogle = () => {
         return;
       }
 
-      // Extract provider_token from the hash
+      // Extract token from hash and/or session (PKCE callback can come as ?code=)
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const providerToken = hashParams.get("provider_token");
-      const providerRefreshToken = hashParams.get("refresh_token");
+      const providerToken =
+        hashParams.get("provider_token") ||
+        (session as { provider_token?: string | null }).provider_token ||
+        null;
+      const providerRefreshToken =
+        hashParams.get("refresh_token") ||
+        (session as { provider_refresh_token?: string | null }).provider_refresh_token ||
+        null;
 
       if (providerToken) {
-        // Save to oauth_tokens table
-        const { error } = await supabase.from("oauth_tokens").upsert(
-          {
-            user_id: session.user.id,
-            provider: "google",
-            access_token: providerToken,
-            refresh_token: providerRefreshToken || null,
-            scope: "https://www.googleapis.com/auth/business.manage",
-            expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
-          },
-          { onConflict: "user_id,provider" }
-        );
+        // Save to oauth_tokens table (manual upsert, table has no unique(user_id, provider))
+        const { data: existingTokens, error: existingError } = await supabase
+          .from("oauth_tokens")
+          .select("id")
+          .eq("user_id", session.user.id)
+          .eq("provider", "google")
+          .order("created_at", { ascending: false });
+
+        if (existingError) throw existingError;
+
+        const payload = {
+          user_id: session.user.id,
+          provider: "google",
+          access_token: providerToken,
+          refresh_token: providerRefreshToken,
+          scope: "https://www.googleapis.com/auth/business.manage",
+          expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
+        };
+
+        let error: Error | null = null;
+        if (existingTokens && existingTokens.length > 0) {
+          const { error: updateError } = await supabase
+            .from("oauth_tokens")
+            .update(payload)
+            .eq("user_id", session.user.id)
+            .eq("provider", "google");
+          error = updateError;
+        } else {
+          const { error: insertError } = await supabase.from("oauth_tokens").insert(payload);
+          error = insertError;
+        }
 
         if (error) throw error;
 
@@ -90,10 +122,16 @@ const ConnectGoogle = () => {
         setStatus("connected");
         toast({ title: "Google conectado com sucesso!" });
 
-        // Clean hash from URL
+        // Clean hash/query from URL and move to the next onboarding step
         window.history.replaceState({}, "", "/onboarding/connect");
+        navigate("/onboarding/business");
       } else {
         setStatus("error");
+        toast({
+          title: "Conexão incompleta",
+          description: "O Google autenticou, mas não retornou permissão de negócio. Tente novamente e aceite todas as permissões.",
+          variant: "destructive",
+        });
       }
     } catch (err) {
       console.error("GMB connect error:", err);
