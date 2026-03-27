@@ -164,8 +164,10 @@ const Auth = () => {
       provider: "google",
       options: {
         redirectTo: "https://localai.app.br/auth",
+        scopes: "openid email profile https://www.googleapis.com/auth/business.manage",
         queryParams: {
           prompt: "select_account consent",
+          access_type: "offline",
         },
       },
     });
