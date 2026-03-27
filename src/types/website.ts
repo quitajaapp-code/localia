@@ -28,6 +28,7 @@ export interface WebsiteHorario {
 }
 
 export interface WebsiteConfig {
+  logo_url?: string;
   hero: {
     titulo: string;
     subtitulo: string;

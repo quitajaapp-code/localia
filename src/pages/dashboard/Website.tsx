@@ -7,7 +7,8 @@ import {
   Globe, Eye, Settings, Phone, Star, Clock, Copy, Check,
   Plus, Trash2, ExternalLink, Palette, Layout, MessageSquare,
   BarChart3, ArrowRight, Zap, Heart, Scissors, Car, Home,
-  Camera, Coffee, MapPin, FileText, Target, Image
+  Camera, Coffee, MapPin, FileText, Target, Image, Download,
+  Upload, Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,15 +37,30 @@ const tabs: { id: TabId; label: string; icon: any }[] = [
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
 ];
 
+const COLOR_PRESETS = [
+  { label: 'Indigo', value: '#6366F1' },
+  { label: 'Azul', value: '#3B82F6' },
+  { label: 'Cyan', value: '#06B6D4' },
+  { label: 'Verde', value: '#10B981' },
+  { label: 'Amarelo', value: '#F59E0B' },
+  { label: 'Laranja', value: '#F97316' },
+  { label: 'Vermelho', value: '#EF4444' },
+  { label: 'Rosa', value: '#EC4899' },
+  { label: 'Roxo', value: '#8B5CF6' },
+  { label: 'Cinza', value: '#6B7280' },
+];
+
 export default function Website() {
   usePageTitle("Meu Site | LocalAI");
   const [businessId, setBusinessId] = useState<string>();
+  const [businessData, setBusinessData] = useState<any>(null);
   const [userPlan, setUserPlan] = useState<string>('trial');
   const [activeTab, setActiveTab] = useState<TabId>('hero');
   const [config, setConfig] = useState<WebsiteConfig>(defaultWebsiteConfig);
   const [hasChanges, setHasChanges] = useState(false);
   const [copied, setCopied] = useState(false);
   const [slugInput, setSlugInput] = useState('');
+  const [importing, setImporting] = useState(false);
 
   const { website, loading, saving, createWebsite, saveWebsite, togglePublish } = useWebsite(businessId);
 
@@ -53,8 +69,11 @@ export default function Website() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: biz } = await supabase.from("businesses").select("id").eq("user_id", user.id).single();
-      if (biz) setBusinessId(biz.id);
+      const { data: biz } = await supabase.from("businesses").select("*").eq("user_id", user.id).single();
+      if (biz) {
+        setBusinessId(biz.id);
+        setBusinessData(biz);
+      }
       const { data: profile } = await supabase.from("profiles").select("plano").eq("user_id", user.id).single();
       if (profile) setUserPlan(profile.plano || 'trial');
     })();
@@ -78,6 +97,78 @@ export default function Website() {
     });
     setHasChanges(true);
   }, []);
+
+  const importFromBusiness = async () => {
+    if (!businessData) { toast.error("Dados do negócio não encontrados"); return; }
+    setImporting(true);
+
+    const biz = businessData;
+    const newConfig = { ...JSON.parse(JSON.stringify(config)) } as WebsiteConfig;
+
+    // Hero
+    if (biz.nome) newConfig.hero.titulo = biz.nome;
+    if (biz.nicho) newConfig.hero.subtitulo = `${biz.nicho} em ${biz.cidade || ''}, ${biz.estado || ''}`.trim().replace(/,\s*$/, '');
+    if (biz.whatsapp) {
+      newConfig.hero.cta_texto = "Falar no WhatsApp";
+      newConfig.hero.cta_link = `https://wa.me/55${biz.whatsapp.replace(/\D/g, '')}`;
+    }
+
+    // Logo
+    if (biz.logo_url) newConfig.logo_url = biz.logo_url;
+
+    // Sobre
+    if (biz.diferenciais) newConfig.sobre.texto = biz.diferenciais;
+    else if (biz.produtos) newConfig.sobre.texto = biz.produtos;
+
+    // Contato
+    if (biz.whatsapp) newConfig.contato.whatsapp = biz.whatsapp;
+    if (biz.website_url) newConfig.contato.email = '';
+    if (biz.cidade && biz.estado) newConfig.contato.endereco = `${biz.cidade}, ${biz.estado}`;
+
+    // Redes
+    if (biz.instagram) newConfig.redes.instagram = biz.instagram;
+    if (biz.outras_redes) {
+      // Try to parse other networks
+      const redes = biz.outras_redes;
+      if (redes.includes('facebook')) newConfig.redes.facebook = redes;
+      if (redes.includes('tiktok')) newConfig.redes.tiktok = redes;
+    }
+
+    // CTA flutuante
+    if (biz.whatsapp) {
+      newConfig.cta_flutuante = { tipo: 'whatsapp', valor: biz.whatsapp };
+    }
+
+    setConfig(newConfig);
+    setHasChanges(true);
+    setImporting(false);
+
+    // Also update primary color from business if available
+    if (biz.cor_primaria) {
+      await saveWebsite({ primary_color: biz.cor_primaria });
+    }
+
+    // Import reviews as depoimentos
+    const { data: reviews } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("business_id", biz.id)
+      .gte("rating", 4)
+      .limit(6);
+
+    if (reviews && reviews.length > 0) {
+      const imported: WebsiteDepoimento[] = reviews.map(r => ({
+        id: crypto.randomUUID(),
+        nome: r.autor || 'Cliente',
+        texto: r.texto || '',
+        rating: r.rating || 5,
+      }));
+      newConfig.depoimentos = imported;
+      setConfig({ ...newConfig });
+    }
+
+    toast.success("Dados importados do Google Meu Negócio! Revise e ajuste conforme necessário.");
+  };
 
   const handleSave = async () => {
     await saveWebsite({ config: config as any });
@@ -123,22 +214,41 @@ export default function Website() {
     return <div className="flex-1 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
   }
 
-  // No site yet
+  // No site yet — offer to create with auto-import
   if (!website) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center space-y-6 max-w-md">
-          <Globe className="h-16 w-16 text-primary mx-auto" />
+        <div className="text-center space-y-6 max-w-lg">
+          <div className="relative inline-flex">
+            <Globe className="h-16 w-16 text-primary" />
+            <Sparkles className="h-6 w-6 text-accent absolute -top-1 -right-1 animate-pulse" />
+          </div>
           <h2 className="text-2xl font-heading font-bold">Crie seu mini site grátis</h2>
-          <p className="text-muted-foreground">Um site profissional no ar em menos de 5 minutos</p>
+          <p className="text-muted-foreground">Um site profissional no ar em menos de 5 minutos. Os dados do seu Google Meu Negócio serão importados automaticamente.</p>
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground whitespace-nowrap">localai.app/</span>
               <Input value={slugInput} onChange={e => setSlugInput(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="seu-negocio" />
             </div>
             {slugInput && <p className="text-xs text-muted-foreground">Seu site ficará em: {window.location.origin}/site/{slugInput}</p>}
-            <Button onClick={handleCreate} className="w-full">Criar meu site</Button>
+            <Button onClick={handleCreate} className="w-full">
+              <Sparkles className="h-4 w-4 mr-2" /> Criar e importar dados
+            </Button>
           </div>
+          {businessData && (
+            <div className="p-4 rounded-xl border border-border bg-muted/50 text-left space-y-2">
+              <p className="text-xs font-medium text-muted-foreground">Dados que serão importados:</p>
+              <div className="flex flex-wrap gap-2">
+                {businessData.nome && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">✓ Nome</span>}
+                {businessData.whatsapp && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">✓ WhatsApp</span>}
+                {businessData.instagram && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">✓ Instagram</span>}
+                {businessData.cidade && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">✓ Localização</span>}
+                {businessData.logo_url && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">✓ Logo</span>}
+                {businessData.cor_primaria && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">✓ Cores</span>}
+                {businessData.nicho && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">✓ Nicho</span>}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -162,6 +272,9 @@ export default function Website() {
           )}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={importFromBusiness} disabled={importing}>
+            <Download className="h-4 w-4 mr-1" /> {importing ? "Importando..." : "Importar do GMB"}
+          </Button>
           {website.published && (
             <button onClick={copyUrl} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted px-3 py-1.5 rounded-lg transition-colors">
               {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
@@ -246,27 +359,63 @@ function TabAparencia({ config, website, updateConfig, onSaveTheme, onSaveColor 
     { id: 'brand', label: 'Marca', bg: '#020817', fg: website.primary_color },
   ];
   return (
-    <Card title="Tema">
-      <div className="grid grid-cols-3 gap-3">
-        {themes.map(t => (
-          <button key={t.id} onClick={() => onSaveTheme(t.id)} className={`rounded-xl p-4 border-2 transition-all ${website.theme === t.id ? 'border-primary' : 'border-border hover:border-border/80'}`}>
-            <div className="h-16 rounded-lg mb-2" style={{ background: t.bg }}>
-              <div className="p-2"><div className="h-2 w-8 rounded" style={{ background: t.fg, opacity: 0.5 }} /></div>
+    <>
+      {/* Logo */}
+      <Card title="Logotipo">
+        <Field label="URL do logotipo" hint="Use uma imagem PNG com fundo transparente para melhor resultado">
+          <Input value={config.logo_url || ''} onChange={e => updateConfig('logo_url', e.target.value)} placeholder="https://exemplo.com/logo.png" />
+        </Field>
+        {config.logo_url && (
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-xl border border-border bg-muted flex items-center justify-center overflow-hidden">
+              <img src={config.logo_url} alt="Logo" className="max-w-full max-h-full object-contain" />
             </div>
-            <span className="text-xs font-medium">{t.label}</span>
-            {website.theme === t.id && <Check className="h-3 w-3 text-primary inline ml-1" />}
-          </button>
-        ))}
-      </div>
-      {website.theme === 'brand' && (
-        <Field label="Cor primária" hint="Esta cor será usada nos botões e destaques do seu site">
-          <div className="flex gap-2">
-            <input type="color" value={website.primary_color} onChange={e => onSaveColor(e.target.value)} className="w-10 h-10 rounded cursor-pointer" />
-            <Input value={website.primary_color} onChange={e => onSaveColor(e.target.value)} className="w-32" />
+            <div className="w-16 h-16 rounded-xl bg-[#020817] flex items-center justify-center overflow-hidden">
+              <img src={config.logo_url} alt="Logo dark" className="max-w-full max-h-full object-contain" />
+            </div>
+            <span className="text-xs text-muted-foreground">Preview: claro / escuro</span>
+          </div>
+        )}
+      </Card>
+
+      {/* Theme */}
+      <Card title="Tema">
+        <div className="grid grid-cols-3 gap-3">
+          {themes.map(t => (
+            <button key={t.id} onClick={() => onSaveTheme(t.id)} className={`rounded-xl p-4 border-2 transition-all ${website.theme === t.id ? 'border-primary' : 'border-border hover:border-border/80'}`}>
+              <div className="h-16 rounded-lg mb-2" style={{ background: t.bg }}>
+                <div className="p-2"><div className="h-2 w-8 rounded" style={{ background: t.fg, opacity: 0.5 }} /></div>
+              </div>
+              <span className="text-xs font-medium">{t.label}</span>
+              {website.theme === t.id && <Check className="h-3 w-3 text-primary inline ml-1" />}
+            </button>
+          ))}
+        </div>
+      </Card>
+
+      {/* Colors */}
+      <Card title="Cor primária">
+        <p className="text-xs text-muted-foreground">Usada em botões, destaques e acentos do site</p>
+        <div className="grid grid-cols-5 gap-2">
+          {COLOR_PRESETS.map(c => (
+            <button
+              key={c.value}
+              onClick={() => onSaveColor(c.value)}
+              className={`flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all ${website.primary_color === c.value ? 'border-foreground' : 'border-transparent hover:border-border'}`}
+            >
+              <div className="w-8 h-8 rounded-full" style={{ background: c.value }} />
+              <span className="text-[10px] text-muted-foreground">{c.label}</span>
+            </button>
+          ))}
+        </div>
+        <Field label="Cor personalizada">
+          <div className="flex gap-2 items-center">
+            <input type="color" value={website.primary_color} onChange={e => onSaveColor(e.target.value)} className="w-10 h-10 rounded cursor-pointer border-0" />
+            <Input value={website.primary_color} onChange={e => onSaveColor(e.target.value)} className="w-32 font-mono text-sm" />
           </div>
         </Field>
-      )}
-    </Card>
+      </Card>
+    </>
   );
 }
 
@@ -308,7 +457,6 @@ function TabSobre({ config, updateConfig, businessId }: { config: WebsiteConfig;
 }
 
 function TabServicos({ config, updateConfig }: { config: WebsiteConfig; updateConfig: (p: string, v: any) => void }) {
-  const [editing, setEditing] = useState<WebsiteService | null>(null);
   const [form, setForm] = useState({ nome: '', descricao: '', preco: '', icone: 'Star' });
 
   const addService = () => {
@@ -326,7 +474,7 @@ function TabServicos({ config, updateConfig }: { config: WebsiteConfig; updateCo
     <Card title="Serviços">
       <p className="text-sm text-muted-foreground">Adicione seus principais serviços ou produtos (máximo 12)</p>
       <div className="space-y-2">
-        {config.servicos.map((s, i) => (
+        {config.servicos.map((s) => (
           <div key={s.id} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
             <span className="text-sm font-medium flex-1">{s.nome}</span>
             <span className="text-xs text-muted-foreground">{s.preco}</span>
