@@ -199,11 +199,21 @@ const Auth = () => {
           setAuthPhase("authenticated");
           await new Promise((r) => setTimeout(r, 1200));
 
-          const { data: biz } = await supabase.from("businesses").select("id").eq("user_id", user.id).limit(1);
-          if (biz && biz.length > 0) {
-            navigate("/dashboard");
+          // Check if user is admin
+          const { data: isAdminUser } = await supabase.rpc("has_role", {
+            _user_id: user.id,
+            _role: "admin",
+          });
+
+          if (isAdminUser) {
+            navigate("/admin", { replace: true });
           } else {
-            navigate("/onboarding/connect");
+            const { data: biz } = await supabase.from("businesses").select("id").eq("user_id", user.id).limit(1);
+            if (biz && biz.length > 0) {
+              navigate("/dashboard");
+            } else {
+              navigate("/onboarding/connect");
+            }
           }
         } else {
           setAuthPhase("failed");
