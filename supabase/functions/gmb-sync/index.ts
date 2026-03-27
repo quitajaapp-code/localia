@@ -65,11 +65,10 @@ async function refreshAccessToken(
       secret_key: encryptionKey,
     });
 
-    // Update token in DB (encrypted only, clear plaintext)
+    // Update token in DB (encrypted only)
     await supabase
       .from("oauth_tokens")
       .update({
-        access_token: null,
         access_token_encrypted: encryptedToken,
         expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
       })
