@@ -125,10 +125,13 @@ Deno.serve(async (req) => {
 
         if (!reviewsRes.ok) {
           const statusCode = reviewsRes.status;
+          let errDetail = "";
+          try { errDetail = await reviewsRes.text(); } catch {}
           const statusLabel = statusCode === 401 ? "gmb_unauthorized"
             : statusCode === 403 ? "gmb_forbidden"
             : `gmb_error_${statusCode}`;
-          results.push({ business_id: biz.id, status: statusLabel });
+          console.error(`GMB API error for ${biz.id}: ${statusCode} - ${errDetail}`);
+          results.push({ business_id: biz.id, status: statusLabel, error_detail: errDetail });
           continue;
         }
 
@@ -159,6 +162,7 @@ Deno.serve(async (req) => {
               rating: ratingMap[review.starRating] || 3,
               texto: review.comment || "",
               respondido: !!review.reviewReply,
+              data_review: review.createTime || new Date().toISOString(),
             });
             added++;
           }
@@ -168,6 +172,7 @@ Deno.serve(async (req) => {
         await supabase.from("gmb_snapshots").insert({
           business_id: biz.id,
           dados_json: reviewsData,
+          synced_at: new Date().toISOString(),
         });
 
         results.push({ business_id: biz.id, status: "ok", reviews_added: added });

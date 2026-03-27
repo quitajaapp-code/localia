@@ -107,9 +107,14 @@ Deno.serve(async (req) => {
 
     let dbError: unknown = null;
     if (existing && existing.length > 0) {
+      // Preserve existing refresh_token if new one is not provided
+      const updatePayload = { ...payload };
+      if (!refreshToken) {
+        delete (updatePayload as Record<string, unknown>).refresh_token;
+      }
       const res = await supabase
         .from("oauth_tokens")
-        .update(payload)
+        .update(updatePayload)
         .eq("id", existing[0].id);
       dbError = res.error;
     } else {
