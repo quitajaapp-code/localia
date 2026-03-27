@@ -32,6 +32,7 @@ import CampaignDetail from "./pages/dashboard/ads/CampaignDetail";
 import NotFound from "./pages/NotFound";
 import WebsitePage from "./pages/dashboard/Website";
 import PublicSite from "./pages/PublicSite";
+import Demos from "./pages/Demos";
 
 const queryClient = new QueryClient();
 
