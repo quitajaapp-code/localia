@@ -46,6 +46,15 @@ const ESTADOS = [
 
 type PageState = "loading" | "select-location" | "form" | "no-gmb" | "manual-gmb";
 
+interface GmbLocation {
+  name: string;
+  title: string;
+  address: string;
+  phone: string;
+  website: string;
+  accountName: string;
+}
+
 export default function BusinessInfo() {
   const [pageState, setPageState] = useState<PageState>("loading");
   const [saving, setSaving] = useState(false);
