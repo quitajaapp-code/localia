@@ -31,6 +31,9 @@ function translateError(msg: string): string {
 }
 
 type AuthPhase = "idle" | "verifying" | "authenticated" | "failed";
+const OAUTH_INTENT_KEY = "localai_oauth_in_progress";
+const OAUTH_INTENT_STARTED_AT_KEY = "localai_oauth_started_at";
+const OAUTH_INTENT_MAX_AGE_MS = 10 * 60 * 1000;
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -49,17 +52,52 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const clearOAuthIntent = () => {
+    sessionStorage.removeItem(OAUTH_INTENT_KEY);
+    sessionStorage.removeItem(OAUTH_INTENT_STARTED_AT_KEY);
+  };
+
+  const hasFreshOAuthIntent = () => {
+    if (sessionStorage.getItem(OAUTH_INTENT_KEY) !== "1") return false;
+
+    const startedAtRaw = sessionStorage.getItem(OAUTH_INTENT_STARTED_AT_KEY);
+    if (!startedAtRaw) return true;
+
+    const startedAt = Number(startedAtRaw);
+    if (Number.isNaN(startedAt)) {
+      clearOAuthIntent();
+      return false;
+    }
+
+    const isFresh = Date.now() - startedAt <= OAUTH_INTENT_MAX_AGE_MS;
+    if (!isFresh) clearOAuthIntent();
+    return isFresh;
+  };
+
   // Detect session only when returning from OAuth callback
   useEffect(() => {
+    let fallbackTimer: number | undefined;
+
     const hasOAuthCallbackParams = () => {
       const hash = window.location.hash;
       const search = new URLSearchParams(window.location.search);
       return hash.includes("access_token=") || search.has("code");
     };
 
+    const shouldProcessOAuth = () => hasOAuthCallbackParams() || hasFreshOAuthIntent();
+
     // If we land on /auth with OAuth params, show verifying state immediately
-    if (hasOAuthCallbackParams()) {
+    if (shouldProcessOAuth()) {
       setAuthPhase("verifying");
+      fallbackTimer = window.setTimeout(() => {
+        setAuthPhase((phase) => {
+          if (phase === "verifying") {
+            clearOAuthIntent();
+            return "failed";
+          }
+          return phase;
+        });
+      }, 12000);
     }
 
     const routeAfterSignIn = async () => {
@@ -67,6 +105,7 @@ const Auth = () => {
 
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error || !user) {
+        clearOAuthIntent();
         setAuthPhase("failed");
         return;
       }
@@ -89,17 +128,33 @@ const Auth = () => {
       } else {
         navigate("/onboarding/connect", { replace: true });
       }
+
+      clearOAuthIntent();
     };
 
+    const resumeOAuthIfSessionExists = async () => {
+      if (!shouldProcessOAuth()) return;
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        void routeAfterSignIn();
+      }
+    };
+
+    void resumeOAuthIfSessionExists();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      const oauthInProgress = sessionStorage.getItem("localai_oauth_in_progress") === "1";
-      if (event === "SIGNED_IN" && session?.user && hasOAuthCallbackParams() && oauthInProgress) {
-        sessionStorage.removeItem("localai_oauth_in_progress");
+      if (!shouldProcessOAuth()) return;
+
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session?.user) {
         void routeAfterSignIn();
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (fallbackTimer) window.clearTimeout(fallbackTimer);
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -155,7 +210,8 @@ const Auth = () => {
     setGoogleLoading(true);
 
     // Mark explicit OAuth intent to avoid accidental redirects from stale events
-    sessionStorage.setItem("localai_oauth_in_progress", "1");
+    sessionStorage.setItem(OAUTH_INTENT_KEY, "1");
+    sessionStorage.setItem(OAUTH_INTENT_STARTED_AT_KEY, String(Date.now()));
 
     // Prevent stale local sessions from bypassing OAuth flow
     await supabase.auth.signOut();
@@ -173,7 +229,7 @@ const Auth = () => {
     });
 
     if (error) {
-      sessionStorage.removeItem("localai_oauth_in_progress");
+      clearOAuthIntent();
       toast({ title: translateError(error.message), variant: "destructive" });
       setGoogleLoading(false);
     }
