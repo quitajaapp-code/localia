@@ -47,27 +47,30 @@ const Auth = () => {
 
   // Detect session after OAuth redirect
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        // Only react to actual sign-in events, not cached sessions
-        if (event === "SIGNED_IN" && session?.user) {
-          // Validate session is real by calling getUser (server-side check)
-          const { data: { user }, error } = await supabase.auth.getUser();
-          if (error || !user) return;
+    const routeAfterSignIn = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) return;
 
-          const { data: biz } = await supabase
-            .from("businesses")
-            .select("id")
-            .eq("user_id", user.id)
-            .limit(1);
-          if (biz && biz.length > 0) {
-            navigate("/dashboard", { replace: true });
-          } else {
-            navigate("/onboarding/connect", { replace: true });
-          }
-        }
+      const { data: biz } = await supabase
+        .from("businesses")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1);
+
+      if (biz && biz.length > 0) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/onboarding/connect", { replace: true });
       }
-    );
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Only react to actual sign-in events, not cached sessions
+      if (event === "SIGNED_IN" && session?.user) {
+        void routeAfterSignIn();
+      }
+    });
+
     return () => subscription.unsubscribe();
   }, [navigate]);
 
