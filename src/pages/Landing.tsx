@@ -65,7 +65,7 @@ const testimonials = [
 
 const plans = [
   { name: "PRESENÇA", price: "R$97", desc: "Para quem quer aparecer no Google com consistência.", features: ["Posts automáticos 4x/semana", "Respostas com IA às avaliações", "Score de eficiência", "Relatório semanal", "Alerta de edições"], highlight: false },
-  { name: "PRESENÇA + ADS", price: "R$197", desc: "Tudo do Presença + gestão inteligente de anúncios.", features: ["Tudo do plano Presença", "Campanha Google Ads com IA", "Otimização semanal de keywords", "Negativação automática", "Relatório Ads unificado"], highlight: true },
+  { name: "PRESENÇA + ADS", price: "R$197", desc: "Tudo do Presença + Google Ads com IA + Mini Site profissional.", features: ["Tudo do plano Presença", "Campanha Google Ads com IA", "Otimização semanal de keywords", "Negativação automática", "Relatório Ads unificado", "Mini Site profissional incluso"], highlight: true },
   { name: "AGÊNCIA", price: "R$397", desc: "Para agências que gerenciam múltiplos negócios.", features: ["Tudo do plano Presença + Ads", "Até 10 negócios", "Painel multi-conta", "Relatórios white-label", "Suporte prioritário"], highlight: false },
 ];
 
