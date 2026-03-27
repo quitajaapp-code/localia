@@ -118,6 +118,13 @@ export default function PublicSite() {
         </div>
       )}
 
+      {/* Demo banner */}
+      {['demo-salao', 'demo-clinica', 'demo-loja'].includes(slug) && (
+        <div style={{ background: 'linear-gradient(135deg, #6366F1, #7C3AED)', color: '#fff', textAlign: 'center', padding: '10px 16px', fontSize: 13, fontWeight: 500, position: 'sticky', top: 0, zIndex: 99 }}>
+          ✦ Este é um site modelo — <a href="/auth" style={{ color: '#fff', textDecoration: 'underline', fontWeight: 700 }}>Crie o seu agora grátis</a>
+        </div>
+      )}
+
       {/* Header */}
       <header style={{ position: 'sticky', top: isPreview ? 36 : 0, zIndex: 50, background: isDark ? 'rgba(2,8,23,0.9)' : 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: `1px solid ${borderC}`, height: 60 }}>
         <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 16px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
