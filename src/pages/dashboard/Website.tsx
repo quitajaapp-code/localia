@@ -188,8 +188,10 @@ export default function Website() {
     else toast.success("Site criado!");
   };
 
+  const siteUrl = (slug: string) => `https://${slug}.localai.app.br`;
+
   const copyUrl = () => {
-    const url = website?.custom_domain || `${window.location.origin}/site/${website?.slug}`;
+    const url = website?.custom_domain ? `https://${website.custom_domain}` : siteUrl(website?.slug || '');
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
