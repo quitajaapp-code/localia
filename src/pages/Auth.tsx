@@ -117,6 +117,17 @@ const Auth = () => {
       // Brief pause to show success state
       await new Promise((r) => setTimeout(r, 1500));
 
+      // Check if user is admin
+      const { data: isAdmin } = await supabase.rpc("has_role", {
+        _user_id: user.id,
+        _role: "admin",
+      });
+
+      if (isAdmin) {
+        navigate("/admin", { replace: true });
+        return;
+      }
+
       const { data: biz } = await supabase
         .from("businesses")
         .select("id")
