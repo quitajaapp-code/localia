@@ -4,7 +4,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   MapPin, Star, TrendingUp, Bot, Zap, BarChart3,
   Shield, Bell, Check, ArrowRight,
-  MessageSquare, Image, Target, FileText, Play
+  MessageSquare, Image, Target, FileText, Play, Globe
 } from "lucide-react";
 
 /* ─── Scroll animation hook ─── */
