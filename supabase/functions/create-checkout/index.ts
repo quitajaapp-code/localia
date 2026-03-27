@@ -8,16 +8,16 @@ const corsHeaders = {
 
 const PLAN_PRICES: Record<string, { monthly: string; annual: string }> = {
   price_presenca: {
-    monthly: "price_presenca_monthly",
-    annual: "price_presenca_annual",
+    monthly: "prod_UDpLCHgb4KlHQy",
+    annual: "prod_UDpaq2vrXQCeVF",
   },
   price_ads: {
-    monthly: "price_ads_monthly",
-    annual: "price_ads_annual",
+    monthly: "prod_UDpMHnFKefJZ5C",
+    annual: "prod_UDpbXDNX6E9tNx",
   },
   price_agencia: {
-    monthly: "price_agencia_monthly",
-    annual: "price_agencia_annual",
+    monthly: "prod_UDpOk4mWphi9UT",
+    annual: "prod_UDpcB3ToZe7u3w",
   },
 };
 
