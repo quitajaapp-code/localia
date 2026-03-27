@@ -125,15 +125,22 @@ const Auth = () => {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        // Check if user has business (onboarding complete)
+
+        setAuthPhase("verifying");
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
+          setAuthUserName(user.user_metadata?.nome || user.user_metadata?.full_name || user.email || "");
+          setAuthPhase("authenticated");
+          await new Promise((r) => setTimeout(r, 1200));
+
           const { data: biz } = await supabase.from("businesses").select("id").eq("user_id", user.id).limit(1);
           if (biz && biz.length > 0) {
             navigate("/dashboard");
           } else {
             navigate("/onboarding/connect");
           }
+        } else {
+          setAuthPhase("failed");
         }
       }
     } catch (err: unknown) {
