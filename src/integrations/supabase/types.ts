@@ -497,42 +497,36 @@ export type Database = {
       }
       oauth_tokens: {
         Row: {
-          access_token: string | null
           access_token_encrypted: string | null
           created_at: string | null
           expires_at: string | null
           google_email: string | null
           id: string
           provider: string
-          refresh_token: string | null
           refresh_token_encrypted: string | null
           scope: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
-          access_token?: string | null
           access_token_encrypted?: string | null
           created_at?: string | null
           expires_at?: string | null
           google_email?: string | null
           id?: string
           provider: string
-          refresh_token?: string | null
           refresh_token_encrypted?: string | null
           scope?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
-          access_token?: string | null
           access_token_encrypted?: string | null
           created_at?: string | null
           expires_at?: string | null
           google_email?: string | null
           id?: string
           provider?: string
-          refresh_token?: string | null
           refresh_token_encrypted?: string | null
           scope?: string | null
           updated_at?: string | null
