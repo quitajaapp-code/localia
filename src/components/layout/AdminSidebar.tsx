@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import localaiLogo from "@/assets/localai-logo.png";
 
 const navItems = [
   { to: "/admin", label: "Visão Geral", icon: BarChart3 },
