@@ -138,7 +138,7 @@ export default function BusinessInfo() {
         }
       }
 
-      setPageState("no-gmb");
+      setPageState("manual-gmb");
     };
     load();
   }, []);
