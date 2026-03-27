@@ -1,8 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export async function createCheckoutSession(planId: string, userEmail?: string) {
+export async function createCheckoutSession(planId: string, userEmail?: string, annual?: boolean) {
   const { data, error } = await supabase.functions.invoke("create-checkout", {
-    body: { plan_id: planId, email: userEmail },
+    body: { plan_id: planId, email: userEmail, annual: !!annual },
   });
 
   if (error) throw new Error(error.message || "Erro ao criar sessão de checkout");
