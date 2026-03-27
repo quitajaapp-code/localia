@@ -74,6 +74,20 @@ export function Sidebar() {
         ))}
       </nav>
 
+      {/* Admin Link */}
+      {isAdmin && (
+        <div className="px-3 py-2 border-t border-sidebar-border">
+          <NavLink
+            to="/admin"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-destructive/80 hover:text-destructive hover:bg-sidebar-accent/50 transition-colors"
+          >
+            <ShieldCheck className="h-5 w-5 shrink-0" />
+            <span>Painel Admin</span>
+          </NavLink>
+        </div>
+      )}
+
       {/* Footer */}
       <div className="px-4 py-4 border-t border-sidebar-border">
         <p className="text-xs text-sidebar-foreground/40 text-center">LocalAI v1.0</p>
