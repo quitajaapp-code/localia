@@ -48,6 +48,7 @@ export interface WebsiteConfig {
     email: string;
     endereco: string;
     maps_url: string;
+    maps_place_id?: string;
   };
   redes: {
     instagram: string;
