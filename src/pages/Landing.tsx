@@ -47,6 +47,7 @@ const features = [
   { icon: Zap, title: "Score de eficiência", desc: "Acompanhe o índice de aproveitamento do seu perfil e saiba exatamente o que melhorar." },
   { icon: BarChart3, title: "Relatório unificado", desc: "GMB + Ads em um relatório semanal simples, sem jargão técnico." },
   { icon: Shield, title: "Alerta de edições", desc: "Se alguém alterar seu perfil no Google sem autorização, você recebe um alerta imediato." },
+  { icon: Globe, title: "Mini Site profissional", desc: "Seu negócio ganha um site otimizado para SEO local, com domínio próprio e atualizações automáticas." },
 ];
 
 const niches = [
