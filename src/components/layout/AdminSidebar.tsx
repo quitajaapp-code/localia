@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import localaiLogo from "@/assets/localai-logo.png";
 
 const navItems = [
   { to: "/admin", label: "Visão Geral", icon: BarChart3 },
@@ -33,8 +34,8 @@ export function AdminSidebar() {
   const sidebarContent = (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-2 px-6 py-5 border-b border-sidebar-border">
-        <ShieldCheck className="h-7 w-7 text-destructive" />
-        <span className="text-xl font-heading font-bold text-sidebar-foreground">
+        <img src={localaiLogo} alt="LocalAI" className="h-7" />
+        <span className="text-xs font-medium text-destructive bg-destructive/10 px-2 py-0.5 rounded">
           Admin
         </span>
       </div>

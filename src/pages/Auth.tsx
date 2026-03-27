@@ -14,6 +14,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Mail, Lock, User, Eye, EyeOff, Chrome, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import localaiLogo from "@/assets/localai-logo.png";
 
 function translateError(msg: string): string {
   const map: Record<string, string> = {
@@ -361,7 +362,7 @@ const Auth = () => {
       {/* Left branding panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-cyan-500 relative overflow-hidden items-center justify-center p-12">
         <div className="relative z-10 text-primary-foreground max-w-md">
-          <h1 className="text-4xl font-bold mb-4">LocalAI</h1>
+          <img src={localaiLogo} alt="LocalAI" className="h-10 mb-4 brightness-0 invert" />
           <p className="text-xl opacity-90 mb-6">
             Seu negócio local no topo do Google — no piloto automático.
           </p>
@@ -379,7 +380,7 @@ const Auth = () => {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <div className="lg:hidden text-center mb-8">
-            <h1 className="text-3xl font-bold text-primary">LocalAI</h1>
+            <img src={localaiLogo} alt="LocalAI" className="h-8 mx-auto" />
           </div>
 
           {/* Toggle */}

@@ -1,6 +1,7 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import localaiLogo from "@/assets/localai-logo.png";
 
 const STEPS = [
   { path: "/onboarding/connect", label: "Conectar Google", step: 1 },
@@ -19,7 +20,7 @@ export default function OnboardingLayout() {
       {/* Header */}
       <header className="border-b bg-card px-6 py-4">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-lg font-bold text-primary">LocalAI</h1>
+          <img src={localaiLogo} alt="LocalAI" className="h-7" />
         </div>
       </header>
 
