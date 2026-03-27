@@ -169,6 +169,7 @@ Deno.serve(async (req) => {
         await supabase.from("gmb_snapshots").insert({
           business_id: biz.id,
           dados_json: reviewsData,
+          synced_at: new Date().toISOString(),
         });
 
         results.push({ business_id: biz.id, status: "ok", reviews_added: added });
