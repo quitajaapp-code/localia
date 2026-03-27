@@ -83,14 +83,34 @@ Deno.serve(async (req) => {
       console.warn("Failed to fetch userinfo:", e);
     }
 
-    // Save tokens to database
+    // Save tokens to database (encrypted)
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const ENCRYPTION_KEY = Deno.env.get("TOKEN_ENCRYPTION_KEY") || "";
 
-    const payload = {
+    // Encrypt tokens using pgcrypto via RPC
+    const encryptToken = async (token: string | null) => {
+      if (!token || !ENCRYPTION_KEY) return null;
+      const { data, error } = await supabase.rpc("encrypt_token", {
+        plain_text: token,
+        secret_key: ENCRYPTION_KEY,
+      });
+      if (error) {
+        console.warn("Encrypt failed, storing plain:", error.message);
+        return null;
+      }
+      return data;
+    };
+
+    const accessTokenEnc = await encryptToken(accessToken);
+    const refreshTokenEnc = await encryptToken(refreshToken);
+
+    const payload: Record<string, unknown> = {
       user_id: userId,
       provider: "google",
-      access_token: accessToken,
+      access_token: accessToken, // keep plain for backward compat (will be removed later)
       refresh_token: refreshToken,
+      access_token_encrypted: accessTokenEnc,
+      refresh_token_encrypted: refreshTokenEnc,
       scope: "business.manage",
       expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
       google_email: googleEmail,
@@ -110,7 +130,8 @@ Deno.serve(async (req) => {
       // Preserve existing refresh_token if new one is not provided
       const updatePayload = { ...payload };
       if (!refreshToken) {
-        delete (updatePayload as Record<string, unknown>).refresh_token;
+        delete updatePayload.refresh_token;
+        delete updatePayload.refresh_token_encrypted;
       }
       const res = await supabase
         .from("oauth_tokens")
