@@ -229,10 +229,10 @@ export default function Website() {
           <p className="text-muted-foreground">Um site profissional no ar em menos de 5 minutos. Os dados do seu Google Meu Negócio serão importados automaticamente.</p>
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground whitespace-nowrap">localai.app/</span>
               <Input value={slugInput} onChange={e => setSlugInput(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="seu-negocio" />
+              <span className="text-sm text-muted-foreground whitespace-nowrap">.localai.app.br</span>
             </div>
-            {slugInput && <p className="text-xs text-muted-foreground">Seu site ficará em: {window.location.origin}/site/{slugInput}</p>}
+            {slugInput && <p className="text-xs text-muted-foreground">Seu site ficará em: <strong>https://{slugInput}.localai.app.br</strong></p>}
             <Button onClick={handleCreate} className="w-full">
               <Sparkles className="h-4 w-4 mr-2" /> Criar e importar dados
             </Button>
