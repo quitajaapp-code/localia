@@ -52,20 +52,37 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        // Get OAuth token
+        // Get OAuth token (use encrypted version)
+        const ENCRYPTION_KEY = Deno.env.get("TOKEN_ENCRYPTION_KEY") || "";
         const { data: tokenRow } = await supabase
           .from("oauth_tokens")
-          .select("access_token, expires_at")
+          .select("access_token_encrypted, expires_at")
           .eq("user_id", biz.user_id)
           .eq("provider", "google")
           .single();
 
-        if (!tokenRow?.access_token) {
+        if (!tokenRow?.access_token_encrypted) {
           await supabase
             .from("posts")
             .update({ status: "erro" })
             .eq("id", post.id);
           results.push({ post_id: post.id, status: "no_token" });
+          continue;
+        }
+
+        // Decrypt access token
+        let accessToken: string;
+        try {
+          const { data: decrypted, error: decErr } = await supabase.rpc("decrypt_token", {
+            encrypted_data: tokenRow.access_token_encrypted,
+            secret_key: ENCRYPTION_KEY,
+          });
+          if (decErr || !decrypted) throw decErr || new Error("Decrypt returned null");
+          accessToken = decrypted;
+        } catch (decryptErr) {
+          console.error(`Failed to decrypt token for post ${post.id}:`, decryptErr);
+          await supabase.from("posts").update({ status: "erro" }).eq("id", post.id);
+          results.push({ post_id: post.id, status: "decrypt_error" });
           continue;
         }
 
