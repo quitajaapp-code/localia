@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Sparkles, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import localaiLogo from "@/assets/localai-logo.png";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
