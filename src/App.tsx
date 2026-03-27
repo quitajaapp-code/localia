@@ -65,6 +65,16 @@ const App = () => (
               </Route>
             </Route>
 
+            <Route element={<ProtectedAdminRoute />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="subscriptions" element={<AdminSubscriptions />} />
+                <Route path="businesses" element={<AdminBusinesses />} />
+                <Route path="coupons" element={<AdminCoupons />} />
+              </Route>
+            </Route>
+
             <Route path="/site/:slug" element={<PublicSite />} />
             <Route path="/" element={isSubdomainSite() ? <PublicSite /> : <Landing />} />
             <Route path="*" element={isSubdomainSite() ? <PublicSite /> : <NotFound />} />
