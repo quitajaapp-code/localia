@@ -6,11 +6,57 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-async function refreshAccessToken(refreshToken: string): Promise<string | null> {
-  // TODO: Implement OAuth token refresh with Google credentials
-  // For now, return null — requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET
-  console.log("Token refresh not yet implemented");
-  return null;
+async function refreshAccessToken(
+  refreshToken: string,
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+): Promise<string | null> {
+  const GOOGLE_CLIENT_ID = Deno.env.get("GOOGLE_CLIENT_ID");
+  const GOOGLE_CLIENT_SECRET = Deno.env.get("GOOGLE_CLIENT_SECRET");
+
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    console.error("Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET for token refresh");
+    return null;
+  }
+
+  try {
+    const res = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error(`Token refresh failed (${res.status}):`, errText);
+      return null;
+    }
+
+    const data = await res.json();
+    const newAccessToken = data.access_token;
+    const expiresIn = data.expires_in || 3600;
+
+    // Update token in DB
+    await supabase
+      .from("oauth_tokens")
+      .update({
+        access_token: newAccessToken,
+        expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
+      })
+      .eq("user_id", userId)
+      .eq("provider", "google");
+
+    console.log(`Token refreshed for user ${userId}`);
+    return newAccessToken;
+  } catch (err) {
+    console.error("Token refresh error:", err);
+    return null;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -58,18 +104,16 @@ Deno.serve(async (req) => {
 
         // Check if token expired
         if (tokenRow.expires_at && new Date(tokenRow.expires_at) < new Date()) {
-          const newToken = await refreshAccessToken(tokenRow.refresh_token!);
+          if (!tokenRow.refresh_token) {
+            results.push({ business_id: biz.id, status: "token_expired_no_refresh" });
+            continue;
+          }
+          const newToken = await refreshAccessToken(tokenRow.refresh_token, supabase, biz.user_id);
           if (!newToken) {
-            results.push({ business_id: biz.id, status: "token_expired" });
+            results.push({ business_id: biz.id, status: "token_refresh_failed" });
             continue;
           }
           accessToken = newToken;
-          // Update token in DB
-          await supabase
-            .from("oauth_tokens")
-            .update({ access_token: newToken, expires_at: new Date(Date.now() + 3600 * 1000).toISOString() })
-            .eq("user_id", biz.user_id)
-            .eq("provider", "google");
         }
 
         // Fetch reviews from GMB API
@@ -80,7 +124,11 @@ Deno.serve(async (req) => {
         );
 
         if (!reviewsRes.ok) {
-          results.push({ business_id: biz.id, status: `gmb_error_${reviewsRes.status}` });
+          const statusCode = reviewsRes.status;
+          const statusLabel = statusCode === 401 ? "gmb_unauthorized"
+            : statusCode === 403 ? "gmb_forbidden"
+            : `gmb_error_${statusCode}`;
+          results.push({ business_id: biz.id, status: statusLabel });
           continue;
         }
 
