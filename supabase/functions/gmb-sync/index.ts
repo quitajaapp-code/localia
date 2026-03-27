@@ -159,6 +159,7 @@ Deno.serve(async (req) => {
               rating: ratingMap[review.starRating] || 3,
               texto: review.comment || "",
               respondido: !!review.reviewReply,
+              data_review: review.createTime || new Date().toISOString(),
             });
             added++;
           }
