@@ -8,6 +8,13 @@ import Landing from "./pages/Landing";
 import Pricing from "./pages/Pricing";
 import Auth from "./pages/Auth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
+import { AdminLayout } from "./components/layout/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
+import AdminBusinesses from "./pages/admin/AdminBusinesses";
+import AdminCoupons from "./pages/admin/AdminCoupons";
 import OnboardingLayout from "./pages/onboarding/OnboardingLayout";
 import ConnectGoogle from "./pages/onboarding/ConnectGoogle";
 import BusinessInfo from "./pages/onboarding/BusinessInfo";
@@ -62,6 +69,16 @@ const App = () => (
                 <Route path="report" element={<Report />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="website" element={<WebsitePage />} />
+              </Route>
+            </Route>
+
+            <Route element={<ProtectedAdminRoute />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="subscriptions" element={<AdminSubscriptions />} />
+                <Route path="businesses" element={<AdminBusinesses />} />
+                <Route path="coupons" element={<AdminCoupons />} />
               </Route>
             </Route>
 
