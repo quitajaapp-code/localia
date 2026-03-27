@@ -71,7 +71,9 @@ const Auth = () => {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session?.user && hasOAuthCallbackParams()) {
+      const oauthInProgress = sessionStorage.getItem("localai_oauth_in_progress") === "1";
+      if (event === "SIGNED_IN" && session?.user && hasOAuthCallbackParams() && oauthInProgress) {
+        sessionStorage.removeItem("localai_oauth_in_progress");
         void routeAfterSignIn();
       }
     });
