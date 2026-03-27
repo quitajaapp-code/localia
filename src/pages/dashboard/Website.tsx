@@ -280,7 +280,7 @@ export default function Website() {
           {website.published && (
             <button onClick={copyUrl} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground bg-muted px-3 py-1.5 rounded-lg transition-colors">
               {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-              {website.custom_domain || `/site/${website.slug}`}
+              {website.custom_domain || `${website.slug}.localai.app.br`}
             </button>
           )}
           <Button variant="outline" size="sm" asChild>
