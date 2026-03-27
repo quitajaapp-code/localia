@@ -189,7 +189,7 @@ export default function BusinessInfo() {
         tom_de_voz: tom,
         publico_alvo: publicoAlvo.trim(),
         diferenciais: diferenciais.trim(),
-        gmb_location_id: selectedLocation?.name ?? manualGmbId.trim() || null,
+        gmb_location_id: selectedLocation?.name ?? (manualGmbId.trim() || null),
       };
 
       if (bizId) {
