@@ -45,8 +45,14 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Detect session after OAuth redirect
+  // Detect session only when returning from OAuth callback
   useEffect(() => {
+    const hasOAuthCallbackParams = () => {
+      const hash = window.location.hash;
+      const search = new URLSearchParams(window.location.search);
+      return hash.includes("access_token=") || search.has("code");
+    };
+
     const routeAfterSignIn = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error || !user) return;
@@ -65,8 +71,9 @@ const Auth = () => {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Only react to actual sign-in events, not cached sessions
-      if (event === "SIGNED_IN" && session?.user) {
+      const oauthInProgress = sessionStorage.getItem("localai_oauth_in_progress") === "1";
+      if (event === "SIGNED_IN" && session?.user && hasOAuthCallbackParams() && oauthInProgress) {
+        sessionStorage.removeItem("localai_oauth_in_progress");
         void routeAfterSignIn();
       }
     });
@@ -118,11 +125,25 @@ const Auth = () => {
 
   const handleGoogle = async () => {
     setGoogleLoading(true);
+
+    // Mark explicit OAuth intent to avoid accidental redirects from stale events
+    sessionStorage.setItem("localai_oauth_in_progress", "1");
+
+    // Prevent stale local sessions from bypassing OAuth flow
+    await supabase.auth.signOut();
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: "https://localai.app.br/auth" },
+      options: {
+        redirectTo: "https://localai.app.br/auth",
+        queryParams: {
+          prompt: "select_account consent",
+        },
+      },
     });
+
     if (error) {
+      sessionStorage.removeItem("localai_oauth_in_progress");
       toast({ title: translateError(error.message), variant: "destructive" });
       setGoogleLoading(false);
     }
