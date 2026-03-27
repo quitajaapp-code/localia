@@ -253,7 +253,7 @@ export default function BusinessInfo() {
         </div>
 
         <button
-          onClick={() => setPageState("no-gmb")}
+          onClick={() => setPageState("manual-gmb")}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           Cadastrar manualmente
