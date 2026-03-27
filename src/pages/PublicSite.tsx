@@ -109,10 +109,14 @@ export default function PublicSite() {
       {/* Header */}
       <header style={{ position: 'sticky', top: isPreview ? 36 : 0, zIndex: 50, background: isDark ? 'rgba(2,8,23,0.9)' : 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: `1px solid ${borderC}`, height: 60 }}>
         <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 16px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 32, height: 32, borderRadius: '50%', background: pc, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14, fontWeight: 700 }}>
-              {config.hero.titulo.charAt(0)}
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {config.logo_url ? (
+              <img src={config.logo_url} alt="Logo" style={{ height: 36, maxWidth: 120, objectFit: 'contain' }} />
+            ) : (
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: pc, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14, fontWeight: 700 }}>
+                {config.hero.titulo.charAt(0)}
+              </div>
+            )}
             <span style={{ fontWeight: 600, fontSize: 16 }}>{config.hero.titulo.split(' ').slice(0, 3).join(' ')}</span>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
