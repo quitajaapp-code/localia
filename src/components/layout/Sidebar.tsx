@@ -61,7 +61,10 @@ export function Sidebar() {
           >
             <item.icon className="h-5 w-5 shrink-0" />
             <span>{item.label}</span>
-            {isActive(item.to) && (
+            {'badge' in item && (item as any).badge && (
+              <span className="ml-auto text-[10px] font-semibold bg-primary/20 text-primary px-1.5 py-0.5 rounded">{(item as any).badge}</span>
+            )}
+            {isActive(item.to) && !('badge' in item) && (
               <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             )}
           </NavLink>
