@@ -8,7 +8,6 @@ import {
   BarChart3,
   Settings,
   Globe,
-  Sparkles,
   Menu,
   X,
   ShieldCheck,
