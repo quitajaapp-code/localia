@@ -362,7 +362,7 @@ const Auth = () => {
       {/* Left branding panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-cyan-500 relative overflow-hidden items-center justify-center p-12">
         <div className="relative z-10 text-primary-foreground max-w-md">
-          <h1 className="text-4xl font-bold mb-4">LocalAI</h1>
+          <img src={localaiLogo} alt="LocalAI" className="h-10 mb-4 brightness-0 invert" />
           <p className="text-xl opacity-90 mb-6">
             Seu negócio local no topo do Google — no piloto automático.
           </p>
