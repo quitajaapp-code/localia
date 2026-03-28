@@ -195,6 +195,8 @@ export default function BusinessInfo() {
         tom_de_voz: tom,
         publico_alvo: publicoAlvo.trim(),
         diferenciais: diferenciais.trim(),
+        produtos: produtos.trim(),
+        faq: faq.trim(),
         gmb_location_id: selectedLocation?.name ?? (manualGmbId.trim() || null),
       };
 
