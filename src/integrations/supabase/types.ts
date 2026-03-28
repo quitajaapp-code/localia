@@ -1173,6 +1173,57 @@ export type Database = {
           },
         ]
       }
+      template_usage: {
+        Row: {
+          canal: string
+          entregue: boolean | null
+          enviado_em: string
+          erro: string | null
+          id: string
+          lead_id: string | null
+          respondido: boolean | null
+          respondido_em: string | null
+          template_id: string
+        }
+        Insert: {
+          canal?: string
+          entregue?: boolean | null
+          enviado_em?: string
+          erro?: string | null
+          id?: string
+          lead_id?: string | null
+          respondido?: boolean | null
+          respondido_em?: string | null
+          template_id: string
+        }
+        Update: {
+          canal?: string
+          entregue?: boolean | null
+          enviado_em?: string
+          erro?: string | null
+          id?: string
+          lead_id?: string | null
+          respondido?: boolean | null
+          respondido_em?: string | null
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_usage_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_usage_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
