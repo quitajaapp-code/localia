@@ -108,6 +108,8 @@ export default function BusinessInfo() {
         setTom(biz.tom_de_voz || "");
         setPublicoAlvo(biz.publico_alvo || "");
         setDiferenciais(biz.diferenciais || "");
+        setProdutos(biz.produtos || "");
+        setFaq(biz.faq || "");
         setPageState("form");
         return;
       }
