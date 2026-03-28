@@ -223,6 +223,12 @@ export default function MaterialsPage() {
     return Math.round(Math.min(100, s));
   }, [data, photos]);
 
+  const aiContext = useMemo(() => ({
+    nome: bizNome, nicho: bizNicho, cidade: bizCidade, estado: bizEstado,
+    publico_alvo: data.publico_alvo, diferenciais: data.diferenciais,
+    tom_de_voz: data.tom_de_voz, produtos: data.produtos,
+  }), [bizNome, bizNicho, bizCidade, bizEstado, data.publico_alvo, data.diferenciais, data.tom_de_voz, data.produtos]);
+
   const handleSave = async () => {
     setSaving(true);
     try {
