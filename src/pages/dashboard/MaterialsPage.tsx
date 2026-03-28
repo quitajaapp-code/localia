@@ -143,6 +143,10 @@ export default function MaterialsPage() {
         .limit(1)
         .maybeSingle();
       if (biz) {
+        setBizNome(biz.nome || "");
+        setBizNicho(biz.nicho || "");
+        setBizCidade(biz.cidade || "");
+        setBizEstado(biz.estado || "");
         const mapped: BizData = {
           id: biz.id,
           tom_de_voz: biz.tom_de_voz || "",
