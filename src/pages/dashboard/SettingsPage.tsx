@@ -167,6 +167,8 @@ export default function SettingsPage() {
       await supabase.from("businesses").update({
         nome: bizNome, nicho: bizNicho, tom_de_voz: bizTom,
         website_url: bizWebsite, whatsapp: bizWhatsapp, cidade: bizCidade, estado: bizEstado,
+        gmb_location_id: bizGmbId || null,
+        instagram: bizInstagram || null,
       }).eq("id", bizId);
       toast.success("Dados do negócio atualizados!");
     } catch { toast.error("Erro ao salvar"); }
