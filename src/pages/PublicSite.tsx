@@ -563,7 +563,7 @@ function defaultConfig(): WebsiteConfig {
     sobre: { texto: '', foto_url: '' },
     servicos: [],
     galeria: [],
-    contato: { telefone: '', whatsapp: '', email: '', endereco: '', maps_url: '' },
+    contato: { telefone: '', whatsapp: '', email: '', endereco: '', maps_url: '', maps_place_id: '' },
     redes: { instagram: '', facebook: '', tiktok: '', youtube: '', linkedin: '' },
     horarios: [],
     depoimentos: [],
