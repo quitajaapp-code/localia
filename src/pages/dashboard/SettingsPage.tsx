@@ -33,7 +33,15 @@ const PLANOS: Record<string, { label: string; price: string; features: string[] 
 };
 
 type NotifKey = "nova_avaliacao" | "avaliacao_negativa" | "post_publicado" | "erro_post" | "verba_esgotando" | "relatorio_semanal" | "edicao_perfil";
-type NotifSettings = Record<NotifKey, { email: boolean; push: boolean }>;
+type NotifSettings = Record<NotifKey, { email: boolean; push: boolean }> & {
+  email_alerts?: boolean;
+  whatsapp_alerts?: boolean;
+  agent_alerts_email?: boolean;
+  agent_alerts_whatsapp?: boolean;
+  alert_urgent_reviews?: boolean;
+  alert_pattern_complaints?: boolean;
+  alert_low_score?: boolean;
+};
 
 const DEFAULT_NOTIFS: NotifSettings = {
   nova_avaliacao: { email: true, push: true },
@@ -43,6 +51,13 @@ const DEFAULT_NOTIFS: NotifSettings = {
   verba_esgotando: { email: true, push: true },
   relatorio_semanal: { email: true, push: false },
   edicao_perfil: { email: true, push: true },
+  email_alerts: true,
+  whatsapp_alerts: false,
+  agent_alerts_email: true,
+  agent_alerts_whatsapp: false,
+  alert_urgent_reviews: true,
+  alert_pattern_complaints: true,
+  alert_low_score: true,
 };
 
 const NOTIF_LABELS: Record<NotifKey, { label: string; emailOnly?: boolean }> = {
