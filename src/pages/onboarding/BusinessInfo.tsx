@@ -397,13 +397,27 @@ export default function BusinessInfo() {
     );
   }
 
+  const filledFields = [nome, nicho, cidade, estado, whatsapp, website, instagram, tom, publicoAlvo, diferenciais, produtos, faq].filter(v => v.trim?.() ? true : false);
+  const totalFields = 12;
+  const filledCount = filledFields.length;
+  const progressPercent = Math.round((filledCount / totalFields) * 100);
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Dados do Negócio</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-foreground">Dados do Negócio</h2>
+          <span className="text-xs font-medium text-muted-foreground">{filledCount}/{totalFields} campos</span>
+        </div>
         <p className="text-sm text-muted-foreground mt-1">
           Essas informações são usadas para personalizar seus posts e respostas com IA.
         </p>
+        <div className="mt-3 h-2 rounded-full bg-muted overflow-hidden">
+          <div
+            className="h-full rounded-full bg-primary transition-all duration-500"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
       </div>
 
       {selectedLocation && (
