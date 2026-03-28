@@ -270,7 +270,7 @@ export default function PublicSite() {
               {config.servicos.map((s, i) => {
                 const Icon = lucideIcons[s.icone] || Star;
                 return (
-                  <Reveal key={s.id} delay={i * 80}>
+                  <Reveal key={s.id} delay={i * 100} variant="scaleUp">
                     <div style={{ background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, padding: 24, transition: 'all 0.3s ease' }}>
                       <div style={{ width: 44, height: 44, borderRadius: 10, background: `${pc}26`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Icon style={{ width: 22, height: 22, color: pc }} />
