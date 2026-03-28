@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Bell, Mail, MessageCircle, CheckCircle2, XCircle, Clock, Filter, Eye } from "lucide-react";
+import { ArrowLeft, Bell, Mail, MessageCircle, CheckCircle2, XCircle, Clock, Filter, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
