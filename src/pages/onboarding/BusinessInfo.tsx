@@ -55,6 +55,8 @@ interface GmbLocation {
   phone: string;
   website: string;
   accountName: string;
+  rating?: number;
+  totalReviews?: number;
 }
 
 export default function BusinessInfo() {
