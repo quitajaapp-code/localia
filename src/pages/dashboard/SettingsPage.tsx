@@ -554,7 +554,10 @@ export default function SettingsPage() {
                     <p className="text-xs text-muted-foreground">{hasGmb ? "Conectado" : "Não conectado"}</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm">{hasGmb ? "Reconectar" : "Conectar"}</Button>
+                <Button variant="outline" size="sm" onClick={handleGmbReconnect}>
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                  {hasGmb ? "Reconectar" : "Conectar"}
+                </Button>
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-3">
@@ -568,6 +571,41 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Excluir negócio */}
+          {bizId && (
+            <Card className="border-destructive/30">
+              <CardHeader>
+                <CardTitle className="text-base text-destructive flex items-center gap-2">
+                  <Trash2 className="h-4 w-4" /> Excluir negócio
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Ao excluir este negócio, todos os dados associados (avaliações, posts, campanhas, métricas) serão removidos permanentemente.
+                  Você poderá cadastrar um novo negócio depois.
+                </p>
+                <Button variant="destructive" size="sm" onClick={() => setDeleteBizOpen(true)}>
+                  <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Excluir negócio
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {!bizId && (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="py-6 text-center space-y-3">
+                <Building2 className="h-8 w-8 text-primary mx-auto" />
+                <div>
+                  <p className="font-medium text-foreground">Nenhum negócio cadastrado</p>
+                  <p className="text-sm text-muted-foreground">Cadastre seu negócio para começar a usar a plataforma.</p>
+                </div>
+                <Button onClick={() => navigate("/onboarding/connect")}>
+                  <Chrome className="h-4 w-4 mr-2" /> Cadastrar negócio
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* NOTIFICAÇÕES */}
