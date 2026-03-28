@@ -206,31 +206,7 @@ export default function PublicSite() {
       </header>
 
       {/* Hero */}
-      <HeroSection config={config} isDark={isDark} pc={pc} fg={fg} fgSec={fgSec} />
-          <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${pc}33, transparent 70%)` }} />
-        )}
-        <div style={{ position: 'relative', zIndex: 10, maxWidth: 768, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
-          <Reveal variant="blur">
-            <h1 className="hero-title" style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em', color: config.hero.bg_image_url ? '#fff' : fg, marginBottom: 16 }}>
-              {config.hero.titulo}
-            </h1>
-          </Reveal>
-          <Reveal delay={150} variant="blur">
-            <p className="hero-sub" style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: config.hero.bg_image_url ? 'rgba(255,255,255,0.8)' : fgSec, marginBottom: 32 }}>
-              {config.hero.subtitulo}
-            </p>
-          </Reveal>
-          {config.hero.cta_link && (
-            <Reveal delay={300} variant="scaleUp">
-              <a href={config.hero.cta_link} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: pc, color: '#fff', padding: '14px 28px', borderRadius: 10, fontWeight: 600, fontSize: 16, textDecoration: 'none', boxShadow: `0 0 40px ${pc}66` }}>
-                {config.hero.cta_link.includes('wa.me') && <MessageSquare style={{ width: 18, height: 18 }} />}
-                {config.hero.cta_link.includes('tel:') && <Phone style={{ width: 18, height: 18 }} />}
-                {config.hero.cta_texto}
-              </a>
-            </Reveal>
-          )}
-        </div>
-      </section>
+      <HeroSection config={config} pc={pc} fg={fg} fgSec={fgSec} />
 
       {/* Sobre */}
       {config.sobre.texto && (
