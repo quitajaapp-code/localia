@@ -17,6 +17,10 @@ const FIELD_PROMPTS: Record<string, string> = {
     "Crie 3 perguntas frequentes (FAQ) com respostas curtas que clientes deste tipo de negócio costumam ter.",
   promocoes:
     "Sugira 2-3 ideias de promoções eficazes para este tipo de negócio atrair mais clientes.",
+  depoimentos:
+    "Crie 3 depoimentos fictícios realistas de clientes satisfeitos para este tipo de negócio. Formato: \"Texto do depoimento\" — Nome",
+  ia_sempre_mencionar:
+    "Sugira 5-7 pontos importantes que a IA deve sempre mencionar ao criar conteúdo para este negócio. Formato: itens separados por vírgula.",
 };
 
 Deno.serve(async (req) => {
