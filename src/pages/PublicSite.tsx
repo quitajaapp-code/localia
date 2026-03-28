@@ -473,9 +473,9 @@ export default function PublicSite() {
                           </div>
                           <a
                             href={
-                              config.contato.maps_url && config.contato.maps_url.startsWith('http')
-                                ? config.contato.maps_url
-                                : `https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco)}`
+                              config.contato.endereco
+                                ? `https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco)}`
+                                : config.contato.maps_url || '#'
                             }
                             target="_blank"
                             rel="noopener"
