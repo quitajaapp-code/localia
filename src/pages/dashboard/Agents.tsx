@@ -111,6 +111,7 @@ interface AgentSettings {
 export default function Agents() {
   usePageTitle("Agentes IA");
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [bizId, setBizId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AgentSettings | null>(null);
   const [actions, setActions] = useState<AgentAction[]>([]);
