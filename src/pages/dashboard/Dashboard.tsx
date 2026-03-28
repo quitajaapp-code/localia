@@ -15,7 +15,7 @@ import {
   Map, MousePointerClick, PhoneCall, Navigation, DollarSign, BarChart3,
   TrendingUp, TrendingDown, Star, Calendar, Sparkles, Wifi, Play,
   Plus, AlertTriangle, MessageSquare, ArrowRight, CheckCircle2, Clock,
-  XCircle, Building2, Bot,
+  XCircle, Building2, Bot, FileText, Megaphone,
 } from "lucide-react";
 
 function ScoreGauge({ score }: { score: number }) {
