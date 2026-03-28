@@ -319,7 +319,7 @@ export default function PublicSite() {
             </Reveal>
             <div className="depoimentos-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.depoimentos.length, 3)}, 1fr)`, gap: 20 }}>
               {config.depoimentos.map((d, i) => (
-                <Reveal key={d.id} delay={i * 100}>
+                <Reveal key={d.id} delay={i * 120} variant="fadeUp">
                   <div style={{ background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, padding: 24 }}>
                     <span style={{ fontSize: 48, lineHeight: 1, color: pc, opacity: 0.6, fontFamily: 'Georgia, serif' }}>"</span>
                     <div style={{ fontSize: 13, color: '#F59E0B', marginBottom: 8 }}>{"★".repeat(d.rating)}</div>
