@@ -54,28 +54,39 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen }: SidebarProps
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            onClick={() => setMobileOpen(false)}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
-              isActive(item.to)
-                ? "bg-sidebar-accent text-sidebar-primary-foreground"
-                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
-            )}
-          >
-            <item.icon className="h-5 w-5 shrink-0" />
-            <span>{item.label}</span>
-            {'badge' in item && (item as any).badge && (
-              <span className="ml-auto text-[10px] font-semibold bg-primary/20 text-primary px-1.5 py-0.5 rounded">{(item as any).badge}</span>
-            )}
-            {isActive(item.to) && !('badge' in item) && (
-              <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            )}
-          </NavLink>
-        ))}
+        {navItems.map((item) => {
+          const showNegativeBadge = item.to === "/dashboard/reviews" && negativeReviewCount > 0;
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={() => {
+                setMobileOpen(false);
+                if (item.to === "/dashboard/reviews" && onReviewsSeen) onReviewsSeen();
+              }}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
+                isActive(item.to)
+                  ? "bg-sidebar-accent text-sidebar-primary-foreground"
+                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+              )}
+            >
+              <item.icon className="h-5 w-5 shrink-0" />
+              <span>{item.label}</span>
+              {showNegativeBadge && (
+                <span className="ml-auto flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
+                  {negativeReviewCount > 9 ? "9+" : negativeReviewCount}
+                </span>
+              )}
+              {!showNegativeBadge && 'badge' in item && (item as any).badge && (
+                <span className="ml-auto text-[10px] font-semibold bg-primary/20 text-primary px-1.5 py-0.5 rounded">{(item as any).badge}</span>
+              )}
+              {!showNegativeBadge && isActive(item.to) && !('badge' in item) && (
+                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              )}
+            </NavLink>
+          );
+        })}
       </nav>
 
       {/* Admin Link */}
