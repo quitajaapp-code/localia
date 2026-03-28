@@ -115,6 +115,18 @@ Deno.serve(async (req) => {
       contact_name: pushName,
     }).eq("id", conv.id);
 
+    // Marca template_usage como respondido para este lead
+    if (conv.lead_id) {
+      await supabase
+        .from("template_usage")
+        .update({
+          respondido: true,
+          respondido_em: new Date().toISOString(),
+        })
+        .eq("lead_id", conv.lead_id)
+        .eq("respondido", false);
+    }
+
     // Se o agente NÃO é humano, invoca o agente IA para responder
     if (conv.assigned_agent !== "humano") {
       const agentFunc = conv.assigned_agent === "support" ? "agent-support" : "agent-sdr";
