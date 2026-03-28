@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, MessageSquare, Copy, Search } from "lucide-react";
+import { MessagePreview } from "@/components/crm/MessagePreview";
 
 type Template = {
   id: string;
