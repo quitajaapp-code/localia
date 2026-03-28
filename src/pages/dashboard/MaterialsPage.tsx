@@ -117,6 +117,10 @@ function SectionCard({ title, icon: Icon, filled, total, children }: {
 export default function MaterialsPage() {
   usePageTitle("Materiais");
   const [data, setData] = useState<BizData>(EMPTY);
+  const [bizNome, setBizNome] = useState("");
+  const [bizNicho, setBizNicho] = useState("");
+  const [bizCidade, setBizCidade] = useState("");
+  const [bizEstado, setBizEstado] = useState("");
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
