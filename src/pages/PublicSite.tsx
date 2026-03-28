@@ -319,7 +319,7 @@ export default function PublicSite() {
 
       {/* Horários */}
       {config.horarios.some(h => !h.fechado) && (
-        <section style={{ padding: '64px 0' }}>
+        <section className="section-padding" style={{ padding: '64px 0' }}>
           <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
             <Reveal>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 24 }}>
