@@ -399,10 +399,30 @@ export default function Reviews() {
                             <span className="text-xs font-medium text-primary">Resposta sugerida pela IA</span>
                           </div>
                           <p className="text-sm text-foreground">{r.resposta_sugerida_ia}</p>
-                          <Button variant="ghost" size="sm" className="mt-2 h-7 text-xs btn-press" onClick={() => copyReply(r.id, r.resposta_sugerida_ia!)}>
-                            {copiedId === r.id ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
-                            {copiedId === r.id ? "Copiada" : "Copiar"}
-                          </Button>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Button variant="ghost" size="sm" className="h-7 text-xs btn-press" onClick={() => copyReply(r.id, r.resposta_sugerida_ia!)}>
+                              {copiedId === r.id ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
+                              {copiedId === r.id ? "Copiada" : "Copiar"}
+                            </Button>
+                            {!r.respondido && (
+                              <Button
+                                size="sm"
+                                className="h-7 text-xs btn-press"
+                                onClick={() => publishReplyToGoogle(r.id, r.resposta_sugerida_ia!)}
+                                disabled={publishingId === r.id}
+                              >
+                                {publishingId === r.id
+                                  ? <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                  : <Send className="h-3 w-3 mr-1" />}
+                                {publishingId === r.id ? "Publicando..." : "Publicar no Google"}
+                              </Button>
+                            )}
+                            {r.respondido && (
+                              <Badge variant="secondary" className="text-xs">
+                                <Check className="h-3 w-3 mr-1" /> Publicada no Google
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       )}
 
