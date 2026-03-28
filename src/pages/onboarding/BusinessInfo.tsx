@@ -9,8 +9,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, MapPin, CheckCircle2 } from "lucide-react";
+import { Loader2, MapPin, CheckCircle2, Search } from "lucide-react";
 import { motion } from "framer-motion";
+import GooglePlacesSearch from "@/components/shared/GooglePlacesSearch";
 
 const NICHOS = [
   "Restaurante / Alimentação",
@@ -263,49 +264,79 @@ export default function BusinessInfo() {
   }
 
   if (pageState === "manual-gmb" || pageState === "no-gmb") {
+    const handlePlaceSelect = (place: {
+      place_id: string;
+      name: string;
+      formatted_address: string;
+      formatted_phone_number?: string;
+      website?: string;
+      address_components?: Array<{ long_name: string; short_name: string; types: string[] }>;
+    }) => {
+      setNome(place.name);
+      setWebsite(place.website || "");
+      setWhatsapp(place.formatted_phone_number || "");
+      setManualGmbId(place.place_id);
+
+      // Extract city and state from address_components
+      if (place.address_components) {
+        for (const comp of place.address_components) {
+          if (comp.types.includes("administrative_area_level_2") || comp.types.includes("locality")) {
+            setCidade(comp.long_name);
+          }
+          if (comp.types.includes("administrative_area_level_1")) {
+            const uf = comp.short_name.toUpperCase();
+            if (ESTADOS.includes(uf)) setEstado(uf);
+          }
+        }
+      }
+
+      setPageState("form");
+      setSelectedLocation({
+        name: place.place_id,
+        title: place.name,
+        address: place.formatted_address,
+        phone: place.formatted_phone_number || "",
+        website: place.website || "",
+        accountName: "",
+      });
+    };
+
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Conectar ao Google Meu Negócio</h2>
+          <h2 className="text-xl font-semibold text-foreground">Encontre seu negócio</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Cole o ID do seu local do Google Business Profile para conectar automaticamente.
+            Busque pelo nome da empresa e cidade para preencher os dados automaticamente.
           </p>
         </div>
 
         <div className="space-y-3">
           <div className="space-y-1.5">
-            <Label htmlFor="gmb-id">Location ID do Google Meu Negócio</Label>
-            <Input
-              id="gmb-id"
-              placeholder="Ex: locations/12345678901234567"
-              value={manualGmbId}
-              onChange={(e) => setManualGmbId(e.target.value)}
+            <Label>Buscar no Google Maps</Label>
+            <GooglePlacesSearch
+              onSelect={handlePlaceSelect}
+              placeholder="Ex: Salão da Maria, Belo Horizonte"
             />
           </div>
 
-          <div className="p-3 rounded-lg bg-muted/50 border border-border space-y-2">
-            <p className="text-xs font-medium text-foreground">Como encontrar seu Location ID:</p>
-            <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Acesse <a href="https://business.google.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">business.google.com</a></li>
-              <li>Clique no negócio desejado</li>
-              <li>Na URL do navegador, copie o número após <code className="bg-muted px-1 rounded">/location/</code></li>
-              <li>Cole aqui no formato <code className="bg-muted px-1 rounded">locations/SEU_NUMERO</code></li>
-            </ol>
+          <div className="p-3 rounded-lg bg-muted/50 border border-border space-y-1">
+            <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
+              <Search className="h-3 w-3" /> Dica
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Digite o nome do seu negócio seguido da cidade para resultados mais precisos.
+              Os dados serão preenchidos automaticamente ao selecionar.
+            </p>
           </div>
         </div>
 
         <div className="flex gap-3">
           <Button
-            onClick={() => {
-              if (manualGmbId.trim()) {
-                setPageState("form");
-              } else {
-                setPageState("form");
-              }
-            }}
+            onClick={() => setPageState("form")}
+            variant="outline"
             className="flex-1"
           >
-            {manualGmbId.trim() ? "Continuar com Location ID" : "Pular e preencher manualmente"}
+            Preencher manualmente
           </Button>
         </div>
       </div>
