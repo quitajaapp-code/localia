@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search, Building2 } from "lucide-react";
 
-interface PlaceResult {
+export interface PlaceResult {
   place_id: string;
   name: string;
   formatted_address: string;
@@ -13,6 +13,19 @@ interface PlaceResult {
     short_name: string;
     types: string[];
   }>;
+  rating?: number;
+  user_ratings_total?: number;
+  opening_hours?: { weekday_text?: string[] };
+  photos?: Array<{ getUrl: (opts: { maxWidth: number }) => string }>;
+  reviews?: Array<{
+    author_name: string;
+    rating: number;
+    text: string;
+    time: number;
+  }>;
+  url?: string; // Google Maps URL
+  international_phone_number?: string;
+  types?: string[];
 }
 
 interface GooglePlacesSearchProps {
