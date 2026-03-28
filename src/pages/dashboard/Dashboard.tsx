@@ -129,7 +129,21 @@ export default function Dashboard() {
       const { data: p } = await supabase.from("profiles").select("nome, plano, trial_ends_at").eq("user_id", user.id).single();
       if (p) setProfile(p);
       const { data: b } = await supabase.from("businesses").select("score_materiais").eq("user_id", user.id).limit(1).maybeSingle();
-      if (b) { setScore(b.score_materiais ?? 0); setHasBusiness(true); }
+      if (b) {
+        setScore(b.score_materiais ?? 0);
+        setHasBusiness(true);
+
+        const { data: rPosts } = await supabase.from("posts")
+          .select("id, texto").eq("business_id", b.id)
+          .order("created_at", { ascending: false }).limit(3);
+        setRecentPosts(rPosts || []);
+
+        const { data: rReplies } = await supabase.from("reviews")
+          .select("id, autor").eq("business_id", b.id)
+          .not("resposta_sugerida_ia", "is", null)
+          .order("created_at", { ascending: false }).limit(3);
+        setRecentReplies(rReplies || []);
+      }
       else setHasBusiness(false);
       setLoading(false);
     };
