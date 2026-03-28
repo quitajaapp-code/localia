@@ -90,6 +90,9 @@ export default function SettingsPage() {
   const [bizEstado, setBizEstado] = useState("");
   const [hasGmb, setHasGmb] = useState(false);
   const [hasAds, setHasAds] = useState(false);
+  const [bizGmbId, setBizGmbId] = useState("");
+  const [bizInstagram, setBizInstagram] = useState("");
+  const [connectedPlaceName, setConnectedPlaceName] = useState("");
 
   // AI Provider
   const [iaProvider, setIaProvider] = useState("lovable");
