@@ -30,7 +30,12 @@ const navItems = [
   { to: "/dashboard/settings", label: "Configurações", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  negativeReviewCount?: number;
+  onReviewsSeen?: () => void;
+}
+
+export function Sidebar({ negativeReviewCount = 0, onReviewsSeen }: SidebarProps) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAdmin } = useAdmin();
