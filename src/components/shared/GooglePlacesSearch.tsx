@@ -137,7 +137,12 @@ export default function GooglePlacesSearch({ onSelect, placeholder }: GooglePlac
     placesService.current.getDetails(
       {
         placeId: prediction.place_id,
-        fields: ["name", "formatted_address", "formatted_phone_number", "website", "address_components", "place_id"],
+        fields: [
+          "name", "formatted_address", "formatted_phone_number", "website",
+          "address_components", "place_id", "rating", "user_ratings_total",
+          "opening_hours", "photos", "reviews", "url",
+          "international_phone_number", "types",
+        ],
       },
       (place: any, status: string) => {
         setFetchingDetails(false);
@@ -149,6 +154,19 @@ export default function GooglePlacesSearch({ onSelect, placeholder }: GooglePlac
             formatted_phone_number: place.formatted_phone_number || undefined,
             website: place.website || undefined,
             address_components: place.address_components,
+            rating: place.rating,
+            user_ratings_total: place.user_ratings_total,
+            opening_hours: place.opening_hours ? { weekday_text: place.opening_hours.weekday_text } : undefined,
+            photos: place.photos?.slice(0, 5),
+            reviews: place.reviews?.map((r: any) => ({
+              author_name: r.author_name,
+              rating: r.rating,
+              text: r.text,
+              time: r.time,
+            })),
+            url: place.url,
+            international_phone_number: place.international_phone_number,
+            types: place.types,
           });
         }
       }
