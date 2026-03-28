@@ -15,7 +15,7 @@ type Template = {
 };
 
 interface TemplatePickerProps {
-  onSelect: (message: string) => void;
+  onSelect: (message: string, templateId?: string) => void;
 }
 
 export function TemplatePicker({ onSelect }: TemplatePickerProps) {
@@ -67,7 +67,7 @@ export function TemplatePicker({ onSelect }: TemplatePickerProps) {
                 <button
                   key={t.id}
                   onClick={() => {
-                    onSelect(t.mensagem);
+                    onSelect(t.mensagem, t.id);
                     setOpen(false);
                   }}
                   className="w-full text-left px-2 py-1.5 rounded hover:bg-accent/50 transition-colors"
