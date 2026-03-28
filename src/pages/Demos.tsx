@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
 
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
