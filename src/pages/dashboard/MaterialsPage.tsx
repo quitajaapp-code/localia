@@ -408,7 +408,10 @@ export default function MaterialsPage() {
             ["produtos", "Produtos/serviços principais com preço", "Liste seus serviços e valores aproximados"],
           ] as const).map(([field, label, placeholder]) => (
             <div key={field}>
-              <Label className="text-sm mb-1 block">{label}</Label>
+              <div className="flex items-center justify-between mb-1">
+                <Label className="text-sm">{label}</Label>
+                <AiSuggestButton field={field} context={aiContext} onSuggestion={(s) => update(field, s)} />
+              </div>
               <Textarea value={data[field]} onChange={(e) => update(field, e.target.value)}
                 placeholder={placeholder} rows={3} />
             </div>
