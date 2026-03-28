@@ -395,7 +395,10 @@ export default function SettingsPage() {
                 <div><Label className="text-sm">Nicho</Label><Input value={bizNicho} onChange={(e) => setBizNicho(e.target.value)} /></div>
               </div>
               <div>
-                <Label className="text-sm">Tom de voz</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Tom de voz</Label>
+                  <AiSuggestButton field="tom_de_voz" context={{ nome: bizNome, nicho: bizNicho, cidade: bizCidade, estado: bizEstado, publico_alvo: bizPublicoAlvo }} onSuggestion={setBizTom} />
+                </div>
                 <Select value={bizTom} onValueChange={setBizTom}>
                   <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
                   <SelectContent>{TOM_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
@@ -409,6 +412,20 @@ export default function SettingsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div><Label className="text-sm">Cidade</Label><Input value={bizCidade} onChange={(e) => setBizCidade(e.target.value)} /></div>
                 <div><Label className="text-sm">Estado</Label><Input value={bizEstado} onChange={(e) => setBizEstado(e.target.value)} /></div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Público-alvo</Label>
+                  <AiSuggestButton field="publico_alvo" context={{ nome: bizNome, nicho: bizNicho, cidade: bizCidade, estado: bizEstado }} onSuggestion={setBizPublicoAlvo} />
+                </div>
+                <Textarea value={bizPublicoAlvo} onChange={(e) => setBizPublicoAlvo(e.target.value)} placeholder="Ex: Mulheres 25-45 anos, classe B/C" rows={2} />
+              </div>
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Diferenciais</Label>
+                  <AiSuggestButton field="diferenciais" context={{ nome: bizNome, nicho: bizNicho, cidade: bizCidade, estado: bizEstado, publico_alvo: bizPublicoAlvo }} onSuggestion={setBizDiferenciais} />
+                </div>
+                <Textarea value={bizDiferenciais} onChange={(e) => setBizDiferenciais(e.target.value)} placeholder="O que torna seu negócio especial?" rows={3} />
               </div>
               <Button onClick={saveBusiness} disabled={saving}>
                 {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
