@@ -57,6 +57,27 @@ function getSubdomainSlug(): string | null {
   return null;
 }
 
+const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
+function buildMapsEmbedUrl(
+  mapsUrl: string,
+  placeId?: string,
+  endereco?: string,
+): string {
+  if (placeId && placeId.startsWith('ChIJ')) {
+    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=place_id:${placeId}&language=pt-BR`;
+  }
+  const placeMatch = mapsUrl.match(/place\/([^/]+)/);
+  if (placeMatch) {
+    const encodedPlace = encodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodedPlace}&language=pt-BR`;
+  }
+  if (endereco) {
+    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodeURIComponent(endereco)}&language=pt-BR`;
+  }
+  return '';
+}
+
 export default function PublicSite() {
   const { slug: routeSlug } = useParams();
   const [searchParams] = useSearchParams();
@@ -109,6 +130,9 @@ export default function PublicSite() {
     <div style={{ background: bg, color: fg, minHeight: '100vh', fontFamily: "'Inter', system-ui, sans-serif" }}>
       <style>{`
         @keyframes float-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+        @media (max-width: 768px) {
+          .contato-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
 
       {/* Preview banner */}
@@ -318,76 +342,185 @@ export default function PublicSite() {
       {/* Contato */}
       {(config.contato.telefone || config.contato.whatsapp || config.contato.email || config.contato.endereco) && (
         <section style={{ padding: '80px 0', background: sectionAlt }}>
-          <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: config.contato.maps_url ? '1fr 1fr' : '1fr', gap: 48 }}>
-            <div>
-              <Reveal>
-                <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', marginBottom: 12 }}>FALE CONOSCO</span>
-                <h2 style={{ fontSize: 32, fontWeight: 700, marginBottom: 32 }}>Entre em contato</h2>
-              </Reveal>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {config.contato.telefone && (
-                  <Reveal delay={50}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <Phone style={{ width: 18, height: 18, color: pc }} />
-                      <span style={{ fontSize: 15 }}>{config.contato.telefone}</span>
-                      <a href={`tel:+55${cleanPhone(config.contato.telefone)}`} style={{ fontSize: 13, color: pc, textDecoration: 'none', fontWeight: 500 }}>Ligar</a>
-                    </div>
-                  </Reveal>
-                )}
-                {config.contato.whatsapp && (
-                  <Reveal delay={100}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <MessageSquare style={{ width: 18, height: 18, color: '#25D366' }} />
-                      <span style={{ fontSize: 15 }}>{config.contato.whatsapp}</span>
-                      <a href={`https://wa.me/55${cleanPhone(config.contato.whatsapp)}`} target="_blank" rel="noopener" style={{ fontSize: 13, color: '#25D366', textDecoration: 'none', fontWeight: 500 }}>WhatsApp</a>
-                    </div>
-                  </Reveal>
-                )}
-                {config.contato.email && (
-                  <Reveal delay={150}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <Mail style={{ width: 18, height: 18, color: pc }} />
-                      <span style={{ fontSize: 15 }}>{config.contato.email}</span>
-                      <a href={`mailto:${config.contato.email}`} style={{ fontSize: 13, color: pc, textDecoration: 'none', fontWeight: 500 }}>E-mail</a>
-                    </div>
-                  </Reveal>
-                )}
-                {config.contato.endereco && (
-                  <Reveal delay={200}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <MapPin style={{ width: 18, height: 18, color: pc, marginTop: 2 }} />
-                      <span style={{ fontSize: 15, whiteSpace: 'pre-line' }}>{config.contato.endereco}</span>
+          <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px' }}>
+
+            {/* Título */}
+            <Reveal>
+              <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', textAlign: 'center', marginBottom: 12 }}>CONTATO & LOCALIZAÇÃO</span>
+              <h2 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>Fale conosco e nos encontre</h2>
+            </Reveal>
+
+            {/* Grid: info + mapa */}
+            <div className="contato-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'start' }}>
+
+              {/* Coluna esquerda: informações de contato */}
+              <div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+                  {config.contato.telefone && (
+                    <Reveal delay={50}>
+                      <a href={`tel:+55${cleanPhone(config.contato.telefone)}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, textDecoration: 'none', color: fg, transition: 'all 0.2s ease' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Phone style={{ width: 20, height: 20, color: pc }} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>Telefone</div>
+                          <div style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.telefone}</div>
+                        </div>
+                        <div style={{ marginLeft: 'auto', fontSize: 12, color: pc, fontWeight: 500 }}>Ligar →</div>
+                      </a>
+                    </Reveal>
+                  )}
+
+                  {config.contato.whatsapp && (
+                    <Reveal delay={100}>
+                      <a href={`https://wa.me/55${cleanPhone(config.contato.whatsapp)}`}
+                        target="_blank" rel="noopener"
+                        style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.25)', borderRadius: 14, textDecoration: 'none', color: fg, transition: 'all 0.2s ease' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(37,211,102,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <MessageSquare style={{ width: 20, height: 20, color: '#25D366' }} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>WhatsApp</div>
+                          <div style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.whatsapp}</div>
+                        </div>
+                        <div style={{ marginLeft: 'auto', fontSize: 12, color: '#25D366', fontWeight: 500 }}>Abrir →</div>
+                      </a>
+                    </Reveal>
+                  )}
+
+                  {config.contato.email && (
+                    <Reveal delay={150}>
+                      <a href={`mailto:${config.contato.email}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, textDecoration: 'none', color: fg }}>
+                        <div style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Mail style={{ width: 20, height: 20, color: pc }} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>E-mail</div>
+                          <div style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.email}</div>
+                        </div>
+                      </a>
+                    </Reveal>
+                  )}
+
+                  {config.contato.endereco && (
+                    <Reveal delay={200}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '16px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14 }}>
+                        <div style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                          <MapPin style={{ width: 20, height: 20, color: pc }} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>Endereço</div>
+                          <div style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.5, whiteSpace: 'pre-line' }}>{config.contato.endereco}</div>
+                        </div>
+                      </div>
+                    </Reveal>
+                  )}
+                </div>
+
+                {/* Redes sociais */}
+                {Object.values(config.redes).some(Boolean) && (
+                  <Reveal delay={250}>
+                    <div style={{ display: 'flex', gap: 10, marginTop: 24, flexWrap: 'wrap' }}>
+                      {config.redes.instagram && (
+                        <a href={config.redes.instagram.startsWith('http') ? config.redes.instagram : `https://instagram.com/${config.redes.instagram.replace('@', '')}`}
+                          target="_blank" rel="noopener"
+                          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 99, fontSize: 13, color: fg, textDecoration: 'none', fontWeight: 500 }}>
+                          <span style={{ fontSize: 15 }}>📷</span> Instagram
+                        </a>
+                      )}
+                      {config.redes.facebook && (
+                        <a href={config.redes.facebook.startsWith('http') ? config.redes.facebook : `https://facebook.com/${config.redes.facebook}`}
+                          target="_blank" rel="noopener"
+                          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 99, fontSize: 13, color: fg, textDecoration: 'none', fontWeight: 500 }}>
+                          <span style={{ fontSize: 15 }}>👤</span> Facebook
+                        </a>
+                      )}
+                      {config.redes.tiktok && (
+                        <a href={config.redes.tiktok.startsWith('http') ? config.redes.tiktok : `https://tiktok.com/${config.redes.tiktok}`}
+                          target="_blank" rel="noopener"
+                          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 99, fontSize: 13, color: fg, textDecoration: 'none', fontWeight: 500 }}>
+                          <span style={{ fontSize: 15 }}>🎵</span> TikTok
+                        </a>
+                      )}
+                      {config.redes.youtube && (
+                        <a href={config.redes.youtube.startsWith('http') ? config.redes.youtube : `https://youtube.com/${config.redes.youtube}`}
+                          target="_blank" rel="noopener"
+                          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 99, fontSize: 13, color: fg, textDecoration: 'none', fontWeight: 500 }}>
+                          <span style={{ fontSize: 15 }}>▶️</span> YouTube
+                        </a>
+                      )}
                     </div>
                   </Reveal>
                 )}
               </div>
 
-              {/* Redes sociais */}
-              {Object.values(config.redes).some(Boolean) && (
-                <div style={{ display: 'flex', gap: 12, marginTop: 32 }}>
-                  {config.redes.instagram && (
-                    <a href={config.redes.instagram.startsWith('http') ? config.redes.instagram : `https://instagram.com/${config.redes.instagram.replace('@', '')}`} target="_blank" rel="noopener" style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}26`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pc, textDecoration: 'none', fontSize: 12, fontWeight: 700 }}>IG</a>
-                  )}
-                  {config.redes.facebook && (
-                    <a href={config.redes.facebook.startsWith('http') ? config.redes.facebook : `https://facebook.com/${config.redes.facebook}`} target="_blank" rel="noopener" style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}26`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pc, textDecoration: 'none', fontSize: 12, fontWeight: 700 }}>FB</a>
-                  )}
-                  {config.redes.tiktok && (
-                    <a href={config.redes.tiktok.startsWith('http') ? config.redes.tiktok : `https://tiktok.com/${config.redes.tiktok}`} target="_blank" rel="noopener" style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}26`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pc, textDecoration: 'none', fontSize: 12, fontWeight: 700 }}>TK</a>
-                  )}
-                  {config.redes.youtube && (
-                    <a href={config.redes.youtube.startsWith('http') ? config.redes.youtube : `https://youtube.com/${config.redes.youtube}`} target="_blank" rel="noopener" style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}26`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pc, textDecoration: 'none', fontSize: 12, fontWeight: 700 }}>YT</a>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {config.contato.maps_url && (
-              <Reveal delay={100}>
-                <div style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${borderC}` }}>
-                  <iframe src={config.contato.maps_url.replace('/maps/', '/maps/embed/')} width="100%" height="300" style={{ border: 0 }} loading="lazy" title="Mapa" />
+              {/* Coluna direita: mapa */}
+              <Reveal delay={150}>
+                <div>
+                  {(() => {
+                    const embedUrl = buildMapsEmbedUrl(
+                      config.contato.maps_url,
+                      (config.contato as any).maps_place_id,
+                      config.contato.endereco,
+                    );
+                    return embedUrl ? (
+                      <div>
+                        <div style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${borderC}`, boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+                          <iframe
+                            src={embedUrl}
+                            width="100%"
+                            height="320"
+                            style={{ border: 0, display: 'block' }}
+                            loading="lazy"
+                            allowFullScreen
+                            title="Localização no mapa"
+                          />
+                        </div>
+                        {/* Botão Como chegar */}
+                        <a
+                          href={
+                            config.contato.maps_url ||
+                            `https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco || '')}`
+                          }
+                          target="_blank"
+                          rel="noopener"
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                            marginTop: 12, padding: '12px 20px',
+                            background: pc, color: '#fff',
+                            borderRadius: 12, textDecoration: 'none',
+                            fontSize: 14, fontWeight: 600,
+                            boxShadow: `0 4px 16px ${pc}44`,
+                            transition: 'all 0.2s ease',
+                          }}
+                        >
+                          <MapPin style={{ width: 16, height: 16 }} />
+                          Como chegar — Abrir no Google Maps
+                        </a>
+                      </div>
+                    ) : (
+                      config.contato.endereco ? (
+                        <div style={{ textAlign: 'center', padding: '40px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 16 }}>
+                          <MapPin style={{ width: 32, height: 32, color: pc, margin: '0 auto 12px' }} />
+                          <p style={{ fontSize: 14, color: fgSec, marginBottom: 20, whiteSpace: 'pre-line' }}>{config.contato.endereco}</p>
+                          <a
+                            href={`https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco)}`}
+                            target="_blank" rel="noopener"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: pc, color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}
+                          >
+                            <MapPin style={{ width: 14, height: 14 }} />
+                            Ver no Google Maps
+                          </a>
+                        </div>
+                      ) : null
+                    );
+                  })()}
                 </div>
               </Reveal>
-            )}
+            </div>
           </div>
         </section>
       )}
@@ -430,7 +563,7 @@ function defaultConfig(): WebsiteConfig {
     sobre: { texto: '', foto_url: '' },
     servicos: [],
     galeria: [],
-    contato: { telefone: '', whatsapp: '', email: '', endereco: '', maps_url: '' },
+    contato: { telefone: '', whatsapp: '', email: '', endereco: '', maps_url: '', maps_place_id: '' },
     redes: { instagram: '', facebook: '', tiktok: '', youtube: '', linkedin: '' },
     horarios: [],
     depoimentos: [],
