@@ -435,6 +435,53 @@ export type Database = {
           },
         ]
       }
+      conversations: {
+        Row: {
+          assigned_agent: string | null
+          canal: string
+          contact_identifier: string | null
+          contact_name: string | null
+          created_at: string | null
+          id: string
+          last_message_at: string | null
+          lead_id: string | null
+          status: string | null
+          subject: string | null
+        }
+        Insert: {
+          assigned_agent?: string | null
+          canal?: string
+          contact_identifier?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          lead_id?: string | null
+          status?: string | null
+          subject?: string | null
+        }
+        Update: {
+          assigned_agent?: string | null
+          canal?: string
+          contact_identifier?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          lead_id?: string | null
+          status?: string | null
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coupons: {
         Row: {
           active: boolean
@@ -597,6 +644,83 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          cidade: string | null
+          created_at: string | null
+          email: string | null
+          empresa: string | null
+          estado: string | null
+          id: string
+          nicho: string | null
+          nome: string
+          notas: string | null
+          pipeline_order: number | null
+          pipeline_stage: string | null
+          proximo_followup: string | null
+          score: number | null
+          source: string | null
+          tags: string[] | null
+          telefone: string | null
+          ultimo_contato: string | null
+          updated_at: string | null
+          valor_estimado: number | null
+          whatsapp: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          created_at?: string | null
+          email?: string | null
+          empresa?: string | null
+          estado?: string | null
+          id?: string
+          nicho?: string | null
+          nome: string
+          notas?: string | null
+          pipeline_order?: number | null
+          pipeline_stage?: string | null
+          proximo_followup?: string | null
+          score?: number | null
+          source?: string | null
+          tags?: string[] | null
+          telefone?: string | null
+          ultimo_contato?: string | null
+          updated_at?: string | null
+          valor_estimado?: number | null
+          whatsapp?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          created_at?: string | null
+          email?: string | null
+          empresa?: string | null
+          estado?: string | null
+          id?: string
+          nicho?: string | null
+          nome?: string
+          notas?: string | null
+          pipeline_order?: number | null
+          pipeline_stage?: string | null
+          proximo_followup?: string | null
+          score?: number | null
+          source?: string | null
+          tags?: string[] | null
+          telefone?: string | null
+          ultimo_contato?: string | null
+          updated_at?: string | null
+          valor_estimado?: number | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_pipeline_stage_fkey"
+            columns: ["pipeline_stage"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       materials: {
         Row: {
           business_id: string
@@ -631,6 +755,41 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          read_at: string | null
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          read_at?: string | null
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          read_at?: string | null
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -727,6 +886,33 @@ export type Database = {
           id?: string
           report_json?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      pipeline_stages: {
+        Row: {
+          cor: string | null
+          created_at: string | null
+          id: string
+          nome: string
+          ordem: number
+          slug: string
+        }
+        Insert: {
+          cor?: string | null
+          created_at?: string | null
+          id?: string
+          nome: string
+          ordem: number
+          slug: string
+        }
+        Update: {
+          cor?: string | null
+          created_at?: string | null
+          id?: string
+          nome?: string
+          ordem?: number
+          slug?: string
         }
         Relationships: []
       }
