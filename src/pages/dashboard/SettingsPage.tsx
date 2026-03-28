@@ -15,7 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { toast } from "sonner";
 import {
   User, Building2, Bell, CreditCard, Plug, Save, Upload, Loader2,
-  AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff, Brain, Key, MapPin, Star
+  AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff, Brain, Key, MapPin, Star,
+  MessageSquare, Mail, Phone, Shield
 } from "lucide-react";
 import GooglePlacesSearch, { type PlaceResult } from "@/components/shared/GooglePlacesSearch";
 import AiSuggestButton from "@/components/shared/AiSuggestButton";
