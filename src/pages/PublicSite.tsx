@@ -169,14 +169,14 @@ export default function PublicSite() {
             )}
             <span style={{ fontWeight: 600, fontSize: 16 }}>{config.hero.titulo.split(' ').slice(0, 3).join(' ')}</span>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="header-buttons" style={{ display: 'flex', gap: 8 }}>
             {config.contato.whatsapp && (
-              <a href={`https://wa.me/55${cleanPhone(config.contato.whatsapp)}`} target="_blank" rel="noopener" style={{ background: '#25D366', color: '#fff', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <a href={`https://wa.me/55${cleanPhone(config.contato.whatsapp)}`} target="_blank" rel="noopener" style={{ background: '#25D366', color: '#fff', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
                 <MessageSquare style={{ width: 14, height: 14 }} /> WhatsApp
               </a>
             )}
             {config.contato.telefone && (
-              <a href={`tel:+55${cleanPhone(config.contato.telefone)}`} style={{ background: pc, color: '#fff', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <a href={`tel:+55${cleanPhone(config.contato.telefone)}`} style={{ background: pc, color: '#fff', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
                 <Phone style={{ width: 14, height: 14 }} /> Ligar
               </a>
             )}
