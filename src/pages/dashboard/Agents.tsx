@@ -381,6 +381,33 @@ export default function Agents() {
                   />
                 </div>
 
+                {/* Schedule selector */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Timer className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Agendamento</span>
+                  </div>
+                  <Select
+                    value={settings?.[AGENT_CRON_KEY[agent.id]] || "off"}
+                    onValueChange={(v) => setSchedule(agent.id, v)}
+                    disabled={savingSchedule === agent.id}
+                  >
+                    <SelectTrigger className="h-7 text-xs w-[180px]">
+                      {savingSchedule === agent.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <SelectValue placeholder="Sem agendamento" />
+                      )}
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="off">Sem agendamento</SelectItem>
+                      {Object.entries(SCHEDULE_PRESETS).map(([key, label]) => (
+                        <SelectItem key={key} value={key}>{label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* Last action */}
                 {last && (
                   <div className="text-xs text-muted-foreground flex items-center gap-1.5">
