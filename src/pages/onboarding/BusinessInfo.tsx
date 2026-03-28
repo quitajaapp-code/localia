@@ -77,6 +77,8 @@ export default function BusinessInfo() {
   const [tom, setTom] = useState("");
   const [publicoAlvo, setPublicoAlvo] = useState("");
   const [diferenciais, setDiferenciais] = useState("");
+  const [produtos, setProdutos] = useState("");
+  const [faq, setFaq] = useState("");
 
   const navigate = useNavigate();
   const { toast } = useToast();
