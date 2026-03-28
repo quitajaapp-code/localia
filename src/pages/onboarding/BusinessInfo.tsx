@@ -9,9 +9,10 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, MapPin, CheckCircle2, Search } from "lucide-react";
+import { Loader2, MapPin, CheckCircle2, Search, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import GooglePlacesSearch from "@/components/shared/GooglePlacesSearch";
+import GooglePlacesSearch, { type PlaceResult } from "@/components/shared/GooglePlacesSearch";
+import AiSuggestButton from "@/components/shared/AiSuggestButton";
 
 const NICHOS = [
   "Restaurante / Alimentação",
@@ -54,6 +55,8 @@ interface GmbLocation {
   phone: string;
   website: string;
   accountName: string;
+  rating?: number;
+  totalReviews?: number;
 }
 
 export default function BusinessInfo() {
@@ -63,7 +66,7 @@ export default function BusinessInfo() {
   const [gmbLocations, setGmbLocations] = useState<GmbLocation[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<GmbLocation | null>(null);
   const [manualGmbId, setManualGmbId] = useState("");
-
+  const [placeReviews, setPlaceReviews] = useState<NonNullable<PlaceResult["reviews"]>>([]);
   const [nome, setNome] = useState("");
   const [nicho, setNicho] = useState("");
   const [cidade, setCidade] = useState("");
@@ -193,12 +196,32 @@ export default function BusinessInfo() {
         gmb_location_id: selectedLocation?.name ?? (manualGmbId.trim() || null),
       };
 
+      let businessId = bizId;
       if (bizId) {
         const { error } = await supabase.from("businesses").update(payload).eq("id", bizId);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("businesses").insert(payload);
+        const { data: inserted, error } = await supabase.from("businesses").insert(payload).select("id").single();
         if (error) throw error;
+        businessId = inserted.id;
+      }
+
+      // Save Google Places reviews if available
+      if (businessId && placeReviews.length > 0) {
+        const ratingMap: Record<number, number> = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 };
+        for (const review of placeReviews) {
+          await supabase.from("reviews").upsert({
+            business_id: businessId,
+            review_id_google: `places_${review.time}_${review.author_name}`,
+            autor: review.author_name || "Anônimo",
+            rating: ratingMap[review.rating] || 3,
+            texto: review.text || "",
+            respondido: false,
+            data_review: new Date(review.time * 1000).toISOString(),
+          }, { onConflict: "business_id,review_id_google" }).then(({ error }) => {
+            if (error) console.warn("Review insert error:", error);
+          });
+        }
       }
 
       toast({ title: "Negócio salvo com sucesso!" });
@@ -209,6 +232,13 @@ export default function BusinessInfo() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const aiContext = {
+    nome, nicho, cidade, estado,
+    publico_alvo: publicoAlvo,
+    diferenciais,
+    tom_de_voz: tom,
   };
 
   if (pageState === "loading") {
@@ -264,14 +294,7 @@ export default function BusinessInfo() {
   }
 
   if (pageState === "manual-gmb" || pageState === "no-gmb") {
-    const handlePlaceSelect = (place: {
-      place_id: string;
-      name: string;
-      formatted_address: string;
-      formatted_phone_number?: string;
-      website?: string;
-      address_components?: Array<{ long_name: string; short_name: string; types: string[] }>;
-    }) => {
+    const handlePlaceSelect = (place: PlaceResult) => {
       setNome(place.name);
       setWebsite(place.website || "");
       setWhatsapp(place.formatted_phone_number || "");
@@ -290,6 +313,17 @@ export default function BusinessInfo() {
         }
       }
 
+      // Save Google reviews to DB if available
+      if (place.reviews && place.reviews.length > 0) {
+        saveGoogleReviews(place.place_id, place.reviews);
+      }
+
+      // Try to detect Instagram from website
+      if (place.website) {
+        const igMatch = place.website.match(/instagram\.com\/([^/?]+)/);
+        if (igMatch) setInstagram(`@${igMatch[1]}`);
+      }
+
       setPageState("form");
       setSelectedLocation({
         name: place.place_id,
@@ -298,7 +332,21 @@ export default function BusinessInfo() {
         phone: place.formatted_phone_number || "",
         website: place.website || "",
         accountName: "",
+        rating: place.rating,
+        totalReviews: place.user_ratings_total,
       });
+    };
+
+    const saveGoogleReviews = async (placeId: string, reviews: NonNullable<PlaceResult["reviews"]>) => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        // We'll save reviews after business is created in handleSave
+        // Store temporarily
+        setPlaceReviews(reviews);
+      } catch (e) {
+        console.warn("Error preparing reviews:", e);
+      }
     };
 
     return (
@@ -353,11 +401,24 @@ export default function BusinessInfo() {
       </div>
 
       {selectedLocation && (
-        <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
-          <span className="text-sm text-foreground">
-            Preenchido com dados de <strong>{selectedLocation.title}</strong>
-          </span>
+        <div className="p-3 rounded-lg bg-primary/10 border border-primary/30 flex items-center gap-2">
+          <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+          <div className="flex-1">
+            <span className="text-sm text-foreground">
+              Preenchido com dados de <strong>{selectedLocation.title}</strong>
+            </span>
+            {selectedLocation.rating && (
+              <span className="text-xs text-muted-foreground ml-2 inline-flex items-center gap-0.5">
+                <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                {selectedLocation.rating} ({selectedLocation.totalReviews || 0} avaliações)
+              </span>
+            )}
+            {placeReviews.length > 0 && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {placeReviews.length} avaliação(ões) serão sincronizadas ao salvar.
+              </p>
+            )}
+          </div>
         </div>
       )}
 
@@ -410,7 +471,14 @@ export default function BusinessInfo() {
         </div>
 
         <div className="space-y-1.5">
-          <Label>Tom de voz da IA</Label>
+          <div className="flex items-center justify-between">
+            <Label>Tom de voz da IA</Label>
+            <AiSuggestButton
+              field="tom_de_voz"
+              context={aiContext}
+              onSuggestion={(s) => setTom(s)}
+            />
+          </div>
           <Select value={tom} onValueChange={setTom}>
             <SelectTrigger><SelectValue placeholder="Como a IA deve escrever?" /></SelectTrigger>
             <SelectContent>
@@ -420,12 +488,32 @@ export default function BusinessInfo() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="publico">Público-alvo</Label>
-          <Input id="publico" placeholder="Ex: Mulheres entre 25-45 anos, classe B/C" value={publicoAlvo} onChange={(e) => setPublicoAlvo(e.target.value)} />
+          <div className="flex items-center justify-between">
+            <Label htmlFor="publico">Público-alvo</Label>
+            <AiSuggestButton
+              field="publico_alvo"
+              context={aiContext}
+              onSuggestion={(s) => setPublicoAlvo(s)}
+            />
+          </div>
+          <Textarea
+            id="publico"
+            placeholder="Ex: Mulheres entre 25-45 anos, classe B/C"
+            value={publicoAlvo}
+            onChange={(e) => setPublicoAlvo(e.target.value)}
+            rows={2}
+          />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="diferenciais">Diferenciais do negócio</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="diferenciais">Diferenciais do negócio</Label>
+            <AiSuggestButton
+              field="diferenciais"
+              context={aiContext}
+              onSuggestion={(s) => setDiferenciais(s)}
+            />
+          </div>
           <Textarea
             id="diferenciais"
             placeholder="O que torna seu negócio especial? Ex: atendimento personalizado, 10 anos de experiência..."
