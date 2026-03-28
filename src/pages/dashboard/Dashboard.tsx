@@ -402,6 +402,38 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
+      {/* Agents Status Card */}
+      <Card className="border-primary/20">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Bot className="h-4 w-4 text-primary" />
+              Status dos Agentes IA
+            </CardTitle>
+            <Link to="/dashboard/agents" className="text-xs text-primary hover:underline flex items-center gap-1">
+              Gerenciar <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3">
+          {[
+            { label: "Avaliações", key: "reviews_auto_reply", icon: Star, cor: "text-warning" },
+            { label: "Conteúdo", key: "posts_auto_publish", icon: FileText, cor: "text-primary" },
+            { label: "Perfil", key: "profile_auto_optimize", icon: TrendingUp, cor: "text-success" },
+            { label: "Ads", key: "ads_auto_adjust", icon: Megaphone, cor: "text-destructive" },
+          ].map((ag) => {
+            const isActive = agentSettings?.[ag.key] ?? false;
+            return (
+              <div key={ag.key} className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
+                <ag.icon className={`h-4 w-4 ${ag.cor}`} />
+                <span className="text-xs text-foreground flex-1">{ag.label}</span>
+                <span className={`h-2 w-2 rounded-full ${isActive ? "bg-success dot-pulse" : "bg-muted-foreground/30"}`} />
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
       {/* AI Suggestion */}
       <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
         <CardContent className="p-6 flex items-start gap-4">
