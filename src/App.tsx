@@ -92,6 +92,7 @@ const App = () => (
                 <Route path="coupons" element={<AdminCoupons />} />
                 <Route path="crm" element={<AdminCRM />} />
                 <Route path="inbox" element={<AdminInbox />} />
+                <Route path="workflows" element={<AdminWorkflows />} />
               </Route>
             </Route>
 
