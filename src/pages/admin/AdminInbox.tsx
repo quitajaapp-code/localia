@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import {
   MessageSquare, Send, Bot, User, AlertCircle,
-  Plus, Search, Sparkles,
+  Plus, Search, Sparkles, Phone,
 } from "lucide-react";
 
 type Conversation = {
@@ -20,6 +20,7 @@ type Conversation = {
   contact_identifier: string | null;
   last_message_at: string;
   created_at: string;
+  lead_id: string | null;
 };
 
 type Message = {
@@ -65,6 +66,24 @@ export default function AdminInbox() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Realtime subscription para mensagens
+  useEffect(() => {
+    if (!selected) return;
+    const channel = supabase
+      .channel(`messages-${selected.id}`)
+      .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
+        filter: `conversation_id=eq.${selected.id}`,
+      }, (payload) => {
+        setMessages((prev) => [...prev, payload.new as Message]);
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [selected?.id]);
+
   const loadConversations = async () => {
     let query = supabase
       .from("conversations" as any)
@@ -91,23 +110,53 @@ export default function AdminInbox() {
     setInput("");
 
     try {
-      // Determina qual agente invocar
-      const funcao = selected.assigned_agent === "sdr" ? "agent-sdr" : "agent-support";
-
-      const { data, error } = await supabase.functions.invoke(funcao, {
-        body: {
+      if (selected.assigned_agent === "humano") {
+        // Modo humano: salva mensagem no DB e envia via WhatsApp se canal = whatsapp
+        await supabase.from("messages" as any).insert({
           conversation_id: selected.id,
-          message: msg,
-        },
-      });
+          role: "humano",
+          content: msg,
+        } as any);
 
-      if (error) throw error;
-      await loadMessages(selected.id);
-      await loadConversations();
+        if (selected.canal === "whatsapp" && selected.contact_identifier) {
+          await supabase.functions.invoke("whatsapp-send", {
+            body: {
+              phone: selected.contact_identifier,
+              message: msg,
+              conversation_id: selected.id,
+            },
+          });
+        }
 
-      // Se o agente escalou para humano
-      if (data?.passar_humano || data?.escalar_humano) {
-        toast.warning("Agente escalou esta conversa para atendimento humano");
+        await supabase.from("conversations" as any).update({
+          last_message_at: new Date().toISOString(),
+        } as any).eq("id", selected.id);
+
+        await loadMessages(selected.id);
+        await loadConversations();
+      } else {
+        // Modo agente IA
+        const funcao = selected.assigned_agent === "sdr" ? "agent-sdr" : "agent-support";
+        const { data, error } = await supabase.functions.invoke(funcao, {
+          body: { conversation_id: selected.id, message: msg },
+        });
+        if (error) throw error;
+        await loadMessages(selected.id);
+        await loadConversations();
+
+        if (data?.passar_humano || data?.escalar_humano) {
+          toast.warning("Agente escalou esta conversa para atendimento humano");
+        }
+
+        // Se canal é WhatsApp e agente gerou resposta, envia via Evolution API
+        if (data?.reply && selected.canal === "whatsapp" && selected.contact_identifier) {
+          await supabase.functions.invoke("whatsapp-send", {
+            body: {
+              phone: selected.contact_identifier,
+              message: data.reply,
+            },
+          });
+        }
       }
     } catch (e: any) {
       toast.error(e.message || "Erro ao enviar mensagem");
@@ -118,12 +167,23 @@ export default function AdminInbox() {
 
   const createConversation = async () => {
     if (!newContact.nome) { toast.error("Nome é obrigatório"); return; }
+
+    // Cria lead automaticamente
+    const { data: lead } = await supabase.from("leads" as any).insert({
+      nome: newContact.nome,
+      whatsapp: newContact.canal === "whatsapp" ? newContact.identifier : null,
+      email: newContact.canal === "email" ? newContact.identifier : null,
+      source: newContact.canal,
+      pipeline_stage: "novo",
+    } as any).select().single();
+
     const { data, error } = await supabase.from("conversations" as any).insert({
       canal: newContact.canal,
       assigned_agent: newContact.agente,
       contact_name: newContact.nome,
       contact_identifier: newContact.identifier,
       status: "aberta",
+      lead_id: (lead as any)?.id || null,
     } as any).select().single();
     if (error) { toast.error("Erro ao criar conversa"); return; }
     setNewConvOpen(false);
@@ -147,7 +207,6 @@ export default function AdminInbox() {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] gap-0 border border-border rounded-xl overflow-hidden">
-
       {/* Lista de conversas */}
       <div className="w-80 flex-shrink-0 border-r border-border flex flex-col bg-card">
         <div className="p-3 border-b border-border space-y-2">
@@ -193,15 +252,14 @@ export default function AdminInbox() {
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <Badge className={`text-[10px] py-0 px-1.5 ${agentInfo.color}`}>{agentInfo.label}</Badge>
                   <Badge className={`text-[10px] py-0 px-1.5 ${statusInfo.color}`}>{statusInfo.label}</Badge>
+                  {conv.canal === "whatsapp" && <Phone className="h-3 w-3 text-success" />}
                   <span className="text-[10px] text-muted-foreground">{conv.canal}</span>
                 </div>
               </div>
             );
           })}
           {filteredConvs.length === 0 && (
-            <div className="p-6 text-center text-sm text-muted-foreground">
-              Nenhuma conversa
-            </div>
+            <div className="p-6 text-center text-sm text-muted-foreground">Nenhuma conversa</div>
           )}
         </div>
       </div>
@@ -209,7 +267,6 @@ export default function AdminInbox() {
       {/* Chat principal */}
       {selected ? (
         <div className="flex-1 flex flex-col bg-background">
-          {/* Chat header */}
           <div className="p-3 border-b border-border flex items-center gap-3 bg-card">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
               {(selected.contact_name || "?").charAt(0).toUpperCase()}
@@ -220,7 +277,11 @@ export default function AdminInbox() {
                 <Badge className={`text-[10px] py-0 px-1.5 ${(AGENT_LABELS[selected.assigned_agent] || AGENT_LABELS.bot).color}`}>
                   {(AGENT_LABELS[selected.assigned_agent] || AGENT_LABELS.bot).label}
                 </Badge>
-                <span className="text-[10px] text-muted-foreground">{selected.canal}</span>
+                {selected.canal === "whatsapp" && (
+                  <span className="text-[10px] text-success flex items-center gap-0.5">
+                    <Phone className="h-3 w-3" /> WhatsApp conectado
+                  </span>
+                )}
               </div>
             </div>
             <Select
@@ -240,7 +301,6 @@ export default function AdminInbox() {
             </Select>
           </div>
 
-          {/* Mensagens */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.map((msg) => {
               const info = roleLabel(msg.role);
@@ -265,12 +325,11 @@ export default function AdminInbox() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Input */}
           <div className="p-3 border-t border-border bg-card">
             {selected.assigned_agent === "humano" && (
               <div className="flex items-center gap-2 mb-2 text-xs text-warning bg-warning/10 px-3 py-2 rounded-lg">
                 <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                Modo humano — você está respondendo diretamente
+                Modo humano — mensagens enviadas diretamente{selected.canal === "whatsapp" ? " via WhatsApp" : ""}
               </div>
             )}
             <div className="flex gap-2">

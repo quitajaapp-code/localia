@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      action_executions: {
+        Row: {
+          action_id: string
+          created_at: string | null
+          executed_at: string | null
+          id: string
+          lead_id: string
+          resultado: Json | null
+          status: string
+        }
+        Insert: {
+          action_id: string
+          created_at?: string | null
+          executed_at?: string | null
+          id?: string
+          lead_id: string
+          resultado?: Json | null
+          status?: string
+        }
+        Update: {
+          action_id?: string
+          created_at?: string | null
+          executed_at?: string | null
+          id?: string
+          lead_id?: string
+          resultado?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "action_executions_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "stage_actions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "action_executions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ads: {
         Row: {
           ads_ad_id: string | null
@@ -518,6 +563,33 @@ export type Database = {
         }
         Relationships: []
       }
+      funnels: {
+        Row: {
+          ativo: boolean
+          created_at: string | null
+          descricao: string | null
+          id: string
+          nome: string
+          updated_at: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          nome: string
+          updated_at?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          nome?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       gmb_metrics: {
         Row: {
           business_id: string
@@ -893,6 +965,7 @@ export type Database = {
         Row: {
           cor: string | null
           created_at: string | null
+          funnel_id: string | null
           id: string
           nome: string
           ordem: number
@@ -901,6 +974,7 @@ export type Database = {
         Insert: {
           cor?: string | null
           created_at?: string | null
+          funnel_id?: string | null
           id?: string
           nome: string
           ordem: number
@@ -909,12 +983,21 @@ export type Database = {
         Update: {
           cor?: string | null
           created_at?: string | null
+          funnel_id?: string | null
           id?: string
           nome?: string
           ordem?: number
           slug?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_stages_funnel_id_fkey"
+            columns: ["funnel_id"]
+            isOneToOne: false
+            referencedRelation: "funnels"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posts: {
         Row: {
@@ -1045,6 +1128,47 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stage_actions: {
+        Row: {
+          ativo: boolean
+          config: Json
+          created_at: string | null
+          delay_minutos: number | null
+          id: string
+          ordem: number
+          stage_id: string
+          tipo: string
+        }
+        Insert: {
+          ativo?: boolean
+          config?: Json
+          created_at?: string | null
+          delay_minutos?: number | null
+          id?: string
+          ordem?: number
+          stage_id: string
+          tipo?: string
+        }
+        Update: {
+          ativo?: boolean
+          config?: Json
+          created_at?: string | null
+          delay_minutos?: number | null
+          id?: string
+          ordem?: number
+          stage_id?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stage_actions_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
             referencedColumns: ["id"]
           },
         ]
