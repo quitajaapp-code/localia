@@ -243,11 +243,11 @@ export default function PublicSite() {
         <section className="section-padding" style={{ padding: '80px 0', background: bg }}>
           <div className="sobre-grid" style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: config.sobre.foto_url ? '1fr 1fr' : '1fr', gap: 32, alignItems: 'center' }}>
             {config.sobre.foto_url && (
-              <Reveal>
+              <Reveal variant="fadeLeft">
                 <img src={config.sobre.foto_url} alt="Sobre" style={{ width: '100%', borderRadius: 16, objectFit: 'cover', maxHeight: 400, aspectRatio: '4/3' }} />
               </Reveal>
             )}
-            <Reveal delay={100}>
+            <Reveal delay={150} variant="fadeRight">
               <div>
                 <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', marginBottom: 12 }}>SOBRE NÓS</span>
                 <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, marginBottom: 16 }}>Conheça nosso negócio</h2>
