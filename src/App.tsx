@@ -94,6 +94,7 @@ const App = () => (
                 <Route path="crm" element={<AdminCRM />} />
                 <Route path="inbox" element={<AdminInbox />} />
                 <Route path="workflows" element={<AdminWorkflows />} />
+                <Route path="templates" element={<AdminTemplates />} />
               </Route>
             </Route>
 

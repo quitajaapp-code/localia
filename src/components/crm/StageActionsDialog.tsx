@@ -90,6 +90,12 @@ export function StageActionsDialog({ stage, stages, onClose }: StageActionsDialo
       case "send_whatsapp":
         return (
           <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <TemplatePicker
+                onSelect={(msg) => updateAction(action.id, { config: { ...config, message: msg } })}
+              />
+              <span className="text-[10px] text-muted-foreground">ou escreva abaixo</span>
+            </div>
             <Textarea
               value={config.message || ""}
               onChange={(e) => updateAction(action.id, { config: { ...config, message: e.target.value } })}
