@@ -151,9 +151,15 @@ export default function AiOptimizer() {
           <p className="text-sm text-muted-foreground mt-1">
             Análise completa do seu perfil Google Meu Negócio com recomendações personalizadas
           </p>
-          {cachedAt && !loading && (
+          {cachedAt && !loading && !cacheExpired && (
             <p className="text-xs text-muted-foreground mt-1">
               📋 Último relatório: {new Date(cachedAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              {" · "}válido por mais {Math.max(0, CACHE_TTL_DAYS - Math.floor((Date.now() - new Date(cachedAt).getTime()) / (24*60*60*1000)))} dias
+            </p>
+          )}
+          {cacheExpired && !loading && (
+            <p className="text-xs text-warning mt-1">
+              ⚠️ Relatório expirado (mais de {CACHE_TTL_DAYS} dias). Uma nova análise é recomendada.
             </p>
           )}
         </div>
