@@ -954,6 +954,32 @@ export default function SettingsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Business Dialog */}
+      <Dialog open={deleteBizOpen} onOpenChange={setDeleteBizOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-destructive flex items-center gap-2">
+              <Trash2 className="h-4 w-4" /> Excluir negócio
+            </DialogTitle>
+            <DialogDescription>
+              Todos os dados do negócio "{bizNome}" serão removidos permanentemente (avaliações, posts, campanhas, métricas).
+              Você poderá cadastrar um novo negócio depois.
+            </DialogDescription>
+          </DialogHeader>
+          <div>
+            <Label className="text-sm">Digite <strong>EXCLUIR</strong> para confirmar</Label>
+            <Input value={deleteBizConfirm} onChange={(e) => setDeleteBizConfirm(e.target.value)} placeholder="EXCLUIR" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setDeleteBizOpen(false); setDeleteBizConfirm(""); }}>Cancelar</Button>
+            <Button variant="destructive" disabled={deleteBizConfirm !== "EXCLUIR" || deletingBiz} onClick={deleteBusiness}>
+              {deletingBiz ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
+              Excluir negócio
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
