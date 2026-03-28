@@ -77,6 +77,8 @@ export default function BusinessInfo() {
   const [tom, setTom] = useState("");
   const [publicoAlvo, setPublicoAlvo] = useState("");
   const [diferenciais, setDiferenciais] = useState("");
+  const [produtos, setProdutos] = useState("");
+  const [faq, setFaq] = useState("");
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -106,6 +108,8 @@ export default function BusinessInfo() {
         setTom(biz.tom_de_voz || "");
         setPublicoAlvo(biz.publico_alvo || "");
         setDiferenciais(biz.diferenciais || "");
+        setProdutos(biz.produtos || "");
+        setFaq(biz.faq || "");
         setPageState("form");
         return;
       }
@@ -193,6 +197,8 @@ export default function BusinessInfo() {
         tom_de_voz: tom,
         publico_alvo: publicoAlvo.trim(),
         diferenciais: diferenciais.trim(),
+        produtos: produtos.trim(),
+        faq: faq.trim(),
         gmb_location_id: selectedLocation?.name ?? (manualGmbId.trim() || null),
       };
 
@@ -519,6 +525,42 @@ export default function BusinessInfo() {
             placeholder="O que torna seu negócio especial? Ex: atendimento personalizado, 10 anos de experiência..."
             value={diferenciais}
             onChange={(e) => setDiferenciais(e.target.value)}
+            rows={3}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="produtos">Produtos / Serviços</Label>
+            <AiSuggestButton
+              field="produtos"
+              context={aiContext}
+              onSuggestion={(s) => setProdutos(s)}
+            />
+          </div>
+          <Textarea
+            id="produtos"
+            placeholder="Liste seus principais produtos ou serviços com valores aproximados..."
+            value={produtos}
+            onChange={(e) => setProdutos(e.target.value)}
+            rows={3}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="faq">Perguntas Frequentes (FAQ)</Label>
+            <AiSuggestButton
+              field="faq"
+              context={aiContext}
+              onSuggestion={(s) => setFaq(s)}
+            />
+          </div>
+          <Textarea
+            id="faq"
+            placeholder="Quais dúvidas seus clientes mais têm? Ex: Aceitam cartão? Tem estacionamento?"
+            value={faq}
+            onChange={(e) => setFaq(e.target.value)}
             rows={3}
           />
         </div>
