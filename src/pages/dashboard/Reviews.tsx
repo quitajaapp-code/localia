@@ -16,7 +16,7 @@ import { OnboardingTooltip } from "@/components/shared/OnboardingTooltip";
 import { CountUp } from "@/components/shared/CountUp";
 import {
   Star, MessageSquare, Search, Filter, Sparkles, Loader2,
-  Copy, Check, TrendingUp, AlertCircle, QrCode,
+  Copy, Check, TrendingUp, AlertCircle, QrCode, Send,
 } from "lucide-react";
 
 type Review = {
@@ -51,6 +51,7 @@ export default function Reviews() {
 
   // Bulk reply state
   const [bulkGenerating, setBulkGenerating] = useState(false);
+  const [publishingId, setPublishingId] = useState<string | null>(null);
 
   useEffect(() => { loadReviews(); }, []);
 
@@ -109,6 +110,33 @@ export default function Reviews() {
     setCopiedId(id);
     toast.success("Resposta copiada!");
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const publishReplyToGoogle = async (reviewId: string, replyText: string) => {
+    setPublishingId(reviewId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { toast.error("Você precisa estar logado"); return; }
+
+      const { data, error } = await supabase.functions.invoke("gmb-reply-review", {
+        body: { review_id: reviewId, reply_text: replyText },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, respondido: true } : r));
+      toast.success("Resposta publicada no Google com sucesso!");
+    } catch (e: any) {
+      const msg = e.message || "Erro ao publicar resposta";
+      if (msg.includes("reconnect")) {
+        toast.error("Token expirado. Reconecte o Google Meu Negócio nas Configurações.");
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setPublishingId(null);
+    }
   };
 
   const generateReviewLink = async () => {
@@ -371,10 +399,30 @@ export default function Reviews() {
                             <span className="text-xs font-medium text-primary">Resposta sugerida pela IA</span>
                           </div>
                           <p className="text-sm text-foreground">{r.resposta_sugerida_ia}</p>
-                          <Button variant="ghost" size="sm" className="mt-2 h-7 text-xs btn-press" onClick={() => copyReply(r.id, r.resposta_sugerida_ia!)}>
-                            {copiedId === r.id ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
-                            {copiedId === r.id ? "Copiada" : "Copiar"}
-                          </Button>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Button variant="ghost" size="sm" className="h-7 text-xs btn-press" onClick={() => copyReply(r.id, r.resposta_sugerida_ia!)}>
+                              {copiedId === r.id ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
+                              {copiedId === r.id ? "Copiada" : "Copiar"}
+                            </Button>
+                            {!r.respondido && (
+                              <Button
+                                size="sm"
+                                className="h-7 text-xs btn-press"
+                                onClick={() => publishReplyToGoogle(r.id, r.resposta_sugerida_ia!)}
+                                disabled={publishingId === r.id}
+                              >
+                                {publishingId === r.id
+                                  ? <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                  : <Send className="h-3 w-3 mr-1" />}
+                                {publishingId === r.id ? "Publicando..." : "Publicar no Google"}
+                              </Button>
+                            )}
+                            {r.respondido && (
+                              <Badge variant="secondary" className="text-xs">
+                                <Check className="h-3 w-3 mr-1" /> Publicada no Google
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       )}
 
