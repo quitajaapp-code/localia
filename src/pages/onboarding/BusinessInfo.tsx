@@ -234,6 +234,13 @@ export default function BusinessInfo() {
     }
   };
 
+  const aiContext = {
+    nome, nicho, cidade, estado,
+    publico_alvo: publicoAlvo,
+    diferenciais,
+    tom_de_voz: tom,
+  };
+
   if (pageState === "loading") {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3">
