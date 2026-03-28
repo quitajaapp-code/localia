@@ -78,6 +78,7 @@ export default function AiOptimizer() {
         { onConflict: "business_id" }
       );
     setCachedAt(new Date().toISOString());
+    setCacheExpired(false);
   };
 
   const runAnalysis = async () => {
