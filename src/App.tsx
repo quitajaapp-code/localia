@@ -76,6 +76,7 @@ const App = () => (
                 <Route path="website" element={<WebsitePage />} />
                 <Route path="ai-optimizer" element={<AiOptimizer />} />
                 <Route path="agents" element={<Agents />} />
+                <Route path="agents/alerts" element={<AlertHistory />} />
               </Route>
             </Route>
 
