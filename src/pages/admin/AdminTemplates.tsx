@@ -47,6 +47,7 @@ export default function AdminTemplates() {
   const [filterCat, setFilterCat] = useState("all");
   const [editOpen, setEditOpen] = useState(false);
   const [usageRows, setUsageRows] = useState<any[]>([]);
+  const [editing, setEditing] = useState<Partial<Template> | null>(null);
 
   useEffect(() => { loadTemplates(); }, []);
 
