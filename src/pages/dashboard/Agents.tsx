@@ -94,6 +94,7 @@ export default function Agents() {
   const [bizId, setBizId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AgentSettings | null>(null);
   const [actions, setActions] = useState<AgentAction[]>([]);
+  const [alerts, setAlerts] = useState<AgentAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState<string | null>(null);
 
