@@ -986,6 +986,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_agent_cron_job: {
+        Args: {
+          p_anon_key: string
+          p_body: string
+          p_function_url: string
+          p_job_name: string
+          p_schedule: string
+        }
+        Returns: undefined
+      }
       decrypt_token: {
         Args: { encrypted_data: string; secret_key: string }
         Returns: string
@@ -1000,6 +1010,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      remove_agent_cron_job: {
+        Args: { p_job_name: string }
+        Returns: undefined
       }
     }
     Enums: {
