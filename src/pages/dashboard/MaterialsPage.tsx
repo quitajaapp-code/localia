@@ -452,7 +452,10 @@ export default function MaterialsPage() {
         {/* 6. Prova Social */}
         <SectionCard title="Prova Social" icon={Award} filled={s6Filled} total={4}>
           <div>
-            <Label className="text-sm mb-1 block">Depoimentos de clientes (um por linha)</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="text-sm">Depoimentos de clientes (um por linha)</Label>
+              <AiSuggestButton field="depoimentos" context={aiContext} onSuggestion={(s) => update("depoimentos", s)} />
+            </div>
             <Textarea value={data.depoimentos} onChange={(e) => update("depoimentos", e.target.value)}
               placeholder={'"Melhor atendimento da cidade!" — Maria\n"Recomendo muito!" — João'} rows={4} />
           </div>
