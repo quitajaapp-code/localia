@@ -128,7 +128,7 @@ export default function Dashboard() {
     const load = async () => {
       const { data: p } = await supabase.from("profiles").select("nome, plano, trial_ends_at").eq("user_id", user.id).single();
       if (p) setProfile(p);
-      const { data: b } = await supabase.from("businesses").select("score_materiais").eq("user_id", user.id).limit(1).maybeSingle();
+      const { data: b } = await supabase.from("businesses").select("id, score_materiais").eq("user_id", user.id).limit(1).maybeSingle();
       if (b) {
         setScore(b.score_materiais ?? 0);
         setHasBusiness(true);
