@@ -268,13 +268,13 @@ export default function PublicSite() {
 
       {/* Galeria */}
       {config.galeria.length > 0 && (
-        <section style={{ padding: '80px 0' }}>
+        <section className="section-padding" style={{ padding: '80px 0' }}>
           <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px' }}>
             <Reveal>
               <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', textAlign: 'center', marginBottom: 12 }}>GALERIA</span>
-              <h2 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>Nossos momentos</h2>
+              <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>Nossos momentos</h2>
             </Reveal>
-            <div style={{ columnCount: 3, columnGap: 16 }}>
+            <div className="galeria-masonry" style={{ columnCount: 3, columnGap: 16 }}>
               {config.galeria.map((g, i) => (
                 <Reveal key={g.id} delay={i * 60}>
                   <div style={{ marginBottom: 16, breakInside: 'avoid' }}>
