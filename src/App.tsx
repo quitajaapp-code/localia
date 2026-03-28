@@ -31,6 +31,7 @@ import NewCampaign from "./pages/dashboard/ads/NewCampaign";
 import CampaignDetail from "./pages/dashboard/ads/CampaignDetail";
 import NotFound from "./pages/NotFound";
 import WebsitePage from "./pages/dashboard/Website";
+import AiOptimizer from "./pages/dashboard/AiOptimizer";
 import PublicSite from "./pages/PublicSite";
 import Demos from "./pages/Demos";
 
