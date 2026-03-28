@@ -290,13 +290,13 @@ export default function PublicSite() {
 
       {/* Depoimentos */}
       {config.depoimentos.length > 0 && (
-        <section style={{ padding: '80px 0', background: sectionAlt }}>
+        <section className="section-padding" style={{ padding: '80px 0', background: sectionAlt }}>
           <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px' }}>
             <Reveal>
               <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', textAlign: 'center', marginBottom: 12 }}>DEPOIMENTOS</span>
-              <h2 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>O que dizem nossos clientes</h2>
+              <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>O que dizem nossos clientes</h2>
             </Reveal>
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.depoimentos.length, 3)}, 1fr)`, gap: 20 }}>
+            <div className="depoimentos-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.depoimentos.length, 3)}, 1fr)`, gap: 20 }}>
               {config.depoimentos.map((d, i) => (
                 <Reveal key={d.id} delay={i * 100}>
                   <div style={{ background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, padding: 24 }}>
