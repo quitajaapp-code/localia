@@ -190,6 +190,17 @@ export default function Agents() {
     await loadActions();
   };
 
+  const markAlertRead = async (alertId: string) => {
+    await supabase.from("agent_alerts").update({ read: true }).eq("id", alertId);
+    setAlerts((prev) => prev.map((a) => a.id === alertId ? { ...a, read: true } : a));
+  };
+
+  const markAllAlertsRead = async () => {
+    if (!bizId) return;
+    await supabase.from("agent_alerts").update({ read: true }).eq("business_id", bizId).eq("read", false);
+    setAlerts((prev) => prev.map((a) => ({ ...a, read: true })));
+  };
+
   const getLastAction = (agentId: string) =>
     actions.find((a) => a.agent === agentId);
 
