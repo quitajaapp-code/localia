@@ -51,6 +51,7 @@ export default function Reviews() {
 
   // Bulk reply state
   const [bulkGenerating, setBulkGenerating] = useState(false);
+  const [publishingId, setPublishingId] = useState<string | null>(null);
 
   useEffect(() => { loadReviews(); }, []);
 
