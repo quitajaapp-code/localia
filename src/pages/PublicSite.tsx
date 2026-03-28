@@ -297,7 +297,7 @@ export default function PublicSite() {
             </Reveal>
             <div className="galeria-masonry" style={{ columnCount: 3, columnGap: 16 }}>
               {config.galeria.map((g, i) => (
-                <Reveal key={g.id} delay={i * 60}>
+                <Reveal key={g.id} delay={i * 80} variant="scaleUp">
                   <div style={{ marginBottom: 16, breakInside: 'avoid' }}>
                     <img src={g.url} alt={g.caption} style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} />
                     {g.caption && <p style={{ fontSize: 12, color: fgSec, marginTop: 4, textAlign: 'center' }}>{g.caption}</p>}
