@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -39,6 +40,11 @@ export default function Posts() {
   const [autoGen, setAutoGen] = useState(false);
   const [generating, setGenerating] = useState(false);
 
+  // Weekly planner states
+  const [plannerOpen, setPlannerOpen] = useState(false);
+  const [plannerData, setPlannerData] = useState<any>(null);
+  const [plannerLoading, setPlannerLoading] = useState(false);
+
   useEffect(() => { loadPosts(); }, []);
 
   const loadPosts = async () => {
@@ -73,7 +79,6 @@ export default function Posts() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      // Save first variation as draft
       if (data?.variations?.[0]) {
         await supabase.from("posts").insert({
           business_id: biz.id, texto: data.variations[0], status: "rascunho", tipo: "generico",
@@ -88,6 +93,39 @@ export default function Posts() {
     }
   };
 
+  const generateWeeklyPlan = async () => {
+    setPlannerLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: biz } = await supabase
+        .from("businesses")
+        .select("id, nome, nicho, tom_de_voz, produtos, promocoes, diferenciais, cidade")
+        .eq("user_id", user.id).limit(1).maybeSingle();
+      if (!biz) throw new Error("Negócio não encontrado");
+
+      const { data: revs } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("business_id", biz.id);
+      const avg = revs?.length
+        ? (revs.reduce((s, r) => s + (r.rating || 0), 0) / revs.length).toFixed(1)
+        : null;
+
+      const { data, error } = await supabase.functions.invoke("ai-weekly-planner", {
+        body: { business_id: biz.id, ...biz, avg_rating: avg },
+      });
+      if (error) throw error;
+      setPlannerData(data);
+      toast.success("Plano semanal gerado! 4 rascunhos salvos.");
+      loadPosts();
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao gerar plano");
+    } finally {
+      setPlannerLoading(false);
+    }
+  };
+
   if (loading) return <div className="space-y-4"><div className="h-8 w-48 bg-muted rounded animate-pulse" /><ListSkeleton rows={3} /></div>;
   if (error) return <ErrorState onRetry={loadPosts} />;
 
@@ -98,17 +136,72 @@ export default function Posts() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-heading font-bold text-foreground">Posts</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Geração automática</span>
+            <span className="text-muted-foreground">Automático</span>
             <Switch checked={autoGen} onCheckedChange={setAutoGen} />
           </div>
-          <Button onClick={generatePost} disabled={generating} className="btn-press">
+          <Button
+            variant="outline"
+            onClick={() => setPlannerOpen(o => !o)}
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            Planejar semana com IA
+          </Button>
+          <Button onClick={generatePost} disabled={generating}>
             {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
-            Criar post com IA
+            Post avulso
           </Button>
         </div>
       </div>
+
+      {/* Painel planejador semanal */}
+      {plannerOpen && (
+        <Card className="mb-6 border-primary/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              Planejador Semanal com IA
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              A IA cria 4 posts otimizados para a semana, considerando seu nicho, datas comemorativas
+              e o melhor horário para publicar. Os posts são salvos como rascunhos para você revisar.
+            </p>
+            <Button onClick={generateWeeklyPlan} disabled={plannerLoading} className="w-full sm:w-auto">
+              {plannerLoading
+                ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando plano...</>
+                : <><Sparkles className="h-4 w-4 mr-2" /> Gerar plano desta semana</>}
+            </Button>
+
+            {plannerData && (
+              <div className="space-y-3 border-t border-border pt-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  {plannerData.semana}
+                </p>
+                {plannerData.posts?.map((p: any, i: number) => (
+                  <div key={i} className="p-3 rounded-lg bg-muted border border-border space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs">{p.dia}</Badge>
+                      <Badge className="text-xs bg-primary/10 text-primary">{p.tipo}</Badge>
+                      <span className="text-xs text-muted-foreground">{p.horario_sugerido}</span>
+                    </div>
+                    <p className="text-sm text-foreground">{p.texto}</p>
+                    <p className="text-xs text-muted-foreground italic">{p.justificativa}</p>
+                  </div>
+                ))}
+                {plannerData.dica_semana && (
+                  <div className="p-3 rounded-lg bg-success/5 border border-success/20 flex gap-2">
+                    <Sparkles className="h-4 w-4 text-success shrink-0 mt-0.5" />
+                    <p className="text-xs text-success">{plannerData.dica_semana}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {posts.length === 0 ? (
         <EmptyState

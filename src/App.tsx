@@ -72,6 +72,7 @@ const App = () => (
                 <Route path="report" element={<Report />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="website" element={<WebsitePage />} />
+                <Route path="ai-optimizer" element={<AiOptimizer />} />
               </Route>
             </Route>
 

@@ -22,6 +22,7 @@ const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/dashboard/reviews", label: "Avaliações", icon: Star },
   { to: "/dashboard/posts", label: "Posts", icon: FileText },
+  { to: "/dashboard/ai-optimizer", label: "IA Optimizer", icon: Sparkles, badge: "Novo" },
   { to: "/dashboard/ads", label: "Anúncios", icon: Megaphone },
   { to: "/dashboard/materials", label: "Materiais", icon: FolderOpen },
   { to: "/dashboard/report", label: "Relatório", icon: BarChart3 },
