@@ -116,6 +116,7 @@ export default function Agents() {
   const [alerts, setAlerts] = useState<AgentAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState<string | null>(null);
+  const [savingSchedule, setSavingSchedule] = useState<string | null>(null);
 
   const loadData = async () => {
     if (!user) return;
