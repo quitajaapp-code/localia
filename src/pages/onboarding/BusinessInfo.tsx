@@ -414,7 +414,13 @@ export default function BusinessInfo() {
         </p>
         <div className="mt-3 h-2 rounded-full bg-muted overflow-hidden">
           <div
-            className="h-full rounded-full bg-primary transition-all duration-500"
+            className={`h-full rounded-full transition-all duration-500 ${
+              progressPercent < 30
+                ? "bg-destructive"
+                : progressPercent < 70
+                  ? "bg-yellow-500"
+                  : "bg-green-500"
+            }`}
             style={{ width: `${progressPercent}%` }}
           />
         </div>
