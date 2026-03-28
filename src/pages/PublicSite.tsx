@@ -287,6 +287,25 @@ export default function PublicSite() {
             border-radius: 14px !important;
             box-shadow: 0 6px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06) !important;
           }
+          .map-container:hover {
+            transform: none !important;
+          }
+          .contact-card {
+            overflow: hidden !important;
+            word-break: break-word !important;
+          }
+          .contact-card-value {
+            word-break: break-all !important;
+          }
+          .header-buttons {
+            flex-shrink: 0 !important;
+            overflow: hidden !important;
+          }
+          .header-buttons a {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+          }
         }
         @media (max-width: 480px) {
           .map-container {
