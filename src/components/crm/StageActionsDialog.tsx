@@ -129,6 +129,7 @@ export function StageActionsDialog({ stage, stages, onClose }: StageActionsDialo
             />
             <MessagePreview message={config.body || ""} />
           </div>
+        );
 
       case "move_stage":
         return (
