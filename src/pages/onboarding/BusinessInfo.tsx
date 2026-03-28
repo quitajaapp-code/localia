@@ -414,7 +414,7 @@ export default function BusinessInfo() {
         </p>
         <div className="mt-3 h-2 rounded-full bg-muted overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all duration-500 ${
+            className={`h-full rounded-full transition-all duration-700 ease-in-out ${
               progressPercent < 30
                 ? "bg-destructive"
                 : progressPercent < 70
