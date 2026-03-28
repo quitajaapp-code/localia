@@ -126,6 +126,11 @@ export default function AiOptimizer() {
         },
       });
       if (error) throw error;
+      // Save previous score for comparison before updating
+      if (report?.score != null) {
+        setPreviousScore(report.score);
+        setPreviousBreakdown(report.score_breakdown || null);
+      }
       setReport(data);
       await saveCache(data);
       toast.success("Análise atualizada e salva no cache!");
