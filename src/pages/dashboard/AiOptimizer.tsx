@@ -32,7 +32,10 @@ export default function AiOptimizer() {
   const [copiedDesc, setCopiedDesc] = useState(false);
   const [bizData, setBizData] = useState<any>(null);
   const [cachedAt, setCachedAt] = useState<string | null>(null);
+  const [cacheExpired, setCacheExpired] = useState(false);
   const [loadingCache, setLoadingCache] = useState(true);
+
+  const CACHE_TTL_DAYS = 7;
 
   useEffect(() => { loadBizData(); }, []);
 
