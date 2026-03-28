@@ -66,6 +66,20 @@ interface AgentAction {
   created_at: string;
 }
 
+interface AgentAlert {
+  id: string;
+  business_id: string;
+  agent: string;
+  alert_type: string;
+  severity: string;
+  title: string;
+  message: string | null;
+  read: boolean;
+  notified_email: boolean;
+  notified_whatsapp: boolean;
+  created_at: string;
+}
+
 interface AgentSettings {
   reviews_auto_reply: boolean;
   posts_auto_publish: boolean;
