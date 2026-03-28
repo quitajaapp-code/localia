@@ -31,17 +31,43 @@ export default function AiOptimizer() {
   const [report, setReport] = useState<any>(null);
   const [copiedDesc, setCopiedDesc] = useState(false);
   const [bizData, setBizData] = useState<any>(null);
+  const [cachedAt, setCachedAt] = useState<string | null>(null);
+  const [loadingCache, setLoadingCache] = useState(true);
 
   useEffect(() => { loadBizData(); }, []);
 
   const loadBizData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setLoadingCache(false); return; }
     const { data: biz } = await supabase
       .from("businesses")
       .select("*")
       .eq("user_id", user.id).limit(1).maybeSingle();
-    if (biz) setBizData(biz);
+    if (biz) {
+      setBizData(biz);
+      // Load cached report
+      const { data: cached } = await supabase
+        .from("optimizer_cache")
+        .select("report_json, updated_at")
+        .eq("business_id", biz.id)
+        .maybeSingle();
+      if (cached?.report_json) {
+        setReport(cached.report_json);
+        setCachedAt(cached.updated_at);
+      }
+    }
+    setLoadingCache(false);
+  };
+
+  const saveCache = async (data: any) => {
+    if (!bizData) return;
+    await supabase
+      .from("optimizer_cache")
+      .upsert(
+        { business_id: bizData.id, report_json: data, updated_at: new Date().toISOString() },
+        { onConflict: "business_id" }
+      );
+    setCachedAt(new Date().toISOString());
   };
 
   const runAnalysis = async () => {
@@ -88,6 +114,8 @@ export default function AiOptimizer() {
       });
       if (error) throw error;
       setReport(data);
+      await saveCache(data);
+      toast.success("Análise atualizada e salva no cache!");
     } catch (e: any) {
       toast.error(e.message || "Erro na análise");
     } finally {
