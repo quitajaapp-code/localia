@@ -1291,6 +1291,50 @@ export type Database = {
           },
         ]
       }
+      workflows: {
+        Row: {
+          ativo: boolean
+          created_at: string | null
+          descricao: string | null
+          edges: Json
+          funnel_id: string | null
+          id: string
+          nodes: Json
+          nome: string
+          updated_at: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string | null
+          descricao?: string | null
+          edges?: Json
+          funnel_id?: string | null
+          id?: string
+          nodes?: Json
+          nome?: string
+          updated_at?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string | null
+          descricao?: string | null
+          edges?: Json
+          funnel_id?: string | null
+          id?: string
+          nodes?: Json
+          nome?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflows_funnel_id_fkey"
+            columns: ["funnel_id"]
+            isOneToOne: false
+            referencedRelation: "funnels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

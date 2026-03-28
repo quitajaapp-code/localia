@@ -11,6 +11,7 @@ import {
   X,
   Kanban,
   MessageSquare,
+  GitBranch,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -24,6 +25,7 @@ const navItems = [
   { to: "/admin/coupons", label: "Cupons", icon: Ticket },
   { to: "/admin/crm",   label: "CRM / Pipeline", icon: Kanban },
   { to: "/admin/inbox", label: "Inbox / Agentes", icon: MessageSquare },
+  { to: "/admin/workflows", label: "Workflows", icon: GitBranch },
 ];
 
 export function AdminSidebar() {

@@ -17,6 +17,7 @@ import AdminBusinesses from "./pages/admin/AdminBusinesses";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminCRM from "./pages/admin/AdminCRM";
 import AdminInbox from "./pages/admin/AdminInbox";
+import AdminWorkflows from "./pages/admin/AdminWorkflows";
 import OnboardingLayout from "./pages/onboarding/OnboardingLayout";
 import ConnectGoogle from "./pages/onboarding/ConnectGoogle";
 import BusinessInfo from "./pages/onboarding/BusinessInfo";
@@ -91,6 +92,7 @@ const App = () => (
                 <Route path="coupons" element={<AdminCoupons />} />
                 <Route path="crm" element={<AdminCRM />} />
                 <Route path="inbox" element={<AdminInbox />} />
+                <Route path="workflows" element={<AdminWorkflows />} />
               </Route>
             </Route>
 
