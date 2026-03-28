@@ -59,7 +59,7 @@ export default function AdminTemplates() {
         .order("nome"),
       supabase
         .from("template_usage" as any)
-        .select("template_id, entregue, respondido"),
+        .select("template_id, entregue, respondido, enviado_em"),
     ]);
 
     setTemplates((tplData as any[]) || []);
