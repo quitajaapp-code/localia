@@ -15,8 +15,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { toast } from "sonner";
 import {
   User, Building2, Bell, CreditCard, Plug, Save, Upload, Loader2,
-  AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff, Brain, Key
+  AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff, Brain, Key, MapPin, Star
 } from "lucide-react";
+import GooglePlacesSearch, { type PlaceResult } from "@/components/shared/GooglePlacesSearch";
 
 const TOM_OPTIONS = [
   "Descontraído e próximo", "Profissional e formal", "Divertido e criativo",
