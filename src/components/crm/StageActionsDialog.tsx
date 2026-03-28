@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { Stage } from "@/pages/admin/AdminCRM";
 import { TemplatePicker } from "@/components/crm/TemplatePicker";
+import { MessagePreview } from "@/components/crm/MessagePreview";
 
 type StageAction = {
   id: string;
