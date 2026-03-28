@@ -228,7 +228,7 @@ export default function AlertHistory() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtered.map((alert) => {
+                  {paginated.map((alert) => {
                     const sev = severityConfig[alert.severity] || severityConfig.high;
                     return (
                       <TableRow key={alert.id} className={!alert.read ? "bg-accent/30" : ""}>
@@ -270,6 +270,32 @@ export default function AlertHistory() {
                   })}
                 </TableBody>
               </Table>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-4 border-t border-border mt-4">
+                  <span className="text-xs text-muted-foreground">
+                    Mostrando {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} de {filtered.length}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Button variant="outline" size="icon" className="h-8 w-8" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                      const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+                      const p = start + i;
+                      if (p > totalPages) return null;
+                      return (
+                        <Button key={p} variant={p === page ? "default" : "outline"} size="icon" className="h-8 w-8 text-xs" onClick={() => setPage(p)}>
+                          {p}
+                        </Button>
+                      );
+                    })}
+                    <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
