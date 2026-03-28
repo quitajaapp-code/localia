@@ -239,13 +239,13 @@ export default function PublicSite() {
 
       {/* Serviços */}
       {config.servicos.length > 0 && (
-        <section style={{ padding: '80px 0', background: sectionAlt }}>
+        <section className="section-padding" style={{ padding: '80px 0', background: sectionAlt }}>
           <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px' }}>
             <Reveal>
               <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', textAlign: 'center', marginBottom: 12 }}>NOSSOS SERVIÇOS</span>
-              <h2 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>O que oferecemos</h2>
+              <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>O que oferecemos</h2>
             </Reveal>
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.servicos.length, 3)}, 1fr)`, gap: 16 }}>
+            <div className="servicos-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.servicos.length, 3)}, 1fr)`, gap: 16 }}>
               {config.servicos.map((s, i) => {
                 const Icon = lucideIcons[s.icone] || Star;
                 return (
