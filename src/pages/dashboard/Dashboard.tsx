@@ -90,6 +90,7 @@ export default function Dashboard() {
   const [hasBusiness, setHasBusiness] = useState(true);
   const [recentPosts, setRecentPosts] = useState<any[]>([]);
   const [recentReplies, setRecentReplies] = useState<any[]>([]);
+  const [agentSettings, setAgentSettings] = useState<any>(null);
 
   const handleStartBusinessFlow = async () => {
     if (!user) {
