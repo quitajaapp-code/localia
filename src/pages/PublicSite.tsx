@@ -57,6 +57,27 @@ function getSubdomainSlug(): string | null {
   return null;
 }
 
+const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
+function buildMapsEmbedUrl(
+  mapsUrl: string,
+  placeId?: string,
+  endereco?: string,
+): string {
+  if (placeId && placeId.startsWith('ChIJ')) {
+    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=place_id:${placeId}&language=pt-BR`;
+  }
+  const placeMatch = mapsUrl.match(/place\/([^/]+)/);
+  if (placeMatch) {
+    const encodedPlace = encodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodedPlace}&language=pt-BR`;
+  }
+  if (endereco) {
+    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodeURIComponent(endereco)}&language=pt-BR`;
+  }
+  return '';
+}
+
 export default function PublicSite() {
   const { slug: routeSlug } = useParams();
   const [searchParams] = useSearchParams();
