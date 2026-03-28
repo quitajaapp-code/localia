@@ -239,6 +239,67 @@ export default function Agents() {
         <p className="text-muted-foreground text-sm">Trabalhando 24h pelo seu negócio</p>
       </div>
 
+      {/* Urgent Alerts */}
+      {alerts.filter(a => !a.read).length > 0 && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-4 w-4" />
+              Alertas urgentes ({alerts.filter(a => !a.read).length})
+            </CardTitle>
+            <Button variant="ghost" size="sm" className="text-xs" onClick={markAllAlertsRead}>
+              <BellOff className="h-3 w-3 mr-1" /> Marcar todos como lidos
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {alerts.filter(a => !a.read).map((alert) => (
+              <div key={alert.id} className="flex items-start gap-3 p-3 rounded-lg bg-background border border-destructive/20">
+                <div className={`p-1.5 rounded-full mt-0.5 ${
+                  alert.severity === "critical" ? "bg-destructive/20" : "bg-warning/20"
+                }`}>
+                  <AlertTriangle className={`h-3.5 w-3.5 ${
+                    alert.severity === "critical" ? "text-destructive" : "text-warning"
+                  }`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                    <Badge variant="outline" className={`text-[10px] ${
+                      alert.severity === "critical" 
+                        ? "border-destructive/50 text-destructive" 
+                        : "border-warning/50 text-warning"
+                    }`}>
+                      {alert.severity === "critical" ? "Crítico" : "Alto"}
+                    </Badge>
+                  </div>
+                  {alert.message && (
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{alert.message}</p>
+                  )}
+                  <div className="flex items-center gap-3 mt-1.5">
+                    <span className="text-[11px] text-muted-foreground">
+                      {formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: ptBR })}
+                    </span>
+                    {alert.notified_email && (
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                        <Bell className="h-2.5 w-2.5" /> Email
+                      </span>
+                    )}
+                    {alert.notified_whatsapp && (
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                        <Bell className="h-2.5 w-2.5" /> WhatsApp
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => markAlertRead(alert.id)}>
+                  <Check className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Grid 2x2 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {AGENTS.map((agent) => {
