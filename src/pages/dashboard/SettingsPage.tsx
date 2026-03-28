@@ -148,6 +148,8 @@ export default function SettingsPage() {
         setBizGmbId(biz.gmb_location_id || "");
         setBizInstagram(biz.instagram || "");
         setConnectedPlaceName(biz.gmb_location_id ? biz.nome || "" : "");
+        setBizPublicoAlvo(biz.publico_alvo || "");
+        setBizDiferenciais(biz.diferenciais || "");
         setIaProvider((biz as any).ia_provider || "lovable");
         setIaApiKey((biz as any).ia_api_key || "");
       }
