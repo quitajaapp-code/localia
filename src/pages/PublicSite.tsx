@@ -276,8 +276,15 @@ export default function PublicSite() {
             line-height: 1.35 !important;
             text-wrap: balance;
           }
+          .map-container {
+            border-radius: 14px !important;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06) !important;
+          }
         }
         @media (max-width: 480px) {
+          .map-container {
+            border-radius: 12px !important;
+          }
           .galeria-masonry { column-count: 1 !important; }
           .como-chegar-btn {
             width: min(100%, 330px) !important;
@@ -595,7 +602,7 @@ export default function PublicSite() {
                     return (
                       <Reveal delay={100}>
                         <div>
-                          <div style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${borderC}`, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
+                          <div className="map-container" style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${borderC}`, boxShadow: `0 8px 32px rgba(0,0,0,0.10), 0 2px 8px ${pc}15` }}>
                             <iframe
                               src={embedUrl}
                               width="100%"
