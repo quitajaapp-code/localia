@@ -201,6 +201,23 @@ export default function PublicSite() {
           animation: cta-gradient-shift 4s ease infinite;
           box-shadow: 0 0 40px color-mix(in srgb, var(--cta-color) 40%, transparent), 0 4px 15px rgba(0,0,0,0.2);
           transition: transform 0.25s ease, box-shadow 0.25s ease;
+          position: relative;
+          overflow: hidden;
+        }
+        .hero-cta-gradient::after {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -75%;
+          width: 50%;
+          height: 200%;
+          background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%);
+          animation: cta-shimmer 3s ease-in-out infinite;
+          pointer-events: none;
+        }
+        @keyframes cta-shimmer {
+          0% { left: -75%; }
+          40%, 100% { left: 125%; }
         }
         .hero-cta-gradient:hover {
           transform: translateY(-2px);
