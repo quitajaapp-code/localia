@@ -206,13 +206,7 @@ export default function PublicSite() {
       </header>
 
       {/* Hero */}
-      <section style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
-        {config.hero.bg_image_url ? (
-          <>
-            <img src={config.hero.bg_image_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)' }} />
-          </>
-        ) : (
+      <HeroSection config={config} isDark={isDark} pc={pc} fg={fg} fgSec={fgSec} />
           <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${pc}33, transparent 70%)` }} />
         )}
         <div style={{ position: 'relative', zIndex: 10, maxWidth: 768, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
