@@ -534,6 +534,34 @@ function TabGaleria({ config, updateConfig }: { config: WebsiteConfig; updateCon
   );
 }
 
+function buildMapsEmbedUrl(
+  mapsUrl: string,
+  placeId?: string,
+  endereco?: string,
+): string {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
+  // Prioridade 1: Place ID direto
+  if (placeId && placeId.startsWith('ChIJ')) {
+    return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=place_id:${placeId}&language=pt-BR`;
+  }
+
+  // Prioridade 2: Extrair place_id do URL longo do Maps
+  const placeMatch = mapsUrl.match(/place\/([^/]+)/);
+  if (placeMatch) {
+    const encodedPlace = encodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+    return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodedPlace}&language=pt-BR`;
+  }
+
+  // Prioridade 3: Usar o endereço como query
+  if (endereco) {
+    return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(endereco)}&language=pt-BR`;
+  }
+
+  // Fallback: embed genérico
+  return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=negocio+local&language=pt-BR`;
+}
+
 function TabContato({ config, updateConfig }: { config: WebsiteConfig; updateConfig: (p: string, v: any) => void }) {
   return (
     <>
@@ -542,8 +570,34 @@ function TabContato({ config, updateConfig }: { config: WebsiteConfig; updateCon
         <Field label="WhatsApp"><Input value={config.contato.whatsapp} onChange={e => updateConfig('contato.whatsapp', e.target.value)} placeholder="(11) 99999-9999" /></Field>
         <Field label="E-mail"><Input value={config.contato.email} onChange={e => updateConfig('contato.email', e.target.value)} placeholder="contato@exemplo.com" /></Field>
         <Field label="Endereço"><Textarea value={config.contato.endereco} onChange={e => updateConfig('contato.endereco', e.target.value)} placeholder="Rua Exemplo, 123 - Bairro, Cidade - SP" rows={2} /></Field>
-        <Field label="Link do Google Maps" hint="Cole o link de compartilhamento do seu local no Maps">
-          <Input value={config.contato.maps_url} onChange={e => updateConfig('contato.maps_url', e.target.value)} placeholder="https://maps.google.com/..." />
+        <Field
+          label="Google Maps — Link ou Place ID"
+          hint='Cole o link de compartilhamento do Maps (maps.app.goo.gl/...) ou o Place ID do seu negócio. O mapa aparece automaticamente no site.'
+        >
+          <Input
+            value={config.contato.maps_url}
+            onChange={e => updateConfig('contato.maps_url', e.target.value)}
+            placeholder="https://maps.app.goo.gl/... ou ChIJ..."
+          />
+          {config.contato.maps_url && (
+            <div className="mt-2 rounded-lg overflow-hidden border border-border" style={{ height: 160 }}>
+              <iframe
+                src={buildMapsEmbedUrl(config.contato.maps_url, config.contato.maps_place_id, config.contato.endereco)}
+                width="100%"
+                height="160"
+                style={{ border: 0 }}
+                loading="lazy"
+                title="Preview do mapa"
+              />
+            </div>
+          )}
+        </Field>
+        <Field label="Place ID do Google Maps (opcional)" hint="Mais preciso que o link. Encontre em: developers.google.com/maps/documentation/places/web-service/place-id">
+          <Input
+            value={config.contato.maps_place_id || ''}
+            onChange={e => updateConfig('contato.maps_place_id', e.target.value)}
+            placeholder="ChIJN1t_tDeuEmsRUsoyG83frY4"
+          />
         </Field>
       </Card>
       <Card title="Redes sociais">
