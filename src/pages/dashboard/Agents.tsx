@@ -186,6 +186,33 @@ export default function Agents() {
     setSettings((prev) => prev ? { ...prev, [key]: value } : prev);
   };
 
+  const setSchedule = async (agentId: string, scheduleKey: string | null) => {
+    if (!bizId) return;
+    setSavingSchedule(agentId);
+    try {
+      const { error } = await supabase.functions.invoke("manage-agent-cron", {
+        body: {
+          action: "set_schedule",
+          business_id: bizId,
+          agent: agentId,
+          schedule_key: scheduleKey === "off" ? null : scheduleKey,
+        },
+      });
+      if (error) throw error;
+
+      const cronKey = AGENT_CRON_KEY[agentId];
+      const val = scheduleKey === "off" ? null : scheduleKey;
+      setSettings((prev) => prev ? { ...prev, [cronKey]: val } : prev);
+      toast({
+        title: val ? "Agendamento salvo!" : "Agendamento removido",
+        description: val ? `${SCHEDULE_PRESETS[val]}` : "O agente não será mais executado automaticamente.",
+      });
+    } catch {
+      toast({ title: "Erro ao salvar agendamento", variant: "destructive" });
+    }
+    setSavingSchedule(null);
+  };
+
   const runAgent = async (funcao: string, agentId: string) => {
     if (!bizId) return;
     setRunning(agentId);
