@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, MessageSquare, Copy, Search, Send, MessageCircle, TrendingUp } from "lucide-react";
 import { MessagePreview } from "@/components/crm/MessagePreview";
+import { TemplateUsageChart } from "@/components/crm/TemplateUsageChart";
 
 type Template = {
   id: string;
