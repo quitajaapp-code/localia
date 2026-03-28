@@ -171,7 +171,7 @@ export default function AiOptimizer() {
       </div>
 
       {/* Estado inicial */}
-      {!report && !loading && !loadingCache && (
+      {!report && !loading && !loadingCache && !cacheExpired && (
         <Card>
           <CardContent className="py-16 text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
