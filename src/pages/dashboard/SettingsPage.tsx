@@ -18,7 +18,8 @@ import {
   AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff, Brain, Key, MapPin, Star
 } from "lucide-react";
 import GooglePlacesSearch, { type PlaceResult } from "@/components/shared/GooglePlacesSearch";
-
+import AiSuggestButton from "@/components/shared/AiSuggestButton";
+import { Textarea } from "@/components/ui/textarea";
 const TOM_OPTIONS = [
   "Descontraído e próximo", "Profissional e formal", "Divertido e criativo",
   "Técnico e especializado", "Empático e acolhedor", "Direto e objetivo",
