@@ -206,7 +206,7 @@ export default function AiOptimizer() {
             </Button>
           </CardContent>
         </Card>
-      )
+      )}
 
       {/* Loading */}
       {(loading || loadingCache) && !report && (
