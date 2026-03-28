@@ -2,7 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { usePublicSite } from "@/hooks/useWebsite";
 import { WebsiteConfig } from "@/types/website";
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView as useMotionInView } from "framer-motion";
+import { motion, useInView as useMotionInView, useScroll, useTransform } from "framer-motion";
 import {
   Phone, MessageSquare, MapPin, Clock, Star, Globe, Mail,
   Zap, Heart, Scissors, Car, Home, Camera, Coffee, FileText, Target
