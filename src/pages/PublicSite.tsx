@@ -454,49 +454,48 @@ export default function PublicSite() {
               {/* Coluna direita: mapa */}
               <Reveal delay={150}>
                 <div>
-                  {(() => {
-                    const embedUrl = buildMapsEmbedUrl(
-                      config.contato.maps_url,
-                      (config.contato as any).maps_place_id,
-                      config.contato.endereco,
-                    );
-                    return embedUrl ? (
-                      <div>
-                        <div style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${borderC}`, boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
-                          <iframe
-                            src={embedUrl}
-                            width="100%"
-                            height="320"
-                            style={{ border: 0, display: 'block' }}
-                            loading="lazy"
-                            allowFullScreen
-                            title="Localização no mapa"
-                          />
+                  {(config.contato.endereco || config.contato.maps_url) && (() => {
+                    const embedUrl = getMapEmbedUrl(config.contato.endereco, config.contato.maps_url);
+                    if (!embedUrl) return null;
+                    return (
+                      <Reveal delay={100}>
+                        <div>
+                          <div style={{ borderRadius: 12, overflow: 'hidden', border: `1px solid ${borderC}`, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
+                            <iframe
+                              src={embedUrl}
+                              width="100%"
+                              height="320"
+                              style={{ border: 0, display: 'block' }}
+                              loading="lazy"
+                              allowFullScreen
+                              title={`Localização — ${config.contato.endereco}`}
+                            />
+                          </div>
+                          <a
+                            href={
+                              config.contato.maps_url && config.contato.maps_url.startsWith('http')
+                                ? config.contato.maps_url
+                                : `https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco)}`
+                            }
+                            target="_blank"
+                            rel="noopener"
+                            style={{
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                              marginTop: 10, padding: '11px 20px',
+                              background: pc, color: '#fff',
+                              borderRadius: 10, textDecoration: 'none',
+                              fontSize: 14, fontWeight: 600,
+                              boxShadow: `0 4px 16px ${pc}44`,
+                            }}
+                          >
+                            <MapPin style={{ width: 15, height: 15 }} />
+                            Como chegar — Abrir no Google Maps
+                          </a>
                         </div>
-                        {/* Botão Como chegar */}
-                        <a
-                          href={
-                            config.contato.maps_url ||
-                            `https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco || '')}`
-                          }
-                          target="_blank"
-                          rel="noopener"
-                          style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                            marginTop: 12, padding: '12px 20px',
-                            background: pc, color: '#fff',
-                            borderRadius: 12, textDecoration: 'none',
-                            fontSize: 14, fontWeight: 600,
-                            boxShadow: `0 4px 16px ${pc}44`,
-                            transition: 'all 0.2s ease',
-                          }}
-                        >
-                          <MapPin style={{ width: 16, height: 16 }} />
-                          Como chegar — Abrir no Google Maps
-                        </a>
-                      </div>
-                    ) : (
-                      config.contato.endereco ? (
+                      </Reveal>
+                    );
+                  })()}
+                  {!(config.contato.endereco || config.contato.maps_url) && config.contato.endereco ? (
                         <div style={{ textAlign: 'center', padding: '40px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 16 }}>
                           <MapPin style={{ width: 32, height: 32, color: pc, margin: '0 auto 12px' }} />
                           <p style={{ fontSize: 14, color: fgSec, marginBottom: 20, whiteSpace: 'pre-line' }}>{config.contato.endereco}</p>
