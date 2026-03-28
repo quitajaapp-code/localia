@@ -91,6 +91,19 @@ Deno.serve(async (req) => {
               body: JSON.stringify({ phone, message: msg }),
             });
             resultado = await res.json();
+
+            // Log template usage if a template was used
+            const templateId = action.config.template_id;
+            if (templateId) {
+              const entregue = res.ok && !resultado?.error;
+              await supabase.from("template_usage").insert({
+                template_id: templateId,
+                lead_id,
+                canal: "whatsapp",
+                entregue,
+                erro: entregue ? null : (resultado?.error || "Falha no envio"),
+              });
+            }
             break;
           }
 
