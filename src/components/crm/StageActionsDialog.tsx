@@ -95,7 +95,6 @@ export function StageActionsDialog({ stage, stages, onClose }: StageActionsDialo
               <TemplatePicker
                 onSelect={(msg, templateId) => updateAction(action.id, { config: { ...config, message: msg, template_id: templateId } })}
               />
-              />
               <span className="text-[10px] text-muted-foreground">ou escreva abaixo</span>
             </div>
             <Textarea
