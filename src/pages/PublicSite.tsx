@@ -126,7 +126,7 @@ function HeroSection({ config, pc, fg, fgSec }: { config: WebsiteConfig; pc: str
         </Reveal>
         {config.hero.cta_link && (
           <Reveal delay={300} variant="scaleUp">
-            <a href={config.hero.cta_link} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: pc, color: '#fff', padding: '14px 28px', borderRadius: 10, fontWeight: 600, fontSize: 16, textDecoration: 'none', boxShadow: `0 0 40px ${pc}66` }}>
+            <a href={config.hero.cta_link} target="_blank" rel="noopener" className="hero-cta-gradient" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#fff', padding: '14px 28px', borderRadius: 10, fontWeight: 600, fontSize: 16, textDecoration: 'none', '--cta-color': pc } as React.CSSProperties}>
               {config.hero.cta_link.includes('wa.me') && <MessageSquare style={{ width: 18, height: 18 }} />}
               {config.hero.cta_link.includes('tel:') && <Phone style={{ width: 18, height: 18 }} />}
               {config.hero.cta_texto}
@@ -190,6 +190,22 @@ export default function PublicSite() {
     <div style={{ background: bg, color: fg, minHeight: '100vh', fontFamily: "'Inter', system-ui, sans-serif", overflowX: 'hidden' }}>
       <style>{`
         @keyframes float-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+        @keyframes cta-gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .hero-cta-gradient {
+          background: linear-gradient(135deg, var(--cta-color), color-mix(in srgb, var(--cta-color) 60%, #fff), var(--cta-color), color-mix(in srgb, var(--cta-color) 70%, #000));
+          background-size: 300% 300%;
+          animation: cta-gradient-shift 4s ease infinite;
+          box-shadow: 0 0 40px color-mix(in srgb, var(--cta-color) 40%, transparent), 0 4px 15px rgba(0,0,0,0.2);
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .hero-cta-gradient:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 0 60px color-mix(in srgb, var(--cta-color) 55%, transparent), 0 8px 25px rgba(0,0,0,0.3);
+        }
         @media (max-width: 768px) {
           .contato-grid { grid-template-columns: 1fr !important; }
           .sobre-grid { grid-template-columns: 1fr !important; }
