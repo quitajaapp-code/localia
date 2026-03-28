@@ -34,6 +34,8 @@ export default function AiOptimizer() {
   const [cachedAt, setCachedAt] = useState<string | null>(null);
   const [cacheExpired, setCacheExpired] = useState(false);
   const [loadingCache, setLoadingCache] = useState(true);
+  const [previousScore, setPreviousScore] = useState<number | null>(null);
+  const [previousBreakdown, setPreviousBreakdown] = useState<Record<string, number> | null>(null);
 
   const CACHE_TTL_DAYS = 7;
 
