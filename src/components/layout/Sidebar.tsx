@@ -12,6 +12,7 @@ import {
   X,
   ShieldCheck,
   Sparkles,
+  Bot,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -23,6 +24,7 @@ const navItems = [
   { to: "/dashboard/reviews", label: "Avaliações", icon: Star },
   { to: "/dashboard/posts", label: "Posts", icon: FileText },
   { to: "/dashboard/ai-optimizer", label: "IA Optimizer", icon: Sparkles, badge: "Novo" },
+  { to: "/dashboard/agents", label: "Agentes IA", icon: Bot, badge: "Auto" },
   { to: "/dashboard/ads", label: "Anúncios", icon: Megaphone },
   { to: "/dashboard/materials", label: "Materiais", icon: FolderOpen },
   { to: "/dashboard/report", label: "Relatório", icon: BarChart3 },

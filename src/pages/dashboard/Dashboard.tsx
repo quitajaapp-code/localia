@@ -15,7 +15,7 @@ import {
   Map, MousePointerClick, PhoneCall, Navigation, DollarSign, BarChart3,
   TrendingUp, TrendingDown, Star, Calendar, Sparkles, Wifi, Play,
   Plus, AlertTriangle, MessageSquare, ArrowRight, CheckCircle2, Clock,
-  XCircle, Building2,
+  XCircle, Building2, Bot, FileText, Megaphone,
 } from "lucide-react";
 
 function ScoreGauge({ score }: { score: number }) {
@@ -90,6 +90,7 @@ export default function Dashboard() {
   const [hasBusiness, setHasBusiness] = useState(true);
   const [recentPosts, setRecentPosts] = useState<any[]>([]);
   const [recentReplies, setRecentReplies] = useState<any[]>([]);
+  const [agentSettings, setAgentSettings] = useState<any>(null);
 
   const handleStartBusinessFlow = async () => {
     if (!user) {
@@ -143,6 +144,12 @@ export default function Dashboard() {
           .not("resposta_sugerida_ia", "is", null)
           .order("created_at", { ascending: false }).limit(3);
         setRecentReplies(rReplies || []);
+
+        // Load agent settings
+        const { data: agS } = await supabase.from("agent_settings")
+          .select("reviews_auto_reply, posts_auto_publish, profile_auto_optimize, ads_auto_adjust")
+          .eq("business_id", b.id).maybeSingle();
+        if (agS) setAgentSettings(agS);
       }
       else setHasBusiness(false);
       setLoading(false);
@@ -392,6 +399,38 @@ export default function Dashboard() {
           <Link to="/dashboard/ai-optimizer" className="flex items-center gap-1 text-xs text-primary hover:underline pt-1">
             <Sparkles className="h-3 w-3" /> Ver otimizações recomendadas
           </Link>
+        </CardContent>
+      </Card>
+
+      {/* Agents Status Card */}
+      <Card className="border-primary/20">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Bot className="h-4 w-4 text-primary" />
+              Status dos Agentes IA
+            </CardTitle>
+            <Link to="/dashboard/agents" className="text-xs text-primary hover:underline flex items-center gap-1">
+              Gerenciar <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3">
+          {[
+            { label: "Avaliações", key: "reviews_auto_reply", icon: Star, cor: "text-warning" },
+            { label: "Conteúdo", key: "posts_auto_publish", icon: FileText, cor: "text-primary" },
+            { label: "Perfil", key: "profile_auto_optimize", icon: TrendingUp, cor: "text-success" },
+            { label: "Ads", key: "ads_auto_adjust", icon: Megaphone, cor: "text-destructive" },
+          ].map((ag) => {
+            const isActive = agentSettings?.[ag.key] ?? false;
+            return (
+              <div key={ag.key} className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
+                <ag.icon className={`h-4 w-4 ${ag.cor}`} />
+                <span className="text-xs text-foreground flex-1">{ag.label}</span>
+                <span className={`h-2 w-2 rounded-full ${isActive ? "bg-success dot-pulse" : "bg-muted-foreground/30"}`} />
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
 
