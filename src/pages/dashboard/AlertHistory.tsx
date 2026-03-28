@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Bell, Mail, MessageCircle, CheckCircle2, XCircle, Clock, Filter, Eye } from "lucide-react";
+import { ArrowLeft, Bell, Mail, MessageCircle, CheckCircle2, XCircle, Clock, Filter, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +49,8 @@ export default function AlertHistory() {
   const [loading, setLoading] = useState(true);
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterDelivery, setFilterDelivery] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   useEffect(() => {
     if (!user) return;
@@ -89,6 +91,12 @@ export default function AlertHistory() {
     if (filterDelivery === "none" && (a.notified_email || a.notified_whatsapp)) return false;
     return true;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [filterSeverity, filterDelivery]);
 
   const stats = {
     total: alerts.length,
@@ -220,7 +228,7 @@ export default function AlertHistory() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtered.map((alert) => {
+                  {paginated.map((alert) => {
                     const sev = severityConfig[alert.severity] || severityConfig.high;
                     return (
                       <TableRow key={alert.id} className={!alert.read ? "bg-accent/30" : ""}>
@@ -262,6 +270,32 @@ export default function AlertHistory() {
                   })}
                 </TableBody>
               </Table>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-4 border-t border-border mt-4">
+                  <span className="text-xs text-muted-foreground">
+                    Mostrando {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} de {filtered.length}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Button variant="outline" size="icon" className="h-8 w-8" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                      const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+                      const p = start + i;
+                      if (p > totalPages) return null;
+                      return (
+                        <Button key={p} variant={p === page ? "default" : "outline"} size="icon" className="h-8 w-8 text-xs" onClick={() => setPage(p)}>
+                          {p}
+                        </Button>
+                      );
+                    })}
+                    <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
