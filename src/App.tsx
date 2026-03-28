@@ -34,6 +34,7 @@ import WebsitePage from "./pages/dashboard/Website";
 import AiOptimizer from "./pages/dashboard/AiOptimizer";
 import PublicSite from "./pages/PublicSite";
 import Demos from "./pages/Demos";
+import Agents from "./pages/dashboard/Agents";
 
 const queryClient = new QueryClient();
 
