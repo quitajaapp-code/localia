@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, MessageSquare, Copy, Search, Send, MessageCircle, TrendingUp } from "lucide-react";
 import { MessagePreview } from "@/components/crm/MessagePreview";
+import { TemplateUsageChart } from "@/components/crm/TemplateUsageChart";
 
 type Template = {
   id: string;
@@ -45,6 +46,7 @@ export default function AdminTemplates() {
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("all");
   const [editOpen, setEditOpen] = useState(false);
+  const [usageRows, setUsageRows] = useState<any[]>([]);
   const [editing, setEditing] = useState<Partial<Template> | null>(null);
 
   useEffect(() => { loadTemplates(); }, []);
@@ -58,10 +60,12 @@ export default function AdminTemplates() {
         .order("nome"),
       supabase
         .from("template_usage" as any)
-        .select("template_id, entregue, respondido"),
+        .select("template_id, entregue, respondido, enviado_em"),
     ]);
 
     setTemplates((tplData as any[]) || []);
+    const rows = (usageData as any[]) || [];
+    setUsageRows(rows);
 
     // Aggregate usage stats client-side
     const map: Record<string, UsageStats> = {};
@@ -170,6 +174,9 @@ export default function AdminTemplates() {
         <StatCard icon={<MessageCircle className="h-4 w-4 text-warning" />} label="Respostas" value={globalRespondidos} />
         <StatCard icon={<TrendingUp className="h-4 w-4 text-accent-foreground" />} label="Taxa de resposta" value={`${globalTaxaResposta}%`} />
       </div>
+
+      {/* Weekly Chart */}
+      <TemplateUsageChart usageRows={usageRows} />
 
       {/* Filters */}
       <div className="flex gap-2 flex-wrap">
