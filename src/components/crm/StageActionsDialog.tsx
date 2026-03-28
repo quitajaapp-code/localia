@@ -127,8 +127,8 @@ export function StageActionsDialog({ stage, stages, onClose }: StageActionsDialo
               rows={3}
               className="text-xs"
             />
+            <MessagePreview message={config.body || ""} />
           </div>
-        );
 
       case "move_stage":
         return (

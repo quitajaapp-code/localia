@@ -250,6 +250,7 @@ export default function AdminTemplates() {
               <p className="text-[10px] text-muted-foreground mt-1">
                 Use variáveis: {"{{nome}}"} {"{{empresa}}"} {"{{cidade}}"} {"{{email}}"} {"{{whatsapp}}"} {"{{nicho}}"}
               </p>
+              <MessagePreview message={editing?.mensagem || ""} />
             </div>
             <Button onClick={handleSave} className="w-full">
               {editing?.id ? "Salvar alterações" : "Criar template"}
