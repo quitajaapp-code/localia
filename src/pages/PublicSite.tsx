@@ -345,7 +345,7 @@ export default function PublicSite() {
             </Reveal>
 
             {/* Grid: info + mapa */}
-            <div className="contato-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'start' }}>
+            <div className="contato-grid" style={{ display: 'grid', gridTemplateColumns: (config.contato.endereco || config.contato.maps_url) ? '1fr 1fr' : '1fr', gap: 40, alignItems: 'start' }}>
 
               {/* Coluna esquerda: informações de contato */}
               <div>
