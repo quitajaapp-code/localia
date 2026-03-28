@@ -56,6 +56,24 @@ const AGENTS = [
   },
 ];
 
+const SCHEDULE_PRESETS: Record<string, string> = {
+  every_6h: "A cada 6 horas",
+  every_12h: "A cada 12 horas",
+  daily_9am: "Diário às 9h",
+  daily_14h: "Diário às 14h",
+  twice_daily: "2x ao dia (9h e 18h)",
+  weekly_mon: "Semanal (segunda 9h)",
+  weekly_wed_fri: "2x por semana (qua e sex)",
+  every_3_days: "A cada 3 dias",
+};
+
+const AGENT_CRON_KEY: Record<string, string> = {
+  reviews: "reviews_cron",
+  posts: "posts_cron",
+  profile: "profile_cron",
+  ads: "ads_cron",
+};
+
 interface AgentAction {
   id: string;
   agent: string;
