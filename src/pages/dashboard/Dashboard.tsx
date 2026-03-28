@@ -144,6 +144,12 @@ export default function Dashboard() {
           .not("resposta_sugerida_ia", "is", null)
           .order("created_at", { ascending: false }).limit(3);
         setRecentReplies(rReplies || []);
+
+        // Load agent settings
+        const { data: agS } = await supabase.from("agent_settings")
+          .select("reviews_auto_reply, posts_auto_publish, profile_auto_optimize, ads_auto_adjust")
+          .eq("business_id", b.id).maybeSingle();
+        if (agS) setAgentSettings(agS);
       }
       else setHasBusiness(false);
       setLoading(false);
