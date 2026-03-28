@@ -59,21 +59,15 @@ function getSubdomainSlug(): string | null {
 
 const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
-function buildMapsEmbedUrl(
-  mapsUrl: string,
-  placeId?: string,
-  endereco?: string,
-): string {
-  if (placeId && placeId.startsWith('ChIJ')) {
-    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=place_id:${placeId}&language=pt-BR`;
+function getMapEmbedUrl(endereco: string, mapsUrl?: string): string {
+  // Prioridade 1: endereço do negócio (sempre presente e preciso)
+  if (endereco && endereco.trim()) {
+    const q = encodeURIComponent(endereco.trim());
+    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_KEY}&q=${q}&language=pt-BR&zoom=16`;
   }
-  const placeMatch = mapsUrl.match(/place\/([^/]+)/);
-  if (placeMatch) {
-    const encodedPlace = encodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
-    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodedPlace}&language=pt-BR`;
-  }
-  if (endereco) {
-    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodeURIComponent(endereco)}&language=pt-BR`;
+  // Prioridade 2: fallback para maps_url se não tiver endereço
+  if (mapsUrl) {
+    return `https://www.google.com/maps/embed/v1/place?key=${MAPS_KEY}&q=${encodeURIComponent(mapsUrl)}&language=pt-BR`;
   }
   return '';
 }
