@@ -35,6 +35,7 @@ import AiOptimizer from "./pages/dashboard/AiOptimizer";
 import PublicSite from "./pages/PublicSite";
 import Demos from "./pages/Demos";
 import Agents from "./pages/dashboard/Agents";
+import AlertHistory from "./pages/dashboard/AlertHistory";
 
 const queryClient = new QueryClient();
 
