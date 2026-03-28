@@ -176,6 +176,7 @@ export default function Agents() {
       if (error) throw error;
       toast({ title: "Agente executado!", description: "Veja as ações abaixo." });
       await loadActions();
+      await loadAlerts();
     } catch {
       toast({ title: "Erro ao executar agente", variant: "destructive" });
     }
