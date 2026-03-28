@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { Stage } from "@/pages/admin/AdminCRM";
 import { TemplatePicker } from "@/components/crm/TemplatePicker";
+import { MessagePreview } from "@/components/crm/MessagePreview";
 
 type StageAction = {
   id: string;
@@ -106,6 +107,7 @@ export function StageActionsDialog({ stage, stages, onClose }: StageActionsDialo
             <p className="text-[10px] text-muted-foreground">
               Variáveis: {"{{nome}}"} {"{{empresa}}"} {"{{cidade}}"} {"{{nicho}}"} {"{{whatsapp}}"} {"{{email}}"}
             </p>
+            <MessagePreview message={config.message || ""} />
           </div>
         );
 
@@ -125,6 +127,7 @@ export function StageActionsDialog({ stage, stages, onClose }: StageActionsDialo
               rows={3}
               className="text-xs"
             />
+            <MessagePreview message={config.body || ""} />
           </div>
         );
 

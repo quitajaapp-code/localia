@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, MessageSquare, Copy, Search } from "lucide-react";
+import { MessagePreview } from "@/components/crm/MessagePreview";
 
 type Template = {
   id: string;
@@ -249,6 +250,7 @@ export default function AdminTemplates() {
               <p className="text-[10px] text-muted-foreground mt-1">
                 Use variáveis: {"{{nome}}"} {"{{empresa}}"} {"{{cidade}}"} {"{{email}}"} {"{{whatsapp}}"} {"{{nicho}}"}
               </p>
+              <MessagePreview message={editing?.mensagem || ""} />
             </div>
             <Button onClick={handleSave} className="w-full">
               {editing?.id ? "Salvar alterações" : "Criar template"}
