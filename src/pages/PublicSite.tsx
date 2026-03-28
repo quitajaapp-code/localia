@@ -130,6 +130,9 @@ export default function PublicSite() {
     <div style={{ background: bg, color: fg, minHeight: '100vh', fontFamily: "'Inter', system-ui, sans-serif" }}>
       <style>{`
         @keyframes float-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+        @media (max-width: 768px) {
+          .contato-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
 
       {/* Preview banner */}

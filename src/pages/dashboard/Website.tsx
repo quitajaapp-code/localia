@@ -125,6 +125,12 @@ export default function Website() {
     if (biz.website_url) newConfig.contato.email = '';
     if (biz.cidade && biz.estado) newConfig.contato.endereco = `${biz.cidade}, ${biz.estado}`;
 
+    // Se o business tem cidade/estado, monta o link de busca no Maps pelo endereço
+    if (biz.cidade && biz.estado) {
+      const query = encodeURIComponent(`${biz.nome}, ${biz.cidade}, ${biz.estado}`);
+      newConfig.contato.maps_url = `https://www.google.com/maps/search/${query}`;
+    }
+
     // Redes
     if (biz.instagram) newConfig.redes.instagram = biz.instagram;
     if (biz.outras_redes) {

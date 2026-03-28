@@ -96,7 +96,7 @@ export const defaultWebsiteConfig: WebsiteConfig = {
   sobre: { texto: "", foto_url: "" },
   servicos: [],
   galeria: [],
-  contato: { telefone: "", whatsapp: "", email: "", endereco: "", maps_url: "" },
+  contato: { telefone: "", whatsapp: "", email: "", endereco: "", maps_url: "", maps_place_id: "" },
   redes: { instagram: "", facebook: "", tiktok: "", youtube: "", linkedin: "" },
   horarios: [
     { dia: "Segunda", abre: "08:00", fecha: "18:00", fechado: false },
