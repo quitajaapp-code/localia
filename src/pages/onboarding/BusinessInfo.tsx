@@ -66,7 +66,7 @@ export default function BusinessInfo() {
   const [gmbLocations, setGmbLocations] = useState<GmbLocation[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<GmbLocation | null>(null);
   const [manualGmbId, setManualGmbId] = useState("");
-
+  const [placeReviews, setPlaceReviews] = useState<NonNullable<PlaceResult["reviews"]>>([]);
   const [nome, setNome] = useState("");
   const [nicho, setNicho] = useState("");
   const [cidade, setCidade] = useState("");
