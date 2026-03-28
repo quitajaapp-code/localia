@@ -223,6 +223,13 @@ export default function PublicSite() {
           transform: translateY(-2px);
           box-shadow: 0 0 60px color-mix(in srgb, var(--cta-color) 55%, transparent), 0 8px 25px rgba(0,0,0,0.3);
         }
+        .map-container {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .map-container:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08) !important;
+        }
         @media (max-width: 768px) {
           .contato-grid { grid-template-columns: 1fr !important; }
           .sobre-grid { grid-template-columns: 1fr !important; }
