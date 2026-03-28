@@ -270,7 +270,7 @@ export default function BusinessInfo() {
       formatted_address: string;
       formatted_phone_number?: string;
       website?: string;
-      address_components?: google.maps.GeocoderAddressComponent[];
+      address_components?: Array<{ long_name: string; short_name: string; types: string[] }>;
     }) => {
       setNome(place.name);
       setWebsite(place.website || "");

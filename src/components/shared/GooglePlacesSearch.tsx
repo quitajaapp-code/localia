@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
-import { MapPin, Loader2, Search, Building2 } from "lucide-react";
+import { Loader2, Search, Building2 } from "lucide-react";
 
 interface PlaceResult {
   place_id: string;
@@ -8,7 +8,11 @@ interface PlaceResult {
   formatted_address: string;
   formatted_phone_number?: string;
   website?: string;
-  address_components?: google.maps.places.PlaceResult["address_components"];
+  address_components?: Array<{
+    long_name: string;
+    short_name: string;
+    types: string[];
+  }>;
 }
 
 interface GooglePlacesSearchProps {
@@ -16,48 +20,38 @@ interface GooglePlacesSearchProps {
   placeholder?: string;
 }
 
-declare global {
-  interface Window {
-    __googleMapsLoaded?: boolean;
-    __googleMapsCallbacks?: (() => void)[];
-  }
-}
-
 function loadGoogleMapsScript(apiKey: string): Promise<void> {
   return new Promise((resolve) => {
-    if (window.google?.maps?.places) {
+    if ((window as any).google?.maps?.places) {
       resolve();
       return;
     }
 
-    if (window.__googleMapsCallbacks) {
-      window.__googleMapsCallbacks.push(resolve);
+    const existing = document.querySelector('script[src*="maps.googleapis.com"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
+      if ((window as any).google?.maps?.places) resolve();
       return;
     }
-
-    window.__googleMapsCallbacks = [resolve];
 
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
     script.async = true;
-    script.onload = () => {
-      window.__googleMapsCallbacks?.forEach((cb) => cb());
-      window.__googleMapsCallbacks = undefined;
-    };
+    script.onload = () => resolve();
     document.head.appendChild(script);
   });
 }
 
 export default function GooglePlacesSearch({ onSelect, placeholder }: GooglePlacesSearchProps) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
 
-  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
-  const placesService = useRef<google.maps.places.PlacesService | null>(null);
+  const autocompleteService = useRef<any>(null);
+  const placesService = useRef<any>(null);
   const dummyDiv = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
@@ -67,16 +61,16 @@ export default function GooglePlacesSearch({ onSelect, placeholder }: GooglePlac
     if (!apiKey) return;
 
     loadGoogleMapsScript(apiKey).then(() => {
-      autocompleteService.current = new google.maps.places.AutocompleteService();
+      const g = (window as any).google;
+      autocompleteService.current = new g.maps.places.AutocompleteService();
       if (!dummyDiv.current) {
         dummyDiv.current = document.createElement("div");
       }
-      placesService.current = new google.maps.places.PlacesService(dummyDiv.current);
+      placesService.current = new g.maps.places.PlacesService(dummyDiv.current);
       setReady(true);
     });
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -87,33 +81,31 @@ export default function GooglePlacesSearch({ onSelect, placeholder }: GooglePlac
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const search = useCallback(
-    (input: string) => {
-      if (!autocompleteService.current || input.length < 3) {
-        setResults([]);
-        return;
-      }
+  const search = useCallback((input: string) => {
+    if (!autocompleteService.current || input.length < 3) {
+      setResults([]);
+      return;
+    }
 
-      setLoading(true);
-      autocompleteService.current.getPlacePredictions(
-        {
-          input,
-          types: ["establishment"],
-          componentRestrictions: { country: "br" },
-        },
-        (predictions, status) => {
-          setLoading(false);
-          if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-            setResults(predictions);
-            setShowResults(true);
-          } else {
-            setResults([]);
-          }
+    setLoading(true);
+    const g = (window as any).google;
+    autocompleteService.current.getPlacePredictions(
+      {
+        input,
+        types: ["establishment"],
+        componentRestrictions: { country: "br" },
+      },
+      (predictions: any[], status: string) => {
+        setLoading(false);
+        if (status === g.maps.places.PlacesServiceStatus.OK && predictions) {
+          setResults(predictions);
+          setShowResults(true);
+        } else {
+          setResults([]);
         }
-      );
-    },
-    []
-  );
+      }
+    );
+  }, []);
 
   const handleInputChange = (value: string) => {
     setQuery(value);
@@ -121,21 +113,22 @@ export default function GooglePlacesSearch({ onSelect, placeholder }: GooglePlac
     debounceRef.current = setTimeout(() => search(value), 350);
   };
 
-  const handleSelect = (prediction: google.maps.places.AutocompletePrediction) => {
+  const handleSelect = (prediction: any) => {
     if (!placesService.current) return;
 
     setFetchingDetails(true);
     setShowResults(false);
     setQuery(prediction.structured_formatting.main_text);
 
+    const g = (window as any).google;
     placesService.current.getDetails(
       {
         placeId: prediction.place_id,
         fields: ["name", "formatted_address", "formatted_phone_number", "website", "address_components", "place_id"],
       },
-      (place, status) => {
+      (place: any, status: string) => {
         setFetchingDetails(false);
-        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+        if (status === g.maps.places.PlacesServiceStatus.OK && place) {
           onSelect({
             place_id: place.place_id || prediction.place_id,
             name: place.name || "",
@@ -168,7 +161,7 @@ export default function GooglePlacesSearch({ onSelect, placeholder }: GooglePlac
 
       {showResults && results.length > 0 && (
         <div className="absolute z-50 top-full mt-1 w-full bg-popover border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
-          {results.map((r) => (
+          {results.map((r: any) => (
             <button
               key={r.place_id}
               onClick={() => handleSelect(r)}
