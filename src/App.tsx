@@ -18,6 +18,7 @@ import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminCRM from "./pages/admin/AdminCRM";
 import AdminInbox from "./pages/admin/AdminInbox";
 import AdminWorkflows from "./pages/admin/AdminWorkflows";
+import AdminTemplates from "./pages/admin/AdminTemplates";
 import OnboardingLayout from "./pages/onboarding/OnboardingLayout";
 import ConnectGoogle from "./pages/onboarding/ConnectGoogle";
 import BusinessInfo from "./pages/onboarding/BusinessInfo";
