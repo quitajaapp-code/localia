@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import {
   User, Building2, Bell, CreditCard, Plug, Save, Upload, Loader2,
   AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff, Brain, Key, MapPin, Star,
-  MessageSquare, Mail, Phone, Shield
+  MessageSquare, Mail, Phone, Shield, Trash2, Chrome, RefreshCw
 } from "lucide-react";
 import GooglePlacesSearch, { type PlaceResult } from "@/components/shared/GooglePlacesSearch";
 import AiSuggestButton from "@/components/shared/AiSuggestButton";
@@ -95,6 +95,11 @@ export default function SettingsPage() {
   // Delete modal
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
+
+  // Delete business modal
+  const [deleteBizOpen, setDeleteBizOpen] = useState(false);
+  const [deleteBizConfirm, setDeleteBizConfirm] = useState("");
+  const [deletingBiz, setDeletingBiz] = useState(false);
 
   // Business
   const [bizId, setBizId] = useState("");
@@ -258,7 +263,95 @@ export default function SettingsPage() {
     finally { setPortalLoading(false); }
   };
 
-  const uploadAvatar = async (file: File) => {
+  const deleteBusiness = async () => {
+    if (deleteBizConfirm !== "EXCLUIR" || !bizId) return;
+    setDeletingBiz(true);
+    try {
+      // Delete related data first (materials, posts, reviews, etc.)
+      await Promise.all([
+        supabase.from("materials").delete().eq("business_id", bizId),
+        supabase.from("posts").delete().eq("business_id", bizId),
+        supabase.from("reviews").delete().eq("business_id", bizId),
+        supabase.from("gmb_metrics").delete().eq("business_id", bizId),
+        supabase.from("gmb_snapshots").delete().eq("business_id", bizId),
+        supabase.from("ads_metrics").delete().eq("business_id", bizId),
+        supabase.from("agent_actions").delete().eq("business_id", bizId),
+        supabase.from("agent_alerts").delete().eq("business_id", bizId),
+        supabase.from("agent_settings").delete().eq("business_id", bizId),
+        supabase.from("optimizer_cache").delete().eq("business_id", bizId),
+      ]);
+      // Delete campaigns and related
+      const { data: campaigns } = await supabase.from("campaigns").select("id").eq("business_id", bizId);
+      if (campaigns) {
+        for (const c of campaigns) {
+          await supabase.from("ads").delete().eq("campaign_id", c.id);
+          await supabase.from("keywords").delete().eq("campaign_id", c.id);
+          await supabase.from("negative_keywords").delete().eq("campaign_id", c.id);
+        }
+        await supabase.from("campaigns").delete().eq("business_id", bizId);
+      }
+      // Delete websites
+      const { data: websites } = await supabase.from("websites").select("id").eq("business_id", bizId);
+      if (websites) {
+        for (const w of websites) {
+          await supabase.from("website_visits").delete().eq("website_id", w.id);
+        }
+        await supabase.from("websites").delete().eq("business_id", bizId);
+      }
+      // Delete business
+      const { error } = await supabase.from("businesses").delete().eq("id", bizId);
+      if (error) throw error;
+
+      toast.success("Negócio excluído! Você pode cadastrar um novo.");
+      // Reset state
+      setBizId("");
+      setBizNome("");
+      setBizNicho("");
+      setBizTom("");
+      setBizWebsite("");
+      setBizWhatsapp("");
+      setBizCidade("");
+      setBizEstado("");
+      setHasGmb(false);
+      setHasAds(false);
+      setBizGmbId("");
+      setBizInstagram("");
+      setConnectedPlaceName("");
+      setBizPublicoAlvo("");
+      setBizDiferenciais("");
+      setDeleteBizOpen(false);
+      setDeleteBizConfirm("");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao excluir negócio");
+    } finally {
+      setDeletingBiz(false);
+    }
+  };
+
+  const handleGmbReconnect = () => {
+    const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!GOOGLE_CLIENT_ID || !userId) {
+      toast.error("Configuração do Google não disponível");
+      return;
+    }
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+    const redirectUri = `${SUPABASE_URL}/functions/v1/google-oauth-callback`;
+    const state = btoa(JSON.stringify({ user_id: userId, redirect: "/dashboard/settings" }));
+
+    const params = new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      scope: "https://www.googleapis.com/auth/business.manage https://www.googleapis.com/auth/userinfo.email",
+      access_type: "offline",
+      prompt: "consent",
+      state,
+    });
+
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  };
+
     try {
       const path = `${userId}/avatar.${file.name.split(".").pop()}`;
       await supabase.storage.from("business-assets").upload(path, file, { upsert: true });
@@ -461,7 +554,10 @@ export default function SettingsPage() {
                     <p className="text-xs text-muted-foreground">{hasGmb ? "Conectado" : "Não conectado"}</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm">{hasGmb ? "Reconectar" : "Conectar"}</Button>
+                <Button variant="outline" size="sm" onClick={handleGmbReconnect}>
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                  {hasGmb ? "Reconectar" : "Conectar"}
+                </Button>
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-3">
@@ -475,6 +571,41 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Excluir negócio */}
+          {bizId && (
+            <Card className="border-destructive/30">
+              <CardHeader>
+                <CardTitle className="text-base text-destructive flex items-center gap-2">
+                  <Trash2 className="h-4 w-4" /> Excluir negócio
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Ao excluir este negócio, todos os dados associados (avaliações, posts, campanhas, métricas) serão removidos permanentemente.
+                  Você poderá cadastrar um novo negócio depois.
+                </p>
+                <Button variant="destructive" size="sm" onClick={() => setDeleteBizOpen(true)}>
+                  <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Excluir negócio
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {!bizId && (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="py-6 text-center space-y-3">
+                <Building2 className="h-8 w-8 text-primary mx-auto" />
+                <div>
+                  <p className="font-medium text-foreground">Nenhum negócio cadastrado</p>
+                  <p className="text-sm text-muted-foreground">Cadastre seu negócio para começar a usar a plataforma.</p>
+                </div>
+                <Button onClick={() => navigate("/onboarding/connect")}>
+                  <Chrome className="h-4 w-4 mr-2" /> Cadastrar negócio
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* NOTIFICAÇÕES */}
@@ -659,9 +790,9 @@ export default function SettingsPage() {
         {/* INTEGRAÇÕES */}
         <TabsContent value="integracoes" className="space-y-4">
           {[
-            { name: "Google Meu Negócio", desc: hasGmb ? "Conectado — sincronizando avaliações e métricas" : "Não conectado", connected: hasGmb },
-            { name: "Google Ads", desc: hasAds ? "Conectado — gerenciando campanhas" : "Não conectado", connected: hasAds },
-            { name: "Stripe", desc: "Pagamentos gerenciados automaticamente", connected: true },
+            { name: "Google Meu Negócio", desc: hasGmb ? "Conectado — sincronizando avaliações e métricas" : "Não conectado", connected: hasGmb, action: handleGmbReconnect },
+            { name: "Google Ads", desc: hasAds ? "Conectado — gerenciando campanhas" : "Não conectado", connected: hasAds, action: undefined },
+            { name: "Stripe", desc: "Pagamentos gerenciados automaticamente", connected: true, action: undefined },
           ].map((int, i) => (
             <Card key={i}>
               <CardContent className="py-4 flex items-center justify-between">
@@ -673,7 +804,10 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 {int.name !== "Stripe" && (
-                  <Button variant="outline" size="sm">{int.connected ? "Reconectar" : "Conectar"}</Button>
+                  <Button variant="outline" size="sm" onClick={int.action}>
+                    <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                    {int.connected ? "Reconectar" : "Conectar"}
+                  </Button>
                 )}
               </CardContent>
             </Card>
@@ -816,6 +950,32 @@ export default function SettingsPage() {
             <Button variant="destructive" disabled={deleteConfirm !== "EXCLUIR"}
               onClick={() => { toast.info("Funcionalidade de exclusão requer implementação server-side"); setDeleteOpen(false); }}>
               Excluir minha conta
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Business Dialog */}
+      <Dialog open={deleteBizOpen} onOpenChange={setDeleteBizOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-destructive flex items-center gap-2">
+              <Trash2 className="h-4 w-4" /> Excluir negócio
+            </DialogTitle>
+            <DialogDescription>
+              Todos os dados do negócio "{bizNome}" serão removidos permanentemente (avaliações, posts, campanhas, métricas).
+              Você poderá cadastrar um novo negócio depois.
+            </DialogDescription>
+          </DialogHeader>
+          <div>
+            <Label className="text-sm">Digite <strong>EXCLUIR</strong> para confirmar</Label>
+            <Input value={deleteBizConfirm} onChange={(e) => setDeleteBizConfirm(e.target.value)} placeholder="EXCLUIR" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setDeleteBizOpen(false); setDeleteBizConfirm(""); }}>Cancelar</Button>
+            <Button variant="destructive" disabled={deleteBizConfirm !== "EXCLUIR" || deletingBiz} onClick={deleteBusiness}>
+              {deletingBiz ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
+              Excluir negócio
             </Button>
           </DialogFooter>
         </DialogContent>
