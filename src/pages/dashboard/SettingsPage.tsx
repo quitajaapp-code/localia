@@ -352,6 +352,7 @@ export default function SettingsPage() {
     window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   };
 
+  const uploadAvatar = async (file: File) => {
     try {
       const path = `${userId}/avatar.${file.name.split(".").pop()}`;
       await supabase.storage.from("business-assets").upload(path, file, { upsert: true });
