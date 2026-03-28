@@ -63,6 +63,8 @@ export default function AdminTemplates() {
     ]);
 
     setTemplates((tplData as any[]) || []);
+    const rows = (usageData as any[]) || [];
+    setUsageRows(rows);
 
     // Aggregate usage stats client-side
     const map: Record<string, UsageStats> = {};
