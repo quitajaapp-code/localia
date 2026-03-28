@@ -32,7 +32,10 @@ export default function AiOptimizer() {
   const [copiedDesc, setCopiedDesc] = useState(false);
   const [bizData, setBizData] = useState<any>(null);
   const [cachedAt, setCachedAt] = useState<string | null>(null);
+  const [cacheExpired, setCacheExpired] = useState(false);
   const [loadingCache, setLoadingCache] = useState(true);
+
+  const CACHE_TTL_DAYS = 7;
 
   useEffect(() => { loadBizData(); }, []);
 
@@ -52,8 +55,15 @@ export default function AiOptimizer() {
         .eq("business_id", biz.id)
         .maybeSingle();
       if (cached?.report_json) {
-        setReport(cached.report_json);
-        setCachedAt(cached.updated_at);
+        const age = Date.now() - new Date(cached.updated_at).getTime();
+        const expired = age > CACHE_TTL_DAYS * 24 * 60 * 60 * 1000;
+        setCacheExpired(expired);
+        if (!expired) {
+          setReport(cached.report_json);
+          setCachedAt(cached.updated_at);
+        } else {
+          setCachedAt(cached.updated_at);
+        }
       }
     }
     setLoadingCache(false);
@@ -68,6 +78,7 @@ export default function AiOptimizer() {
         { onConflict: "business_id" }
       );
     setCachedAt(new Date().toISOString());
+    setCacheExpired(false);
   };
 
   const runAnalysis = async () => {
@@ -141,9 +152,15 @@ export default function AiOptimizer() {
           <p className="text-sm text-muted-foreground mt-1">
             Análise completa do seu perfil Google Meu Negócio com recomendações personalizadas
           </p>
-          {cachedAt && !loading && (
+          {cachedAt && !loading && !cacheExpired && (
             <p className="text-xs text-muted-foreground mt-1">
               📋 Último relatório: {new Date(cachedAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              {" · "}válido por mais {Math.max(0, CACHE_TTL_DAYS - Math.floor((Date.now() - new Date(cachedAt).getTime()) / (24*60*60*1000)))} dias
+            </p>
+          )}
+          {cacheExpired && !loading && (
+            <p className="text-xs text-warning mt-1">
+              ⚠️ Relatório expirado (mais de {CACHE_TTL_DAYS} dias). Uma nova análise é recomendada.
             </p>
           )}
         </div>
@@ -155,7 +172,7 @@ export default function AiOptimizer() {
       </div>
 
       {/* Estado inicial */}
-      {!report && !loading && !loadingCache && (
+      {!report && !loading && !loadingCache && !cacheExpired && (
         <Card>
           <CardContent className="py-16 text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
@@ -168,6 +185,24 @@ export default function AiOptimizer() {
             </p>
             <Button onClick={runAnalysis} size="lg">
               <Sparkles className="h-4 w-4 mr-2" /> Iniciar análise gratuita
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Cache expirado */}
+      {cacheExpired && !loading && !loadingCache && (
+        <Card className="border-warning/30 bg-warning/5">
+          <CardContent className="py-12 text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-warning/10 flex items-center justify-center mx-auto">
+              <AlertCircle className="h-8 w-8 text-warning" />
+            </div>
+            <h2 className="text-lg font-semibold">Relatório desatualizado</h2>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              Seu último relatório tem mais de {CACHE_TTL_DAYS} dias. Gere uma nova análise para obter recomendações atualizadas.
+            </p>
+            <Button onClick={runAnalysis} size="lg">
+              <RefreshCw className="h-4 w-4 mr-2" /> Gerar nova análise
             </Button>
           </CardContent>
         </Card>
