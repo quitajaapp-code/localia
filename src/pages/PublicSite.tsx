@@ -235,6 +235,7 @@ export default function PublicSite() {
           .section-padding { padding: 48px 0 !important; }
           .header-buttons { gap: 4px !important; }
           .header-buttons a { padding: 6px 10px !important; font-size: 12px !important; }
+          .como-chegar-btn { font-size: 13px !important; padding: 10px 16px !important; width: 100% !important; max-width: 100% !important; justify-content: center !important; }
         }
         @media (max-width: 480px) {
           .galeria-masonry { column-count: 1 !important; }
@@ -571,6 +572,7 @@ export default function PublicSite() {
                               fontSize: 14, fontWeight: 600,
                               boxShadow: `0 4px 16px ${pc}44`,
                             }}
+                            className="como-chegar-btn"
                           >
                             <MapPin style={{ width: 15, height: 15 }} />
                             Como chegar — Abrir no Google Maps
