@@ -22,6 +22,8 @@ const navItems = [
   { to: "/admin/subscriptions", label: "Assinaturas", icon: CreditCard },
   { to: "/admin/businesses", label: "Negócios", icon: Building2 },
   { to: "/admin/coupons", label: "Cupons", icon: Ticket },
+  { to: "/admin/crm",   label: "CRM / Pipeline", icon: Kanban },
+  { to: "/admin/inbox", label: "Inbox / Agentes", icon: MessageSquare },
 ];
 
 export function AdminSidebar() {
