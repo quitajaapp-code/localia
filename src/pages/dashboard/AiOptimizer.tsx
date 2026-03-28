@@ -254,17 +254,24 @@ export default function AiOptimizer() {
                 <div>
                   <p className="text-sm font-semibold mb-1">Score do Perfil</p>
                   <p className="text-xs text-muted-foreground">{report.diagnostico}</p>
+                  {previousScore !== null && (
+                    <ScoreDelta current={report.score} previous={previousScore} />
+                  )}
                 </div>
               </CardContent>
             </Card>
-            {report.score_breakdown && Object.entries(report.score_breakdown).map(([key, val]: [string, any]) => (
-              <Card key={key}>
-                <CardContent className="py-4 text-center">
-                  <p className="text-2xl font-bold text-foreground">{val}<span className="text-sm text-muted-foreground">/25</span></p>
-                  <p className="text-xs text-muted-foreground capitalize mt-1">{key}</p>
-                </CardContent>
-              </Card>
-            ))}
+            {report.score_breakdown && Object.entries(report.score_breakdown).map(([key, val]: [string, any]) => {
+              const prevVal = previousBreakdown?.[key];
+              return (
+                <Card key={key}>
+                  <CardContent className="py-4 text-center">
+                    <p className="text-2xl font-bold text-foreground">{val}<span className="text-sm text-muted-foreground">/25</span></p>
+                    <p className="text-xs text-muted-foreground capitalize mt-1">{key}</p>
+                    {prevVal != null && <ScoreDelta current={val} previous={prevVal} />}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           {/* Próxima ação */}
