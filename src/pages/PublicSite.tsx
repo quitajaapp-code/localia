@@ -495,7 +495,6 @@ export default function PublicSite() {
                       </Reveal>
                     );
                   })()}
-                  {!(config.contato.endereco || config.contato.maps_url) && config.contato.endereco ? (
                         <div style={{ textAlign: 'center', padding: '40px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 16 }}>
                           <MapPin style={{ width: 32, height: 32, color: pc, margin: '0 auto 12px' }} />
                           <p style={{ fontSize: 14, color: fgSec, marginBottom: 20, whiteSpace: 'pre-line' }}>{config.contato.endereco}</p>
@@ -508,9 +507,7 @@ export default function PublicSite() {
                             Ver no Google Maps
                           </a>
                         </div>
-                      ) : null
-                    );
-                  })()}
+                  ) : null}
                 </div>
               </Reveal>
             </div>
