@@ -495,19 +495,6 @@ export default function PublicSite() {
                       </Reveal>
                     );
                   })()}
-                        <div style={{ textAlign: 'center', padding: '40px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 16 }}>
-                          <MapPin style={{ width: 32, height: 32, color: pc, margin: '0 auto 12px' }} />
-                          <p style={{ fontSize: 14, color: fgSec, marginBottom: 20, whiteSpace: 'pre-line' }}>{config.contato.endereco}</p>
-                          <a
-                            href={`https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco)}`}
-                            target="_blank" rel="noopener"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: pc, color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}
-                          >
-                            <MapPin style={{ width: 14, height: 14 }} />
-                            Ver no Google Maps
-                          </a>
-                        </div>
-                  ) : null}
                 </div>
               </Reveal>
             </div>
