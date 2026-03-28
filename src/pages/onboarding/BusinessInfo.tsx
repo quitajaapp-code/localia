@@ -196,12 +196,32 @@ export default function BusinessInfo() {
         gmb_location_id: selectedLocation?.name ?? (manualGmbId.trim() || null),
       };
 
+      let businessId = bizId;
       if (bizId) {
         const { error } = await supabase.from("businesses").update(payload).eq("id", bizId);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("businesses").insert(payload);
+        const { data: inserted, error } = await supabase.from("businesses").insert(payload).select("id").single();
         if (error) throw error;
+        businessId = inserted.id;
+      }
+
+      // Save Google Places reviews if available
+      if (businessId && placeReviews.length > 0) {
+        const ratingMap: Record<number, number> = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 };
+        for (const review of placeReviews) {
+          await supabase.from("reviews").upsert({
+            business_id: businessId,
+            review_id_google: `places_${review.time}_${review.author_name}`,
+            autor: review.author_name || "Anônimo",
+            rating: ratingMap[review.rating] || 3,
+            texto: review.text || "",
+            respondido: false,
+            data_review: new Date(review.time * 1000).toISOString(),
+          }, { onConflict: "business_id,review_id_google" }).then(({ error }) => {
+            if (error) console.warn("Review insert error:", error);
+          });
+        }
       }
 
       toast({ title: "Negócio salvo com sucesso!" });
