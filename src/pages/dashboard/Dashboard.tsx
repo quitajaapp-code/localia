@@ -88,6 +88,8 @@ export default function Dashboard() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [hasBusiness, setHasBusiness] = useState(true);
+  const [recentPosts, setRecentPosts] = useState<any[]>([]);
+  const [recentReplies, setRecentReplies] = useState<any[]>([]);
 
   const handleStartBusinessFlow = async () => {
     if (!user) {
@@ -126,8 +128,22 @@ export default function Dashboard() {
     const load = async () => {
       const { data: p } = await supabase.from("profiles").select("nome, plano, trial_ends_at").eq("user_id", user.id).single();
       if (p) setProfile(p);
-      const { data: b } = await supabase.from("businesses").select("score_materiais").eq("user_id", user.id).limit(1).maybeSingle();
-      if (b) { setScore(b.score_materiais ?? 0); setHasBusiness(true); }
+      const { data: b } = await supabase.from("businesses").select("id, score_materiais").eq("user_id", user.id).limit(1).maybeSingle();
+      if (b) {
+        setScore(b.score_materiais ?? 0);
+        setHasBusiness(true);
+
+        const { data: rPosts } = await supabase.from("posts")
+          .select("id, texto").eq("business_id", b.id)
+          .order("created_at", { ascending: false }).limit(3);
+        setRecentPosts(rPosts || []);
+
+        const { data: rReplies } = await supabase.from("reviews")
+          .select("id, autor").eq("business_id", b.id)
+          .not("resposta_sugerida_ia", "is", null)
+          .order("created_at", { ascending: false }).limit(3);
+        setRecentReplies(rReplies || []);
+      }
       else setHasBusiness(false);
       setLoading(false);
     };
@@ -348,6 +364,36 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Card: IA em ação */}
+      <Card className="border-primary/20">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            IA trabalhando para você
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {recentPosts.slice(0, 2).map((p: any) => (
+            <div key={p.id} className="flex items-center gap-2 text-xs text-muted-foreground">
+              <CheckCircle2 className="h-3 w-3 text-success shrink-0" />
+              <span className="truncate">Post gerado: "{p.texto?.slice(0, 60)}..."</span>
+            </div>
+          ))}
+          {recentReplies.slice(0, 2).map((r: any) => (
+            <div key={r.id} className="flex items-center gap-2 text-xs text-muted-foreground">
+              <CheckCircle2 className="h-3 w-3 text-success shrink-0" />
+              <span className="truncate">Resposta sugerida para {r.autor}</span>
+            </div>
+          ))}
+          {recentPosts.length === 0 && recentReplies.length === 0 && (
+            <p className="text-xs text-muted-foreground">Nenhuma ação da IA ainda. Gere posts ou respostas para começar.</p>
+          )}
+          <Link to="/dashboard/ai-optimizer" className="flex items-center gap-1 text-xs text-primary hover:underline pt-1">
+            <Sparkles className="h-3 w-3" /> Ver otimizações recomendadas
+          </Link>
+        </CardContent>
+      </Card>
 
       {/* AI Suggestion */}
       <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">

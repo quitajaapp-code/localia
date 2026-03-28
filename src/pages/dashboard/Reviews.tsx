@@ -42,6 +42,16 @@ export default function Reviews() {
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  // Review Link states
+  const [reviewLinkOpen, setReviewLinkOpen] = useState(false);
+  const [reviewLinkData, setReviewLinkData] = useState<any>(null);
+  const [reviewLinkLoading, setReviewLinkLoading] = useState(false);
+  const [reviewLinkCanal, setReviewLinkCanal] = useState("whatsapp");
+  const [copiedMsg, setCopiedMsg] = useState<number | null>(null);
+
+  // Bulk reply state
+  const [bulkGenerating, setBulkGenerating] = useState(false);
+
   useEffect(() => { loadReviews(); }, []);
 
   const loadReviews = async () => {
@@ -101,6 +111,54 @@ export default function Reviews() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const generateReviewLink = async () => {
+    setReviewLinkLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: biz } = await supabase
+        .from("businesses")
+        .select("nome, nicho, tom_de_voz, gmb_location_id")
+        .eq("user_id", user.id).limit(1).maybeSingle();
+
+      const { data, error } = await supabase.functions.invoke("ai-review-link", {
+        body: {
+          business_name: biz?.nome,
+          nicho: biz?.nicho,
+          tom_de_voz: biz?.tom_de_voz,
+          gmb_place_id: biz?.gmb_location_id?.split("/").pop() || null,
+          canal: reviewLinkCanal,
+        },
+      });
+      if (error) throw error;
+      setReviewLinkData(data);
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao gerar mensagens");
+    } finally {
+      setReviewLinkLoading(false);
+    }
+  };
+
+  const copyMsg = (index: number, texto: string) => {
+    navigator.clipboard.writeText(texto);
+    setCopiedMsg(index);
+    toast.success("Mensagem copiada!");
+    setTimeout(() => setCopiedMsg(null), 2000);
+  };
+
+  const generateAllReplies = async () => {
+    const pending = reviews.filter(r => !r.resposta_sugerida_ia && r.texto);
+    if (!pending.length) { toast.info("Nenhuma avaliação sem resposta"); return; }
+    setBulkGenerating(true);
+    let count = 0;
+    for (const r of pending.slice(0, 10)) {
+      await generateReply(r);
+      count++;
+    }
+    setBulkGenerating(false);
+    toast.success(`${count} respostas geradas!`);
+  };
+
   const filtered = reviews.filter(r => {
     if (filterStar !== "all" && r.rating !== Number(filterStar)) return false;
     if (filterStatus === "responded" && !r.respondido) return false;
@@ -132,6 +190,74 @@ export default function Reviews() {
           )}
         </div>
       </div>
+
+      {/* Card: Link de avaliação */}
+      <Card className="mb-6 border-primary/20 bg-primary/5">
+        <CardContent className="py-4">
+          <div
+            className="flex items-center justify-between cursor-pointer"
+            onClick={() => setReviewLinkOpen(o => !o)}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                <QrCode className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Pedir avaliação dos clientes</p>
+                <p className="text-xs text-muted-foreground">Gere mensagens personalizadas com IA para WhatsApp, e-mail ou QR Code</p>
+              </div>
+            </div>
+            <Sparkles className="h-4 w-4 text-primary" />
+          </div>
+
+          {reviewLinkOpen && (
+            <div className="mt-4 space-y-4 border-t border-border pt-4">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">Canal:</span>
+                <Select value={reviewLinkCanal} onValueChange={setReviewLinkCanal}>
+                  <SelectTrigger className="w-40 h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                    <SelectItem value="sms">SMS</SelectItem>
+                    <SelectItem value="email">E-mail</SelectItem>
+                    <SelectItem value="qrcode">QR Code</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button size="sm" onClick={generateReviewLink} disabled={reviewLinkLoading}>
+                  {reviewLinkLoading
+                    ? <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    : <Sparkles className="h-3 w-3 mr-1" />}
+                  {reviewLinkLoading ? "Gerando..." : "Gerar com IA"}
+                </Button>
+              </div>
+
+              {reviewLinkData?.mensagens && (
+                <div className="space-y-3">
+                  {reviewLinkData.mensagens.map((m: any, i: number) => (
+                    <div key={i} className="p-3 rounded-lg bg-muted border border-border">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="outline" className="text-xs capitalize">{m.tom}</Badge>
+                        <Button
+                          variant="ghost" size="sm"
+                          className="h-6 text-xs"
+                          onClick={() => copyMsg(i, m.texto)}
+                        >
+                          {copiedMsg === i
+                            ? <><Check className="h-3 w-3 mr-1" /> Copiado</>
+                            : <><Copy className="h-3 w-3 mr-1" /> Copiar</>}
+                        </Button>
+                      </div>
+                      <p className="text-sm text-foreground">{m.texto}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <OnboardingTooltip id="reviews-auto">
         Ative o modo automático para não perder nenhuma avaliação
@@ -201,6 +327,19 @@ export default function Reviews() {
                 <SelectItem value="responded">Respondidas</SelectItem>
               </SelectContent>
             </Select>
+            {reviews.filter(r => !r.resposta_sugerida_ia).length > 0 && (
+              <Button
+                variant="outline" size="sm"
+                onClick={generateAllReplies}
+                disabled={bulkGenerating}
+                className="whitespace-nowrap"
+              >
+                {bulkGenerating
+                  ? <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  : <Sparkles className="h-3 w-3 mr-1" />}
+                Responder todas com IA
+              </Button>
+            )}
           </div>
 
           {/* List */}
