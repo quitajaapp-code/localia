@@ -2,6 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { usePublicSite } from "@/hooks/useWebsite";
 import { WebsiteConfig } from "@/types/website";
 import { useEffect, useRef, useState } from "react";
+import { motion, useInView as useMotionInView } from "framer-motion";
 import {
   Phone, MessageSquare, MapPin, Clock, Star, Globe, Mail,
   Zap, Heart, Scissors, Car, Home, Camera, Coffee, FileText, Target
@@ -11,25 +12,45 @@ const lucideIcons: Record<string, any> = {
   Star, Zap, Heart, Scissors, Car, Home, Camera, Coffee, MapPin, FileText, Target, Phone,
 };
 
-function useInView(threshold = 0.1) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-}
+type RevealVariant = 'fadeUp' | 'fadeLeft' | 'fadeRight' | 'scaleUp' | 'blur';
 
-function Reveal({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
-  const { ref, visible } = useInView();
+const variants: Record<RevealVariant, { hidden: any; visible: any }> = {
+  fadeUp: {
+    hidden: { opacity: 0, y: 32 },
+    visible: { opacity: 1, y: 0 },
+  },
+  fadeLeft: {
+    hidden: { opacity: 0, x: -40 },
+    visible: { opacity: 1, x: 0 },
+  },
+  fadeRight: {
+    hidden: { opacity: 0, x: 40 },
+    visible: { opacity: 1, x: 0 },
+  },
+  scaleUp: {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { opacity: 1, scale: 1 },
+  },
+  blur: {
+    hidden: { opacity: 0, filter: 'blur(8px)', y: 16 },
+    visible: { opacity: 1, filter: 'blur(0px)', y: 0 },
+  },
+};
+
+function Reveal({ children, delay = 0, style = {}, variant = 'fadeUp' }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties; variant?: RevealVariant }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useMotionInView(ref, { once: true, margin: '-40px' });
+  const v = variants[variant];
   return (
-    <div ref={ref} style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(24px)', transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`, ...style }}>
+    <motion.div
+      ref={ref}
+      initial={v.hidden}
+      animate={isInView ? v.visible : v.hidden}
+      transition={{ duration: 0.7, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
+      style={style}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
