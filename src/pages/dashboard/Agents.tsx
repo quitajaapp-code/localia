@@ -129,7 +129,20 @@ export default function Agents() {
     }
 
     await loadActions(biz.id);
+    await loadAlerts(biz.id);
     setLoading(false);
+  };
+
+  const loadAlerts = async (id?: string) => {
+    const businessId = id || bizId;
+    if (!businessId) return;
+    const { data } = await supabase
+      .from("agent_alerts")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    setAlerts((data || []) as unknown as AgentAlert[]);
   };
 
   const loadActions = async (id?: string) => {
