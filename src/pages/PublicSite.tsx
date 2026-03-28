@@ -121,11 +121,24 @@ export default function PublicSite() {
   const sectionAlt = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)';
 
   return (
-    <div style={{ background: bg, color: fg, minHeight: '100vh', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div style={{ background: bg, color: fg, minHeight: '100vh', fontFamily: "'Inter', system-ui, sans-serif", overflowX: 'hidden' }}>
       <style>{`
         @keyframes float-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
         @media (max-width: 768px) {
           .contato-grid { grid-template-columns: 1fr !important; }
+          .sobre-grid { grid-template-columns: 1fr !important; }
+          .servicos-grid { grid-template-columns: 1fr !important; }
+          .depoimentos-grid { grid-template-columns: 1fr !important; }
+          .galeria-masonry { column-count: 2 !important; }
+          .hero-title { font-size: 28px !important; }
+          .hero-sub { font-size: 15px !important; }
+          .section-title { font-size: 24px !important; }
+          .section-padding { padding: 48px 0 !important; }
+          .header-buttons { gap: 4px !important; }
+          .header-buttons a { padding: 6px 10px !important; font-size: 12px !important; }
+        }
+        @media (max-width: 480px) {
+          .galeria-masonry { column-count: 1 !important; }
         }
       `}</style>
 
@@ -156,14 +169,14 @@ export default function PublicSite() {
             )}
             <span style={{ fontWeight: 600, fontSize: 16 }}>{config.hero.titulo.split(' ').slice(0, 3).join(' ')}</span>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="header-buttons" style={{ display: 'flex', gap: 8 }}>
             {config.contato.whatsapp && (
-              <a href={`https://wa.me/55${cleanPhone(config.contato.whatsapp)}`} target="_blank" rel="noopener" style={{ background: '#25D366', color: '#fff', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <a href={`https://wa.me/55${cleanPhone(config.contato.whatsapp)}`} target="_blank" rel="noopener" style={{ background: '#25D366', color: '#fff', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
                 <MessageSquare style={{ width: 14, height: 14 }} /> WhatsApp
               </a>
             )}
             {config.contato.telefone && (
-              <a href={`tel:+55${cleanPhone(config.contato.telefone)}`} style={{ background: pc, color: '#fff', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <a href={`tel:+55${cleanPhone(config.contato.telefone)}`} style={{ background: pc, color: '#fff', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
                 <Phone style={{ width: 14, height: 14 }} /> Ligar
               </a>
             )}
@@ -183,12 +196,12 @@ export default function PublicSite() {
         )}
         <div style={{ position: 'relative', zIndex: 10, maxWidth: 768, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
           <Reveal>
-            <h1 style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em', color: config.hero.bg_image_url ? '#fff' : fg, marginBottom: 16 }}>
+            <h1 className="hero-title" style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em', color: config.hero.bg_image_url ? '#fff' : fg, marginBottom: 16 }}>
               {config.hero.titulo}
             </h1>
           </Reveal>
           <Reveal delay={100}>
-            <p style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: config.hero.bg_image_url ? 'rgba(255,255,255,0.8)' : fgSec, marginBottom: 32 }}>
+            <p className="hero-sub" style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: config.hero.bg_image_url ? 'rgba(255,255,255,0.8)' : fgSec, marginBottom: 32 }}>
               {config.hero.subtitulo}
             </p>
           </Reveal>
@@ -206,15 +219,17 @@ export default function PublicSite() {
 
       {/* Sobre */}
       {config.sobre.texto && (
-        <section style={{ padding: '80px 0', background: bg }}>
-          <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: config.sobre.foto_url ? '1fr 1fr' : '1fr', gap: 48, alignItems: 'center' }}>
+        <section className="section-padding" style={{ padding: '80px 0', background: bg }}>
+          <div className="sobre-grid" style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: config.sobre.foto_url ? '1fr 1fr' : '1fr', gap: 32, alignItems: 'center' }}>
             {config.sobre.foto_url && (
-              <Reveal><img src={config.sobre.foto_url} alt="Sobre" style={{ width: '100%', borderRadius: 16, objectFit: 'cover', maxHeight: 400 }} /></Reveal>
+              <Reveal>
+                <img src={config.sobre.foto_url} alt="Sobre" style={{ width: '100%', borderRadius: 16, objectFit: 'cover', maxHeight: 400, aspectRatio: '4/3' }} />
+              </Reveal>
             )}
             <Reveal delay={100}>
               <div>
                 <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', marginBottom: 12 }}>SOBRE NÓS</span>
-                <h2 style={{ fontSize: 32, fontWeight: 700, marginBottom: 16 }}>Conheça nosso negócio</h2>
+                <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, marginBottom: 16 }}>Conheça nosso negócio</h2>
                 <p style={{ fontSize: 16, lineHeight: 1.8, color: fgSec, whiteSpace: 'pre-line' }}>{config.sobre.texto}</p>
               </div>
             </Reveal>
@@ -224,13 +239,13 @@ export default function PublicSite() {
 
       {/* Serviços */}
       {config.servicos.length > 0 && (
-        <section style={{ padding: '80px 0', background: sectionAlt }}>
+        <section className="section-padding" style={{ padding: '80px 0', background: sectionAlt }}>
           <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px' }}>
             <Reveal>
               <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', textAlign: 'center', marginBottom: 12 }}>NOSSOS SERVIÇOS</span>
-              <h2 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>O que oferecemos</h2>
+              <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>O que oferecemos</h2>
             </Reveal>
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.servicos.length, 3)}, 1fr)`, gap: 16 }}>
+            <div className="servicos-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.servicos.length, 3)}, 1fr)`, gap: 16 }}>
               {config.servicos.map((s, i) => {
                 const Icon = lucideIcons[s.icone] || Star;
                 return (
@@ -253,13 +268,13 @@ export default function PublicSite() {
 
       {/* Galeria */}
       {config.galeria.length > 0 && (
-        <section style={{ padding: '80px 0' }}>
+        <section className="section-padding" style={{ padding: '80px 0' }}>
           <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px' }}>
             <Reveal>
               <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', textAlign: 'center', marginBottom: 12 }}>GALERIA</span>
-              <h2 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>Nossos momentos</h2>
+              <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>Nossos momentos</h2>
             </Reveal>
-            <div style={{ columnCount: 3, columnGap: 16 }}>
+            <div className="galeria-masonry" style={{ columnCount: 3, columnGap: 16 }}>
               {config.galeria.map((g, i) => (
                 <Reveal key={g.id} delay={i * 60}>
                   <div style={{ marginBottom: 16, breakInside: 'avoid' }}>
@@ -275,13 +290,13 @@ export default function PublicSite() {
 
       {/* Depoimentos */}
       {config.depoimentos.length > 0 && (
-        <section style={{ padding: '80px 0', background: sectionAlt }}>
+        <section className="section-padding" style={{ padding: '80px 0', background: sectionAlt }}>
           <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px' }}>
             <Reveal>
               <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', textAlign: 'center', marginBottom: 12 }}>DEPOIMENTOS</span>
-              <h2 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>O que dizem nossos clientes</h2>
+              <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', marginBottom: 48 }}>O que dizem nossos clientes</h2>
             </Reveal>
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.depoimentos.length, 3)}, 1fr)`, gap: 20 }}>
+            <div className="depoimentos-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.depoimentos.length, 3)}, 1fr)`, gap: 20 }}>
               {config.depoimentos.map((d, i) => (
                 <Reveal key={d.id} delay={i * 100}>
                   <div style={{ background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, padding: 24 }}>
@@ -304,7 +319,7 @@ export default function PublicSite() {
 
       {/* Horários */}
       {config.horarios.some(h => !h.fechado) && (
-        <section style={{ padding: '64px 0' }}>
+        <section className="section-padding" style={{ padding: '64px 0' }}>
           <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
             <Reveal>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 24 }}>
