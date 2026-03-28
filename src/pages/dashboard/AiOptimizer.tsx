@@ -55,8 +55,15 @@ export default function AiOptimizer() {
         .eq("business_id", biz.id)
         .maybeSingle();
       if (cached?.report_json) {
-        setReport(cached.report_json);
-        setCachedAt(cached.updated_at);
+        const age = Date.now() - new Date(cached.updated_at).getTime();
+        const expired = age > CACHE_TTL_DAYS * 24 * 60 * 60 * 1000;
+        setCacheExpired(expired);
+        if (!expired) {
+          setReport(cached.report_json);
+          setCachedAt(cached.updated_at);
+        } else {
+          setCachedAt(cached.updated_at);
+        }
       }
     }
     setLoadingCache(false);
