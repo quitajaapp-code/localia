@@ -3,12 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Star, FileText, TrendingUp, Megaphone, Bot, Play, History, Check, X, Clock, AlertTriangle, Bell, BellOff } from "lucide-react";
+import { Loader2, Star, FileText, TrendingUp, Megaphone, Bot, Play, History, Check, X, Clock, AlertTriangle, Bell, BellOff, Timer } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -55,6 +56,24 @@ const AGENTS = [
   },
 ];
 
+const SCHEDULE_PRESETS: Record<string, string> = {
+  every_6h: "A cada 6 horas",
+  every_12h: "A cada 12 horas",
+  daily_9am: "Diário às 9h",
+  daily_14h: "Diário às 14h",
+  twice_daily: "2x ao dia (9h e 18h)",
+  weekly_mon: "Semanal (segunda 9h)",
+  weekly_wed_fri: "2x por semana (qua e sex)",
+  every_3_days: "A cada 3 dias",
+};
+
+const AGENT_CRON_KEY: Record<string, string> = {
+  reviews: "reviews_cron",
+  posts: "posts_cron",
+  profile: "profile_cron",
+  ads: "ads_cron",
+};
+
 interface AgentAction {
   id: string;
   agent: string;
@@ -97,6 +116,7 @@ export default function Agents() {
   const [alerts, setAlerts] = useState<AgentAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState<string | null>(null);
+  const [savingSchedule, setSavingSchedule] = useState<string | null>(null);
 
   const loadData = async () => {
     if (!user) return;
@@ -164,6 +184,33 @@ export default function Agents() {
     await supabase.from("agent_settings")
       .upsert({ business_id: bizId, [key]: value, updated_at: new Date().toISOString() }, { onConflict: "business_id" });
     setSettings((prev) => prev ? { ...prev, [key]: value } : prev);
+  };
+
+  const setSchedule = async (agentId: string, scheduleKey: string | null) => {
+    if (!bizId) return;
+    setSavingSchedule(agentId);
+    try {
+      const { error } = await supabase.functions.invoke("manage-agent-cron", {
+        body: {
+          action: "set_schedule",
+          business_id: bizId,
+          agent: agentId,
+          schedule_key: scheduleKey === "off" ? null : scheduleKey,
+        },
+      });
+      if (error) throw error;
+
+      const cronKey = AGENT_CRON_KEY[agentId];
+      const val = scheduleKey === "off" ? null : scheduleKey;
+      setSettings((prev) => prev ? { ...prev, [cronKey]: val } : prev);
+      toast({
+        title: val ? "Agendamento salvo!" : "Agendamento removido",
+        description: val ? `${SCHEDULE_PRESETS[val]}` : "O agente não será mais executado automaticamente.",
+      });
+    } catch {
+      toast({ title: "Erro ao salvar agendamento", variant: "destructive" });
+    }
+    setSavingSchedule(null);
   };
 
   const runAgent = async (funcao: string, agentId: string) => {
@@ -332,6 +379,33 @@ export default function Agents() {
                     checked={isAuto}
                     onCheckedChange={(v) => saveConfig(agent.configKey, v)}
                   />
+                </div>
+
+                {/* Schedule selector */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Timer className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Agendamento</span>
+                  </div>
+                  <Select
+                    value={settings?.[AGENT_CRON_KEY[agent.id]] || "off"}
+                    onValueChange={(v) => setSchedule(agent.id, v)}
+                    disabled={savingSchedule === agent.id}
+                  >
+                    <SelectTrigger className="h-7 text-xs w-[180px]">
+                      {savingSchedule === agent.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <SelectValue placeholder="Sem agendamento" />
+                      )}
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="off">Sem agendamento</SelectItem>
+                      {Object.entries(SCHEDULE_PRESETS).map(([key, label]) => (
+                        <SelectItem key={key} value={key}>{label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Last action */}
