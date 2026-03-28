@@ -15,7 +15,7 @@ type Template = {
 };
 
 interface TemplatePickerProps {
-  onSelect: (message: string) => void;
+  onSelect: (message: string, templateId?: string) => void;
 }
 
 export function TemplatePicker({ onSelect }: TemplatePickerProps) {
