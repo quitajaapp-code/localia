@@ -224,41 +224,53 @@ export type Database = {
       agent_settings: {
         Row: {
           ads_auto_adjust: boolean | null
+          ads_cron: string | null
           business_id: string | null
           created_at: string | null
           id: string
           posts_auto_publish: boolean | null
           posts_best_time: string | null
+          posts_cron: string | null
           posts_frequency: string | null
           profile_auto_optimize: boolean | null
+          profile_cron: string | null
           reviews_auto_reply: boolean | null
           reviews_auto_threshold: number | null
+          reviews_cron: string | null
           updated_at: string | null
         }
         Insert: {
           ads_auto_adjust?: boolean | null
+          ads_cron?: string | null
           business_id?: string | null
           created_at?: string | null
           id?: string
           posts_auto_publish?: boolean | null
           posts_best_time?: string | null
+          posts_cron?: string | null
           posts_frequency?: string | null
           profile_auto_optimize?: boolean | null
+          profile_cron?: string | null
           reviews_auto_reply?: boolean | null
           reviews_auto_threshold?: number | null
+          reviews_cron?: string | null
           updated_at?: string | null
         }
         Update: {
           ads_auto_adjust?: boolean | null
+          ads_cron?: string | null
           business_id?: string | null
           created_at?: string | null
           id?: string
           posts_auto_publish?: boolean | null
           posts_best_time?: string | null
+          posts_cron?: string | null
           posts_frequency?: string | null
           profile_auto_optimize?: boolean | null
+          profile_cron?: string | null
           reviews_auto_reply?: boolean | null
           reviews_auto_threshold?: number | null
+          reviews_cron?: string | null
           updated_at?: string | null
         }
         Relationships: [
