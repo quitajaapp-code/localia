@@ -235,10 +235,28 @@ export default function PublicSite() {
           .section-padding { padding: 48px 0 !important; }
           .header-buttons { gap: 4px !important; }
           .header-buttons a { padding: 6px 10px !important; font-size: 12px !important; }
-          .como-chegar-btn { font-size: 13px !important; padding: 10px 16px !important; width: 100% !important; max-width: 100% !important; justify-content: center !important; }
+          .como-chegar-btn {
+            width: min(100%, 360px) !important;
+            margin: 12px auto 0 !important;
+            padding: 11px 14px !important;
+            font-size: 13px !important;
+            justify-content: center !important;
+            text-align: center !important;
+          }
+          .como-chegar-btn .como-chegar-label {
+            white-space: normal !important;
+            line-height: 1.35 !important;
+            text-wrap: balance;
+          }
         }
         @media (max-width: 480px) {
           .galeria-masonry { column-count: 1 !important; }
+          .como-chegar-btn {
+            width: min(100%, 330px) !important;
+            font-size: 12px !important;
+            padding: 10px 12px !important;
+            gap: 6px !important;
+          }
         }
       `}</style>
 
@@ -575,7 +593,7 @@ export default function PublicSite() {
                             className="como-chegar-btn"
                           >
                             <MapPin style={{ width: 15, height: 15 }} />
-                            Como chegar — Abrir no Google Maps
+                            <span className="como-chegar-label">Como chegar — Abrir no Google Maps</span>
                           </a>
                         </div>
                       </Reveal>
