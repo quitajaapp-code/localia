@@ -526,6 +526,42 @@ export default function BusinessInfo() {
             rows={3}
           />
         </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="produtos">Produtos / Serviços</Label>
+            <AiSuggestButton
+              field="produtos"
+              context={aiContext}
+              onSuggestion={(s) => setProdutos(s)}
+            />
+          </div>
+          <Textarea
+            id="produtos"
+            placeholder="Liste seus principais produtos ou serviços com valores aproximados..."
+            value={produtos}
+            onChange={(e) => setProdutos(e.target.value)}
+            rows={3}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="faq">Perguntas Frequentes (FAQ)</Label>
+            <AiSuggestButton
+              field="faq"
+              context={aiContext}
+              onSuggestion={(s) => setFaq(s)}
+            />
+          </div>
+          <Textarea
+            id="faq"
+            placeholder="Quais dúvidas seus clientes mais têm? Ex: Aceitam cartão? Tem estacionamento?"
+            value={faq}
+            onChange={(e) => setFaq(e.target.value)}
+            rows={3}
+          />
+        </div>
       </div>
 
       <Button onClick={handleSave} disabled={saving} className="w-full">
