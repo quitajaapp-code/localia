@@ -121,11 +121,24 @@ export default function PublicSite() {
   const sectionAlt = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)';
 
   return (
-    <div style={{ background: bg, color: fg, minHeight: '100vh', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div style={{ background: bg, color: fg, minHeight: '100vh', fontFamily: "'Inter', system-ui, sans-serif", overflowX: 'hidden' }}>
       <style>{`
         @keyframes float-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
         @media (max-width: 768px) {
           .contato-grid { grid-template-columns: 1fr !important; }
+          .sobre-grid { grid-template-columns: 1fr !important; }
+          .servicos-grid { grid-template-columns: 1fr !important; }
+          .depoimentos-grid { grid-template-columns: 1fr !important; }
+          .galeria-masonry { column-count: 2 !important; }
+          .hero-title { font-size: 28px !important; }
+          .hero-sub { font-size: 15px !important; }
+          .section-title { font-size: 24px !important; }
+          .section-padding { padding: 48px 0 !important; }
+          .header-buttons { gap: 4px !important; }
+          .header-buttons a { padding: 6px 10px !important; font-size: 12px !important; }
+        }
+        @media (max-width: 480px) {
+          .galeria-masonry { column-count: 1 !important; }
         }
       `}</style>
 
