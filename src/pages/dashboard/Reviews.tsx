@@ -16,7 +16,7 @@ import { OnboardingTooltip } from "@/components/shared/OnboardingTooltip";
 import { CountUp } from "@/components/shared/CountUp";
 import {
   Star, MessageSquare, Search, Filter, Sparkles, Loader2,
-  Copy, Check, TrendingUp, AlertCircle, QrCode,
+  Copy, Check, TrendingUp, AlertCircle, QrCode, Send,
 } from "lucide-react";
 
 type Review = {
