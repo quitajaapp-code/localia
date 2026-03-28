@@ -14,6 +14,7 @@ import {
   Tag, Globe, Bot, Clock, Mail,
 } from "lucide-react";
 import type { Stage } from "@/pages/admin/AdminCRM";
+import { TemplatePicker } from "@/components/crm/TemplatePicker";
 
 type StageAction = {
   id: string;
