@@ -8,7 +8,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Star, FileText, TrendingUp, Megaphone, Bot, Play, History, Check, X, Clock } from "lucide-react";
+import { Loader2, Star, FileText, TrendingUp, Megaphone, Bot, Play, History, Check, X, Clock, AlertTriangle, Bell, BellOff } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -66,6 +66,20 @@ interface AgentAction {
   created_at: string;
 }
 
+interface AgentAlert {
+  id: string;
+  business_id: string;
+  agent: string;
+  alert_type: string;
+  severity: string;
+  title: string;
+  message: string | null;
+  read: boolean;
+  notified_email: boolean;
+  notified_whatsapp: boolean;
+  created_at: string;
+}
+
 interface AgentSettings {
   reviews_auto_reply: boolean;
   posts_auto_publish: boolean;
@@ -80,6 +94,7 @@ export default function Agents() {
   const [bizId, setBizId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AgentSettings | null>(null);
   const [actions, setActions] = useState<AgentAction[]>([]);
+  const [alerts, setAlerts] = useState<AgentAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState<string | null>(null);
 
@@ -114,7 +129,20 @@ export default function Agents() {
     }
 
     await loadActions(biz.id);
+    await loadAlerts(biz.id);
     setLoading(false);
+  };
+
+  const loadAlerts = async (id?: string) => {
+    const businessId = id || bizId;
+    if (!businessId) return;
+    const { data } = await supabase
+      .from("agent_alerts")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    setAlerts((data || []) as unknown as AgentAlert[]);
   };
 
   const loadActions = async (id?: string) => {
@@ -148,6 +176,7 @@ export default function Agents() {
       if (error) throw error;
       toast({ title: "Agente executado!", description: "Veja as ações abaixo." });
       await loadActions();
+      await loadAlerts();
     } catch {
       toast({ title: "Erro ao executar agente", variant: "destructive" });
     }
@@ -159,6 +188,17 @@ export default function Agents() {
       .update({ status: newStatus, applied_at: newStatus === "applied" ? new Date().toISOString() : null })
       .eq("id", actionId);
     await loadActions();
+  };
+
+  const markAlertRead = async (alertId: string) => {
+    await supabase.from("agent_alerts").update({ read: true }).eq("id", alertId);
+    setAlerts((prev) => prev.map((a) => a.id === alertId ? { ...a, read: true } : a));
+  };
+
+  const markAllAlertsRead = async () => {
+    if (!bizId) return;
+    await supabase.from("agent_alerts").update({ read: true }).eq("business_id", bizId).eq("read", false);
+    setAlerts((prev) => prev.map((a) => ({ ...a, read: true })));
   };
 
   const getLastAction = (agentId: string) =>
@@ -198,6 +238,67 @@ export default function Agents() {
         </h1>
         <p className="text-muted-foreground text-sm">Trabalhando 24h pelo seu negócio</p>
       </div>
+
+      {/* Urgent Alerts */}
+      {alerts.filter(a => !a.read).length > 0 && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-4 w-4" />
+              Alertas urgentes ({alerts.filter(a => !a.read).length})
+            </CardTitle>
+            <Button variant="ghost" size="sm" className="text-xs" onClick={markAllAlertsRead}>
+              <BellOff className="h-3 w-3 mr-1" /> Marcar todos como lidos
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {alerts.filter(a => !a.read).map((alert) => (
+              <div key={alert.id} className="flex items-start gap-3 p-3 rounded-lg bg-background border border-destructive/20">
+                <div className={`p-1.5 rounded-full mt-0.5 ${
+                  alert.severity === "critical" ? "bg-destructive/20" : "bg-warning/20"
+                }`}>
+                  <AlertTriangle className={`h-3.5 w-3.5 ${
+                    alert.severity === "critical" ? "text-destructive" : "text-warning"
+                  }`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                    <Badge variant="outline" className={`text-[10px] ${
+                      alert.severity === "critical" 
+                        ? "border-destructive/50 text-destructive" 
+                        : "border-warning/50 text-warning"
+                    }`}>
+                      {alert.severity === "critical" ? "Crítico" : "Alto"}
+                    </Badge>
+                  </div>
+                  {alert.message && (
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{alert.message}</p>
+                  )}
+                  <div className="flex items-center gap-3 mt-1.5">
+                    <span className="text-[11px] text-muted-foreground">
+                      {formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: ptBR })}
+                    </span>
+                    {alert.notified_email && (
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                        <Bell className="h-2.5 w-2.5" /> Email
+                      </span>
+                    )}
+                    {alert.notified_whatsapp && (
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                        <Bell className="h-2.5 w-2.5" /> WhatsApp
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => markAlertRead(alert.id)}>
+                  <Check className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Grid 2x2 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

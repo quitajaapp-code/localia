@@ -158,6 +158,69 @@ export type Database = {
           },
         ]
       }
+      agent_alerts: {
+        Row: {
+          agent: string
+          alert_type: string
+          business_id: string
+          created_at: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          notified_email: boolean
+          notified_whatsapp: boolean
+          read: boolean
+          review_id: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          agent?: string
+          alert_type: string
+          business_id: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          notified_email?: boolean
+          notified_whatsapp?: boolean
+          read?: boolean
+          review_id?: string | null
+          severity?: string
+          title: string
+        }
+        Update: {
+          agent?: string
+          alert_type?: string
+          business_id?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          notified_email?: boolean
+          notified_whatsapp?: boolean
+          read?: boolean
+          review_id?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_alerts_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_alerts_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_settings: {
         Row: {
           ads_auto_adjust: boolean | null
