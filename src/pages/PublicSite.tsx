@@ -57,7 +57,7 @@ function getSubdomainSlug(): string | null {
   return null;
 }
 
-const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+const MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '';
 
 function getMapEmbedUrl(endereco: string, mapsUrl?: string): string {
   // Prioridade 1: endereço do negócio (sempre presente e preciso)
