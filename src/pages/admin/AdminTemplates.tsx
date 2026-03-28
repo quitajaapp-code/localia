@@ -175,6 +175,9 @@ export default function AdminTemplates() {
         <StatCard icon={<TrendingUp className="h-4 w-4 text-accent-foreground" />} label="Taxa de resposta" value={`${globalTaxaResposta}%`} />
       </div>
 
+      {/* Weekly Chart */}
+      <TemplateUsageChart usageRows={usageRows} />
+
       {/* Filters */}
       <div className="flex gap-2 flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-xs">
