@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -110,6 +111,7 @@ interface AgentSettings {
 export default function Agents() {
   usePageTitle("Agentes IA");
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [bizId, setBizId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AgentSettings | null>(null);
   const [actions, setActions] = useState<AgentAction[]>([]);
@@ -294,9 +296,14 @@ export default function Agents() {
               <AlertTriangle className="h-4 w-4" />
               Alertas urgentes ({alerts.filter(a => !a.read).length})
             </CardTitle>
-            <Button variant="ghost" size="sm" className="text-xs" onClick={markAllAlertsRead}>
-              <BellOff className="h-3 w-3 mr-1" /> Marcar todos como lidos
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/dashboard/agents/alerts")}>
+                <History className="h-3 w-3 mr-1" /> Ver histórico
+              </Button>
+              <Button variant="ghost" size="sm" className="text-xs" onClick={markAllAlertsRead}>
+                <BellOff className="h-3 w-3 mr-1" /> Marcar lidos
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-2">
             {alerts.filter(a => !a.read).map((alert) => (
