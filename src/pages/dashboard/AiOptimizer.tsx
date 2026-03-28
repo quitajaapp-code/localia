@@ -190,6 +190,24 @@ export default function AiOptimizer() {
         </Card>
       )}
 
+      {/* Cache expirado */}
+      {cacheExpired && !loading && !loadingCache && (
+        <Card className="border-warning/30 bg-warning/5">
+          <CardContent className="py-12 text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-warning/10 flex items-center justify-center mx-auto">
+              <AlertCircle className="h-8 w-8 text-warning" />
+            </div>
+            <h2 className="text-lg font-semibold">Relatório desatualizado</h2>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              Seu último relatório tem mais de {CACHE_TTL_DAYS} dias. Gere uma nova análise para obter recomendações atualizadas.
+            </p>
+            <Button onClick={runAnalysis} size="lg">
+              <RefreshCw className="h-4 w-4 mr-2" /> Gerar nova análise
+            </Button>
+          </CardContent>
+        </Card>
+      )
+
       {/* Loading */}
       {(loading || loadingCache) && !report && (
         <Card>
