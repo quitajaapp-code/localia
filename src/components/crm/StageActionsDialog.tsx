@@ -107,6 +107,7 @@ export function StageActionsDialog({ stage, stages, onClose }: StageActionsDialo
             <p className="text-[10px] text-muted-foreground">
               Variáveis: {"{{nome}}"} {"{{empresa}}"} {"{{cidade}}"} {"{{nicho}}"} {"{{whatsapp}}"} {"{{email}}"}
             </p>
+            <MessagePreview message={config.message || ""} />
           </div>
         );
 
