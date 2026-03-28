@@ -15,6 +15,7 @@ import {
   Upload, X, Image, Video, Globe, MessageSquare, Sparkles, Save,
   Palette, Camera, Info, Award, Users, Brain, CheckCircle, ExternalLink, Loader2
 } from "lucide-react";
+import AiSuggestButton from "@/components/shared/AiSuggestButton";
 
 const TOM_OPTIONS = [
   "Descontraído e próximo", "Profissional e formal", "Divertido e criativo",
@@ -116,6 +117,10 @@ function SectionCard({ title, icon: Icon, filled, total, children }: {
 export default function MaterialsPage() {
   usePageTitle("Materiais");
   const [data, setData] = useState<BizData>(EMPTY);
+  const [bizNome, setBizNome] = useState("");
+  const [bizNicho, setBizNicho] = useState("");
+  const [bizCidade, setBizCidade] = useState("");
+  const [bizEstado, setBizEstado] = useState("");
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -138,6 +143,10 @@ export default function MaterialsPage() {
         .limit(1)
         .maybeSingle();
       if (biz) {
+        setBizNome(biz.nome || "");
+        setBizNicho(biz.nicho || "");
+        setBizCidade(biz.cidade || "");
+        setBizEstado(biz.estado || "");
         const mapped: BizData = {
           id: biz.id,
           tom_de_voz: biz.tom_de_voz || "",
@@ -213,6 +222,12 @@ export default function MaterialsPage() {
     if (data.publico_alvo) s += 3;
     return Math.round(Math.min(100, s));
   }, [data, photos]);
+
+  const aiContext = useMemo(() => ({
+    nome: bizNome, nicho: bizNicho, cidade: bizCidade, estado: bizEstado,
+    publico_alvo: data.publico_alvo, diferenciais: data.diferenciais,
+    tom_de_voz: data.tom_de_voz, produtos: data.produtos,
+  }), [bizNome, bizNicho, bizCidade, bizEstado, data.publico_alvo, data.diferenciais, data.tom_de_voz, data.produtos]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -393,7 +408,10 @@ export default function MaterialsPage() {
             ["produtos", "Produtos/serviços principais com preço", "Liste seus serviços e valores aproximados"],
           ] as const).map(([field, label, placeholder]) => (
             <div key={field}>
-              <Label className="text-sm mb-1 block">{label}</Label>
+              <div className="flex items-center justify-between mb-1">
+                <Label className="text-sm">{label}</Label>
+                <AiSuggestButton field={field} context={aiContext} onSuggestion={(s) => update(field, s)} />
+              </div>
               <Textarea value={data[field]} onChange={(e) => update(field, e.target.value)}
                 placeholder={placeholder} rows={3} />
             </div>
@@ -434,7 +452,10 @@ export default function MaterialsPage() {
         {/* 6. Prova Social */}
         <SectionCard title="Prova Social" icon={Award} filled={s6Filled} total={4}>
           <div>
-            <Label className="text-sm mb-1 block">Depoimentos de clientes (um por linha)</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="text-sm">Depoimentos de clientes (um por linha)</Label>
+              <AiSuggestButton field="depoimentos" context={aiContext} onSuggestion={(s) => update("depoimentos", s)} />
+            </div>
             <Textarea value={data.depoimentos} onChange={(e) => update("depoimentos", e.target.value)}
               placeholder={'"Melhor atendimento da cidade!" — Maria\n"Recomendo muito!" — João'} rows={4} />
           </div>
@@ -460,7 +481,10 @@ export default function MaterialsPage() {
         {/* 7. Contexto IA */}
         <SectionCard title="Contexto para IA" icon={Brain} filled={s7Filled} total={3}>
           <div>
-            <Label className="text-sm mb-1 block">O que a IA deve <strong>sempre</strong> mencionar nos posts?</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="text-sm">O que a IA deve <strong>sempre</strong> mencionar nos posts?</Label>
+              <AiSuggestButton field="ia_sempre_mencionar" context={aiContext} onSuggestion={(s) => update("ia_sempre_mencionar", s)} />
+            </div>
             <Textarea value={data.ia_sempre_mencionar} onChange={(e) => update("ia_sempre_mencionar", e.target.value)}
               placeholder="Ex: Estacionamento gratuito, aceita cartão, delivery..." rows={3} />
           </div>
@@ -470,7 +494,10 @@ export default function MaterialsPage() {
               placeholder="Ex: Preços específicos, nome de concorrentes..." rows={3} />
           </div>
           <div>
-            <Label className="text-sm mb-1 block">Público-alvo ideal</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="text-sm">Público-alvo ideal</Label>
+              <AiSuggestButton field="publico_alvo" context={aiContext} onSuggestion={(s) => update("publico_alvo", s)} />
+            </div>
             <Textarea value={data.publico_alvo} onChange={(e) => update("publico_alvo", e.target.value)}
               placeholder="Idade, perfil, motivação principal..." rows={2} />
           </div>

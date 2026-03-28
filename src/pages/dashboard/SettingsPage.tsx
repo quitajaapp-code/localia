@@ -18,7 +18,8 @@ import {
   AlertTriangle, CheckCircle, XCircle, ExternalLink, Copy, Eye, EyeOff, Brain, Key, MapPin, Star
 } from "lucide-react";
 import GooglePlacesSearch, { type PlaceResult } from "@/components/shared/GooglePlacesSearch";
-
+import AiSuggestButton from "@/components/shared/AiSuggestButton";
+import { Textarea } from "@/components/ui/textarea";
 const TOM_OPTIONS = [
   "Descontraído e próximo", "Profissional e formal", "Divertido e criativo",
   "Técnico e especializado", "Empático e acolhedor", "Direto e objetivo",
@@ -93,6 +94,8 @@ export default function SettingsPage() {
   const [bizGmbId, setBizGmbId] = useState("");
   const [bizInstagram, setBizInstagram] = useState("");
   const [connectedPlaceName, setConnectedPlaceName] = useState("");
+  const [bizPublicoAlvo, setBizPublicoAlvo] = useState("");
+  const [bizDiferenciais, setBizDiferenciais] = useState("");
 
   // AI Provider
   const [iaProvider, setIaProvider] = useState("lovable");
@@ -145,6 +148,8 @@ export default function SettingsPage() {
         setBizGmbId(biz.gmb_location_id || "");
         setBizInstagram(biz.instagram || "");
         setConnectedPlaceName(biz.gmb_location_id ? biz.nome || "" : "");
+        setBizPublicoAlvo(biz.publico_alvo || "");
+        setBizDiferenciais(biz.diferenciais || "");
         setIaProvider((biz as any).ia_provider || "lovable");
         setIaApiKey((biz as any).ia_api_key || "");
       }
@@ -169,6 +174,8 @@ export default function SettingsPage() {
         website_url: bizWebsite, whatsapp: bizWhatsapp, cidade: bizCidade, estado: bizEstado,
         gmb_location_id: bizGmbId || null,
         instagram: bizInstagram || null,
+        publico_alvo: bizPublicoAlvo || null,
+        diferenciais: bizDiferenciais || null,
       }).eq("id", bizId);
       toast.success("Dados do negócio atualizados!");
     } catch { toast.error("Erro ao salvar"); }
@@ -388,7 +395,10 @@ export default function SettingsPage() {
                 <div><Label className="text-sm">Nicho</Label><Input value={bizNicho} onChange={(e) => setBizNicho(e.target.value)} /></div>
               </div>
               <div>
-                <Label className="text-sm">Tom de voz</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Tom de voz</Label>
+                  <AiSuggestButton field="tom_de_voz" context={{ nome: bizNome, nicho: bizNicho, cidade: bizCidade, estado: bizEstado, publico_alvo: bizPublicoAlvo }} onSuggestion={setBizTom} />
+                </div>
                 <Select value={bizTom} onValueChange={setBizTom}>
                   <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
                   <SelectContent>{TOM_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
@@ -402,6 +412,20 @@ export default function SettingsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div><Label className="text-sm">Cidade</Label><Input value={bizCidade} onChange={(e) => setBizCidade(e.target.value)} /></div>
                 <div><Label className="text-sm">Estado</Label><Input value={bizEstado} onChange={(e) => setBizEstado(e.target.value)} /></div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Público-alvo</Label>
+                  <AiSuggestButton field="publico_alvo" context={{ nome: bizNome, nicho: bizNicho, cidade: bizCidade, estado: bizEstado }} onSuggestion={setBizPublicoAlvo} />
+                </div>
+                <Textarea value={bizPublicoAlvo} onChange={(e) => setBizPublicoAlvo(e.target.value)} placeholder="Ex: Mulheres 25-45 anos, classe B/C" rows={2} />
+              </div>
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Diferenciais</Label>
+                  <AiSuggestButton field="diferenciais" context={{ nome: bizNome, nicho: bizNicho, cidade: bizCidade, estado: bizEstado, publico_alvo: bizPublicoAlvo }} onSuggestion={setBizDiferenciais} />
+                </div>
+                <Textarea value={bizDiferenciais} onChange={(e) => setBizDiferenciais(e.target.value)} placeholder="O que torna seu negócio especial?" rows={3} />
               </div>
               <Button onClick={saveBusiness} disabled={saving}>
                 {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
