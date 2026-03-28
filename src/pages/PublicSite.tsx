@@ -2,7 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { usePublicSite } from "@/hooks/useWebsite";
 import { WebsiteConfig } from "@/types/website";
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView as useMotionInView } from "framer-motion";
+import { motion, useInView as useMotionInView, useScroll, useTransform } from "framer-motion";
 import {
   Phone, MessageSquare, MapPin, Clock, Star, Globe, Mail,
   Zap, Heart, Scissors, Car, Home, Camera, Coffee, FileText, Target
@@ -91,6 +91,51 @@ function getMapEmbedUrl(endereco: string, mapsUrl?: string): string {
     return `https://www.google.com/maps/embed/v1/place?key=${MAPS_KEY}&q=${encodeURIComponent(mapsUrl)}&language=pt-BR`;
   }
   return '';
+}
+
+function HeroSection({ config, pc, fg, fgSec }: { config: WebsiteConfig; pc: string; fg: string; fgSec: string }) {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+
+  return (
+    <section ref={heroRef} style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+      {config.hero.bg_image_url ? (
+        <>
+          <motion.img
+            src={config.hero.bg_image_url}
+            alt=""
+            style={{ position: 'absolute', inset: '-10% 0', width: '100%', height: '120%', objectFit: 'cover', y: bgY, scale: bgScale }}
+          />
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)' }} />
+        </>
+      ) : (
+        <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${pc}33, transparent 70%)` }} />
+      )}
+      <div style={{ position: 'relative', zIndex: 10, maxWidth: 768, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
+        <Reveal variant="blur">
+          <h1 className="hero-title" style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em', color: config.hero.bg_image_url ? '#fff' : fg, marginBottom: 16 }}>
+            {config.hero.titulo}
+          </h1>
+        </Reveal>
+        <Reveal delay={150} variant="blur">
+          <p className="hero-sub" style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: config.hero.bg_image_url ? 'rgba(255,255,255,0.8)' : fgSec, marginBottom: 32 }}>
+            {config.hero.subtitulo}
+          </p>
+        </Reveal>
+        {config.hero.cta_link && (
+          <Reveal delay={300} variant="scaleUp">
+            <a href={config.hero.cta_link} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: pc, color: '#fff', padding: '14px 28px', borderRadius: 10, fontWeight: 600, fontSize: 16, textDecoration: 'none', boxShadow: `0 0 40px ${pc}66` }}>
+              {config.hero.cta_link.includes('wa.me') && <MessageSquare style={{ width: 18, height: 18 }} />}
+              {config.hero.cta_link.includes('tel:') && <Phone style={{ width: 18, height: 18 }} />}
+              {config.hero.cta_texto}
+            </a>
+          </Reveal>
+        )}
+      </div>
+    </section>
+  );
 }
 
 export default function PublicSite() {
@@ -206,37 +251,7 @@ export default function PublicSite() {
       </header>
 
       {/* Hero */}
-      <section style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
-        {config.hero.bg_image_url ? (
-          <>
-            <img src={config.hero.bg_image_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)' }} />
-          </>
-        ) : (
-          <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${pc}33, transparent 70%)` }} />
-        )}
-        <div style={{ position: 'relative', zIndex: 10, maxWidth: 768, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
-          <Reveal variant="blur">
-            <h1 className="hero-title" style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em', color: config.hero.bg_image_url ? '#fff' : fg, marginBottom: 16 }}>
-              {config.hero.titulo}
-            </h1>
-          </Reveal>
-          <Reveal delay={150} variant="blur">
-            <p className="hero-sub" style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: config.hero.bg_image_url ? 'rgba(255,255,255,0.8)' : fgSec, marginBottom: 32 }}>
-              {config.hero.subtitulo}
-            </p>
-          </Reveal>
-          {config.hero.cta_link && (
-            <Reveal delay={300} variant="scaleUp">
-              <a href={config.hero.cta_link} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: pc, color: '#fff', padding: '14px 28px', borderRadius: 10, fontWeight: 600, fontSize: 16, textDecoration: 'none', boxShadow: `0 0 40px ${pc}66` }}>
-                {config.hero.cta_link.includes('wa.me') && <MessageSquare style={{ width: 18, height: 18 }} />}
-                {config.hero.cta_link.includes('tel:') && <Phone style={{ width: 18, height: 18 }} />}
-                {config.hero.cta_texto}
-              </a>
-            </Reveal>
-          )}
-        </div>
-      </section>
+      <HeroSection config={config} pc={pc} fg={fg} fgSec={fgSec} />
 
       {/* Sobre */}
       {config.sobre.texto && (
