@@ -25,6 +25,18 @@ const CATEGORIA_ICON: Record<string, any> = {
   "palavras-chave": Search,
 };
 
+function ScoreDelta({ current, previous }: { current: number; previous: number }) {
+  const diff = current - previous;
+  if (diff === 0) return <span className="text-xs text-muted-foreground mt-1 block">→ Sem mudança</span>;
+  const isPositive = diff > 0;
+  return (
+    <span className={`text-xs font-semibold mt-1 flex items-center justify-center gap-0.5 ${isPositive ? "text-success" : "text-destructive"}`}>
+      {isPositive ? <TrendingUp className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+      {isPositive ? "+" : ""}{diff} pts
+    </span>
+  );
+}
+
 export default function AiOptimizer() {
   usePageTitle("Otimizador GMB | LocalAI");
   const [loading, setLoading] = useState(false);
