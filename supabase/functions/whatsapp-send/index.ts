@@ -70,11 +70,23 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Se tiver conversation_id, salva a mensagem enviada
+    // Se tiver conversation_id, salva a mensagem enviada com o role correto do agente
     if (conversation_id) {
+      // Descobre qual agente está atribuído à conversa para salvar o role correto
+      const { data: conv } = await supabase
+        .from("conversations")
+        .select("assigned_agent")
+        .eq("id", conversation_id)
+        .maybeSingle();
+
+      const agentRole =
+        conv?.assigned_agent === "support" ? "agent_support" :
+        conv?.assigned_agent === "humano"  ? "human"         :
+        "agent_sdr";
+
       await supabase.from("messages").insert({
         conversation_id,
-        role: "agent_sdr",
+        role: agentRole,
         content: message,
       });
 
