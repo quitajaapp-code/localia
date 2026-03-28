@@ -49,6 +49,8 @@ export default function AlertHistory() {
   const [loading, setLoading] = useState(true);
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterDelivery, setFilterDelivery] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   useEffect(() => {
     if (!user) return;
