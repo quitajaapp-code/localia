@@ -2,6 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { usePublicSite } from "@/hooks/useWebsite";
 import { WebsiteConfig } from "@/types/website";
 import { useEffect, useRef, useState } from "react";
+import { motion, useInView as useMotionInView } from "framer-motion";
 import {
   Phone, MessageSquare, MapPin, Clock, Star, Globe, Mail,
   Zap, Heart, Scissors, Car, Home, Camera, Coffee, FileText, Target
@@ -11,25 +12,45 @@ const lucideIcons: Record<string, any> = {
   Star, Zap, Heart, Scissors, Car, Home, Camera, Coffee, MapPin, FileText, Target, Phone,
 };
 
-function useInView(threshold = 0.1) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-}
+type RevealVariant = 'fadeUp' | 'fadeLeft' | 'fadeRight' | 'scaleUp' | 'blur';
 
-function Reveal({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
-  const { ref, visible } = useInView();
+const variants: Record<RevealVariant, { hidden: any; visible: any }> = {
+  fadeUp: {
+    hidden: { opacity: 0, y: 32 },
+    visible: { opacity: 1, y: 0 },
+  },
+  fadeLeft: {
+    hidden: { opacity: 0, x: -40 },
+    visible: { opacity: 1, x: 0 },
+  },
+  fadeRight: {
+    hidden: { opacity: 0, x: 40 },
+    visible: { opacity: 1, x: 0 },
+  },
+  scaleUp: {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { opacity: 1, scale: 1 },
+  },
+  blur: {
+    hidden: { opacity: 0, filter: 'blur(8px)', y: 16 },
+    visible: { opacity: 1, filter: 'blur(0px)', y: 0 },
+  },
+};
+
+function Reveal({ children, delay = 0, style = {}, variant = 'fadeUp' }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties; variant?: RevealVariant }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useMotionInView(ref, { once: true, margin: '-40px' });
+  const v = variants[variant];
   return (
-    <div ref={ref} style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(24px)', transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`, ...style }}>
+    <motion.div
+      ref={ref}
+      initial={v.hidden}
+      animate={isInView ? v.visible : v.hidden}
+      transition={{ duration: 0.7, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
+      style={style}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -195,18 +216,18 @@ export default function PublicSite() {
           <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${pc}33, transparent 70%)` }} />
         )}
         <div style={{ position: 'relative', zIndex: 10, maxWidth: 768, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
-          <Reveal>
+          <Reveal variant="blur">
             <h1 className="hero-title" style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em', color: config.hero.bg_image_url ? '#fff' : fg, marginBottom: 16 }}>
               {config.hero.titulo}
             </h1>
           </Reveal>
-          <Reveal delay={100}>
+          <Reveal delay={150} variant="blur">
             <p className="hero-sub" style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: config.hero.bg_image_url ? 'rgba(255,255,255,0.8)' : fgSec, marginBottom: 32 }}>
               {config.hero.subtitulo}
             </p>
           </Reveal>
           {config.hero.cta_link && (
-            <Reveal delay={200}>
+            <Reveal delay={300} variant="scaleUp">
               <a href={config.hero.cta_link} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: pc, color: '#fff', padding: '14px 28px', borderRadius: 10, fontWeight: 600, fontSize: 16, textDecoration: 'none', boxShadow: `0 0 40px ${pc}66` }}>
                 {config.hero.cta_link.includes('wa.me') && <MessageSquare style={{ width: 18, height: 18 }} />}
                 {config.hero.cta_link.includes('tel:') && <Phone style={{ width: 18, height: 18 }} />}
@@ -222,11 +243,11 @@ export default function PublicSite() {
         <section className="section-padding" style={{ padding: '80px 0', background: bg }}>
           <div className="sobre-grid" style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: config.sobre.foto_url ? '1fr 1fr' : '1fr', gap: 32, alignItems: 'center' }}>
             {config.sobre.foto_url && (
-              <Reveal>
+              <Reveal variant="fadeLeft">
                 <img src={config.sobre.foto_url} alt="Sobre" style={{ width: '100%', borderRadius: 16, objectFit: 'cover', maxHeight: 400, aspectRatio: '4/3' }} />
               </Reveal>
             )}
-            <Reveal delay={100}>
+            <Reveal delay={150} variant="fadeRight">
               <div>
                 <span style={{ fontSize: 11, letterSpacing: '0.15em', color: pc, fontWeight: 600, display: 'block', marginBottom: 12 }}>SOBRE NÓS</span>
                 <h2 className="section-title" style={{ fontSize: 32, fontWeight: 700, marginBottom: 16 }}>Conheça nosso negócio</h2>
@@ -249,7 +270,7 @@ export default function PublicSite() {
               {config.servicos.map((s, i) => {
                 const Icon = lucideIcons[s.icone] || Star;
                 return (
-                  <Reveal key={s.id} delay={i * 80}>
+                  <Reveal key={s.id} delay={i * 100} variant="scaleUp">
                     <div style={{ background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, padding: 24, transition: 'all 0.3s ease' }}>
                       <div style={{ width: 44, height: 44, borderRadius: 10, background: `${pc}26`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Icon style={{ width: 22, height: 22, color: pc }} />
@@ -276,7 +297,7 @@ export default function PublicSite() {
             </Reveal>
             <div className="galeria-masonry" style={{ columnCount: 3, columnGap: 16 }}>
               {config.galeria.map((g, i) => (
-                <Reveal key={g.id} delay={i * 60}>
+                <Reveal key={g.id} delay={i * 80} variant="scaleUp">
                   <div style={{ marginBottom: 16, breakInside: 'avoid' }}>
                     <img src={g.url} alt={g.caption} style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} />
                     {g.caption && <p style={{ fontSize: 12, color: fgSec, marginTop: 4, textAlign: 'center' }}>{g.caption}</p>}
@@ -298,7 +319,7 @@ export default function PublicSite() {
             </Reveal>
             <div className="depoimentos-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(config.depoimentos.length, 3)}, 1fr)`, gap: 20 }}>
               {config.depoimentos.map((d, i) => (
-                <Reveal key={d.id} delay={i * 100}>
+                <Reveal key={d.id} delay={i * 120} variant="fadeUp">
                   <div style={{ background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, padding: 24 }}>
                     <span style={{ fontSize: 48, lineHeight: 1, color: pc, opacity: 0.6, fontFamily: 'Georgia, serif' }}>"</span>
                     <div style={{ fontSize: 13, color: '#F59E0B', marginBottom: 8 }}>{"★".repeat(d.rating)}</div>
