@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import demoPreview from "@/assets/demo-salao-preview.png";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   MapPin, Star, TrendingUp, Bot, Zap, BarChart3,
@@ -350,64 +351,9 @@ export default function Landing() {
               <div style={{ position: "relative" }}>
                 {/* Glow */}
                 <div style={{ position: "absolute", inset: -40, background: "radial-gradient(ellipse at center, rgba(99,102,241,0.15), transparent 70%)", pointerEvents: "none" }} />
-                {/* Browser frame */}
+                {/* Screenshot */}
                 <div style={{ border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, overflow: "hidden", boxShadow: "0 40px 80px -20px rgba(0,0,0,0.8), 0 0 60px rgba(99,102,241,0.08)", position: "relative" }}>
-                  {/* Window bar */}
-                  <div style={{ height: 36, background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", padding: "0 12px", gap: 6 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#EF4444" }} />
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#F59E0B" }} />
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22C55E" }} />
-                    <div style={{ flex: 1, maxWidth: 200, margin: "0 auto", height: 20, borderRadius: 4, background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#475569" }}>
-                      salaodamaria.localai.app.br
-                    </div>
-                  </div>
-                  {/* Mini site preview */}
-                  <div style={{ background: "#0F172A", padding: 0 }}>
-                    {/* Hero do mini site */}
-                    <div style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.3), rgba(34,211,238,0.1))", padding: "24px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(99,102,241,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700 }}>S</div>
-                        <div>
-                          <div style={{ fontSize: 13, fontWeight: 600 }}>Salão da Maria</div>
-                          <div style={{ fontSize: 10, color: "#64748B" }}>Porto Alegre, RS</div>
-                        </div>
-                        <div style={{ marginLeft: "auto", fontSize: 10, color: "#F59E0B" }}>★ 4.8</div>
-                      </div>
-                      <div style={{ fontSize: 10, color: "#94A3B8", lineHeight: 1.5 }}>Especialistas em coloração e tratamento capilar. Agende seu horário!</div>
-                      <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
-                        <div style={{ background: "#22C55E", color: "#fff", fontSize: 9, padding: "4px 10px", borderRadius: 6, fontWeight: 500 }}>💬 WhatsApp</div>
-                        <div style={{ border: "1px solid rgba(255,255,255,0.2)", color: "#94A3B8", fontSize: 9, padding: "4px 10px", borderRadius: 6 }}>📍 Ver no Maps</div>
-                      </div>
-                    </div>
-                    {/* Posts recentes no mini site */}
-                    <div style={{ padding: "14px 20px" }}>
-                      <div style={{ fontSize: 10, color: "#475569", fontWeight: 600, letterSpacing: "0.1em", marginBottom: 10 }}>ÚLTIMAS NOVIDADES</div>
-                      {[
-                        { emoji: "✨", text: "Novo tratamento de hidratação profunda disponível!", time: "há 2 dias" },
-                        { emoji: "⭐", text: "Obrigada pelas 200 avaliações 5 estrelas!", time: "há 5 dias" },
-                      ].map((post, i) => (
-                        <div key={i} style={{ display: "flex", gap: 8, padding: "8px 0", borderBottom: i === 0 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                          <span style={{ fontSize: 14 }}>{post.emoji}</span>
-                          <div>
-                            <div style={{ fontSize: 10, color: "#CBD5E1", lineHeight: 1.4 }}>{post.text}</div>
-                            <div style={{ fontSize: 9, color: "#334155", marginTop: 2 }}>{post.time}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    {/* Avaliações no mini site */}
-                    <div style={{ padding: "0 20px 16px" }}>
-                      <div style={{ fontSize: 10, color: "#475569", fontWeight: 600, letterSpacing: "0.1em", marginBottom: 8 }}>AVALIAÇÕES RECENTES</div>
-                      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: 10 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#6366F1", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 600 }}>A</div>
-                          <span style={{ fontSize: 9, color: "#F59E0B" }}>★★★★★</span>
-                          <span style={{ fontSize: 9, color: "#334155" }}>Ana R.</span>
-                        </div>
-                        <div style={{ fontSize: 9, color: "#64748B", lineHeight: 1.4 }}>Melhor salão da cidade! Atendimento impecável.</div>
-                      </div>
-                    </div>
-                  </div>
+                  <img src={demoPreview} alt="Exemplo de mini site — Estúdio Bela & Arte" style={{ width: "100%", display: "block" }} />
                 </div>
                 {/* Badge flutuante */}
                 <div style={{ position: "absolute", top: -12, right: -12, background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", fontSize: 10, fontWeight: 600, padding: "6px 12px", borderRadius: 999, boxShadow: "0 4px 16px rgba(99,102,241,0.4)", border: "1px solid rgba(255,255,255,0.2)" }}>
