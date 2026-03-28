@@ -481,7 +481,10 @@ export default function MaterialsPage() {
         {/* 7. Contexto IA */}
         <SectionCard title="Contexto para IA" icon={Brain} filled={s7Filled} total={3}>
           <div>
-            <Label className="text-sm mb-1 block">O que a IA deve <strong>sempre</strong> mencionar nos posts?</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="text-sm">O que a IA deve <strong>sempre</strong> mencionar nos posts?</Label>
+              <AiSuggestButton field="ia_sempre_mencionar" context={aiContext} onSuggestion={(s) => update("ia_sempre_mencionar", s)} />
+            </div>
             <Textarea value={data.ia_sempre_mencionar} onChange={(e) => update("ia_sempre_mencionar", e.target.value)}
               placeholder="Ex: Estacionamento gratuito, aceita cartão, delivery..." rows={3} />
           </div>
@@ -491,7 +494,10 @@ export default function MaterialsPage() {
               placeholder="Ex: Preços específicos, nome de concorrentes..." rows={3} />
           </div>
           <div>
-            <Label className="text-sm mb-1 block">Público-alvo ideal</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="text-sm">Público-alvo ideal</Label>
+              <AiSuggestButton field="publico_alvo" context={aiContext} onSuggestion={(s) => update("publico_alvo", s)} />
+            </div>
             <Textarea value={data.publico_alvo} onChange={(e) => update("publico_alvo", e.target.value)}
               placeholder="Idade, perfil, motivação principal..." rows={2} />
           </div>
