@@ -201,7 +201,7 @@ export default function PublicSite() {
             </h1>
           </Reveal>
           <Reveal delay={100}>
-            <p style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: config.hero.bg_image_url ? 'rgba(255,255,255,0.8)' : fgSec, marginBottom: 32 }}>
+            <p className="hero-sub" style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: config.hero.bg_image_url ? 'rgba(255,255,255,0.8)' : fgSec, marginBottom: 32 }}>
               {config.hero.subtitulo}
             </p>
           </Reveal>
