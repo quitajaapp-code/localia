@@ -112,6 +112,33 @@ export default function Reviews() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const publishReplyToGoogle = async (reviewId: string, replyText: string) => {
+    setPublishingId(reviewId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { toast.error("Você precisa estar logado"); return; }
+
+      const { data, error } = await supabase.functions.invoke("gmb-reply-review", {
+        body: { review_id: reviewId, reply_text: replyText },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, respondido: true } : r));
+      toast.success("Resposta publicada no Google com sucesso!");
+    } catch (e: any) {
+      const msg = e.message || "Erro ao publicar resposta";
+      if (msg.includes("reconnect")) {
+        toast.error("Token expirado. Reconecte o Google Meu Negócio nas Configurações.");
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setPublishingId(null);
+    }
+  };
+
   const generateReviewLink = async () => {
     setReviewLinkLoading(true);
     try {
