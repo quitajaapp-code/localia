@@ -142,6 +142,9 @@ export default function SettingsPage() {
         setBizEstado(biz.estado || "");
         setHasGmb(!!biz.gmb_location_id);
         setHasAds(!!biz.ads_customer_id);
+        setBizGmbId(biz.gmb_location_id || "");
+        setBizInstagram(biz.instagram || "");
+        setConnectedPlaceName(biz.gmb_location_id ? biz.nome || "" : "");
         setIaProvider((biz as any).ia_provider || "lovable");
         setIaApiKey((biz as any).ia_api_key || "");
       }
