@@ -111,6 +111,103 @@ export type Database = {
           },
         ]
       }
+      agent_actions: {
+        Row: {
+          action_type: string
+          agent: string
+          applied_at: string | null
+          auto_applied: boolean | null
+          business_id: string | null
+          created_at: string | null
+          id: string
+          input_data: Json | null
+          output_data: Json | null
+          status: string
+        }
+        Insert: {
+          action_type: string
+          agent: string
+          applied_at?: string | null
+          auto_applied?: boolean | null
+          business_id?: string | null
+          created_at?: string | null
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          status?: string
+        }
+        Update: {
+          action_type?: string
+          agent?: string
+          applied_at?: string | null
+          auto_applied?: boolean | null
+          business_id?: string | null
+          created_at?: string | null
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_actions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_settings: {
+        Row: {
+          ads_auto_adjust: boolean | null
+          business_id: string | null
+          created_at: string | null
+          id: string
+          posts_auto_publish: boolean | null
+          posts_best_time: string | null
+          posts_frequency: string | null
+          profile_auto_optimize: boolean | null
+          reviews_auto_reply: boolean | null
+          reviews_auto_threshold: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ads_auto_adjust?: boolean | null
+          business_id?: string | null
+          created_at?: string | null
+          id?: string
+          posts_auto_publish?: boolean | null
+          posts_best_time?: string | null
+          posts_frequency?: string | null
+          profile_auto_optimize?: boolean | null
+          reviews_auto_reply?: boolean | null
+          reviews_auto_threshold?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ads_auto_adjust?: boolean | null
+          business_id?: string | null
+          created_at?: string | null
+          id?: string
+          posts_auto_publish?: boolean | null
+          posts_best_time?: string | null
+          posts_frequency?: string | null
+          profile_auto_optimize?: boolean | null
+          reviews_auto_reply?: boolean | null
+          reviews_auto_threshold?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_settings_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: true
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       businesses: {
         Row: {
           ads_customer_id: string | null
