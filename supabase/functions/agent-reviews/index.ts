@@ -157,6 +157,42 @@ Gere APENAS a resposta, sem explicações adicionais.`;
             applied_at: autoApply ? new Date().toISOString() : null,
           });
 
+          // Send notification for urgent reviews or pattern alerts
+          if (isUrgent || patternAlert) {
+            const alertTitle = isUrgent
+              ? `Avaliação urgente de ${review.autor || "Cliente"} (${review.rating}★)`
+              : `Padrão de reclamação detectado`;
+            const alertMessage = isUrgent
+              ? `"${(review.texto || "sem texto").slice(0, 200)}" — Requer atenção imediata.`
+              : `Reclamações semelhantes estão se repetindo. Texto: "${(review.texto || "").slice(0, 150)}"`;
+
+            try {
+              await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-agent-alert`, {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  business_id: biz.id,
+                  alert_type: isUrgent ? "urgent_review" : "pattern_detected",
+                  severity: isUrgent && (review.rating || 5) <= 1 ? "critical" : "high",
+                  title: alertTitle,
+                  message: alertMessage,
+                  review_id: review.id,
+                  metadata: {
+                    rating: review.rating,
+                    autor: review.autor,
+                    is_urgent: isUrgent,
+                    pattern_alert: patternAlert,
+                  },
+                }),
+              });
+            } catch (alertErr) {
+              console.error("Failed to send alert:", alertErr);
+            }
+          }
+
           results.push({
             business_id: biz.id,
             review_id: review.id,

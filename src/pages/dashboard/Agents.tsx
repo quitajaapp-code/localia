@@ -8,7 +8,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Star, FileText, TrendingUp, Megaphone, Bot, Play, History, Check, X, Clock } from "lucide-react";
+import { Loader2, Star, FileText, TrendingUp, Megaphone, Bot, Play, History, Check, X, Clock, AlertTriangle, Bell, BellOff } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
