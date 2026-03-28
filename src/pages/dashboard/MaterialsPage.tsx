@@ -15,6 +15,7 @@ import {
   Upload, X, Image, Video, Globe, MessageSquare, Sparkles, Save,
   Palette, Camera, Info, Award, Users, Brain, CheckCircle, ExternalLink, Loader2
 } from "lucide-react";
+import AiSuggestButton from "@/components/shared/AiSuggestButton";
 
 const TOM_OPTIONS = [
   "Descontraído e próximo", "Profissional e formal", "Divertido e criativo",
