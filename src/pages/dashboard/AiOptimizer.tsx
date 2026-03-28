@@ -31,17 +31,43 @@ export default function AiOptimizer() {
   const [report, setReport] = useState<any>(null);
   const [copiedDesc, setCopiedDesc] = useState(false);
   const [bizData, setBizData] = useState<any>(null);
+  const [cachedAt, setCachedAt] = useState<string | null>(null);
+  const [loadingCache, setLoadingCache] = useState(true);
 
   useEffect(() => { loadBizData(); }, []);
 
   const loadBizData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setLoadingCache(false); return; }
     const { data: biz } = await supabase
       .from("businesses")
       .select("*")
       .eq("user_id", user.id).limit(1).maybeSingle();
-    if (biz) setBizData(biz);
+    if (biz) {
+      setBizData(biz);
+      // Load cached report
+      const { data: cached } = await supabase
+        .from("optimizer_cache")
+        .select("report_json, updated_at")
+        .eq("business_id", biz.id)
+        .maybeSingle();
+      if (cached?.report_json) {
+        setReport(cached.report_json);
+        setCachedAt(cached.updated_at);
+      }
+    }
+    setLoadingCache(false);
+  };
+
+  const saveCache = async (data: any) => {
+    if (!bizData) return;
+    await supabase
+      .from("optimizer_cache")
+      .upsert(
+        { business_id: bizData.id, report_json: data, updated_at: new Date().toISOString() },
+        { onConflict: "business_id" }
+      );
+    setCachedAt(new Date().toISOString());
   };
 
   const runAnalysis = async () => {
@@ -88,6 +114,8 @@ export default function AiOptimizer() {
       });
       if (error) throw error;
       setReport(data);
+      await saveCache(data);
+      toast.success("Análise atualizada e salva no cache!");
     } catch (e: any) {
       toast.error(e.message || "Erro na análise");
     } finally {
@@ -113,16 +141,21 @@ export default function AiOptimizer() {
           <p className="text-sm text-muted-foreground mt-1">
             Análise completa do seu perfil Google Meu Negócio com recomendações personalizadas
           </p>
+          {cachedAt && !loading && (
+            <p className="text-xs text-muted-foreground mt-1">
+              📋 Último relatório: {new Date(cachedAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+            </p>
+          )}
         </div>
-        <Button onClick={runAnalysis} disabled={loading}>
+        <Button onClick={runAnalysis} disabled={loading || loadingCache}>
           {loading
             ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Analisando...</>
-            : <><Sparkles className="h-4 w-4 mr-2" /> {report ? "Reanalisar" : "Analisar perfil"}</>}
+            : <><RefreshCw className="h-4 w-4 mr-2" /> {report ? "Reanalisar" : "Analisar perfil"}</>}
         </Button>
       </div>
 
       {/* Estado inicial */}
-      {!report && !loading && (
+      {!report && !loading && !loadingCache && (
         <Card>
           <CardContent className="py-16 text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
@@ -141,12 +174,12 @@ export default function AiOptimizer() {
       )}
 
       {/* Loading */}
-      {loading && (
+      {(loading || loadingCache) && !report && (
         <Card>
           <CardContent className="py-12 text-center space-y-3">
             <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
             <p className="text-sm text-muted-foreground">
-              Analisando seu perfil, avaliações e atividade...
+              {loadingCache ? "Carregando relatório salvo..." : "Analisando seu perfil, avaliações e atividade..."}
             </p>
           </CardContent>
         </Card>

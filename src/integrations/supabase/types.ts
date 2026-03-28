@@ -534,6 +534,30 @@ export type Database = {
         }
         Relationships: []
       }
+      optimizer_cache: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          report_json: Json
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          report_json?: Json
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          report_json?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           agendado_para: string | null
