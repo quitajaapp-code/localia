@@ -6,10 +6,31 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function decryptToken(
+  supabase: ReturnType<typeof createClient>,
+  encryptedData: string,
+  encryptionKey: string,
+): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.rpc("decrypt_token", {
+      encrypted_data: encryptedData,
+      secret_key: encryptionKey,
+    });
+    if (error || !data) {
+      console.error("decrypt_token error:", error);
+      return null;
+    }
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 async function refreshAccessToken(
   refreshToken: string,
   supabase: ReturnType<typeof createClient>,
   userId: string,
+  encryptionKey: string,
 ): Promise<string | null> {
   const GOOGLE_CLIENT_ID = Deno.env.get("GOOGLE_CLIENT_ID");
   const GOOGLE_CLIENT_SECRET = Deno.env.get("GOOGLE_CLIENT_SECRET");
@@ -41,10 +62,16 @@ async function refreshAccessToken(
     const newAccessToken = data.access_token;
     const expiresIn = data.expires_in || 3600;
 
+    // Encrypt new access token
+    const { data: encryptedToken } = await supabase.rpc("encrypt_token", {
+      plain_text: newAccessToken,
+      secret_key: encryptionKey,
+    });
+
     await supabase
       .from("oauth_tokens")
       .update({
-        access_token: newAccessToken,
+        access_token_encrypted: encryptedToken,
         expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
       })
       .eq("user_id", userId)
@@ -66,6 +93,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
+    const ENCRYPTION_KEY = Deno.env.get("TOKEN_ENCRYPTION_KEY") || "";
 
     // Authenticate user via JWT
     const authHeader = req.headers.get("Authorization");
@@ -90,34 +118,50 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get OAuth token
+    // Get OAuth token (encrypted)
     const { data: tokenRow } = await supabase
       .from("oauth_tokens")
-      .select("access_token, refresh_token, expires_at")
+      .select("access_token_encrypted, refresh_token_encrypted, expires_at")
       .eq("user_id", user.id)
       .eq("provider", "google")
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    if (!tokenRow) {
+    if (!tokenRow?.access_token_encrypted) {
+      console.log("No encrypted token found for user", user.id);
       return new Response(JSON.stringify({ error: "no_token", accounts: [] }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    let accessToken = tokenRow.access_token;
+    // Decrypt access token
+    let accessToken = await decryptToken(supabase, tokenRow.access_token_encrypted, ENCRYPTION_KEY);
+    if (!accessToken) {
+      console.error("Failed to decrypt access token for user", user.id);
+      return new Response(JSON.stringify({ error: "decrypt_error", accounts: [] }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Refresh if expired
     if (tokenRow.expires_at && new Date(tokenRow.expires_at) < new Date()) {
-      if (!tokenRow.refresh_token) {
+      if (!tokenRow.refresh_token_encrypted) {
         return new Response(JSON.stringify({ error: "token_expired_no_refresh", accounts: [] }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const newToken = await refreshAccessToken(tokenRow.refresh_token, supabase, user.id);
+      const refreshToken = await decryptToken(supabase, tokenRow.refresh_token_encrypted, ENCRYPTION_KEY);
+      if (!refreshToken) {
+        return new Response(JSON.stringify({ error: "refresh_decrypt_error", accounts: [] }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const newToken = await refreshAccessToken(refreshToken, supabase, user.id, ENCRYPTION_KEY);
       if (!newToken) {
         return new Response(JSON.stringify({ error: "token_refresh_failed", accounts: [] }), {
           status: 200,
@@ -128,6 +172,7 @@ Deno.serve(async (req) => {
     }
 
     // List GMB accounts
+    console.log("Fetching GMB accounts for user", user.id);
     const accountsRes = await fetch(
       "https://mybusinessaccountmanagement.googleapis.com/v1/accounts",
       { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -144,6 +189,7 @@ Deno.serve(async (req) => {
 
     const accountsData = await accountsRes.json();
     const gmbAccounts = accountsData.accounts || [];
+    console.log(`Found ${gmbAccounts.length} GMB account(s)`);
 
     const result: Array<{
       accountId: string;
@@ -159,7 +205,7 @@ Deno.serve(async (req) => {
 
     // For each account, list locations
     for (const account of gmbAccounts) {
-      const accountName = account.name; // e.g. "accounts/123"
+      const accountName = account.name;
 
       const locationsRes = await fetch(
         `https://mybusinessbusinessinformation.googleapis.com/v1/${accountName}/locations?readMask=name,title,phoneNumbers,websiteUri,storefrontAddress`,
@@ -176,6 +222,7 @@ Deno.serve(async (req) => {
 
       if (locationsRes.ok) {
         const locData = await locationsRes.json();
+        console.log(`Account ${accountName}: ${(locData.locations || []).length} location(s)`);
         for (const loc of locData.locations || []) {
           const addr = loc.storefrontAddress;
           const addressParts: string[] = [];
@@ -192,7 +239,8 @@ Deno.serve(async (req) => {
           });
         }
       } else {
-        console.warn(`Failed to list locations for ${accountName}: ${locationsRes.status}`);
+        const errText = await locationsRes.text();
+        console.warn(`Failed to list locations for ${accountName}: ${locationsRes.status} - ${errText}`);
       }
 
       result.push({
