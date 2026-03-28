@@ -790,9 +790,9 @@ export default function SettingsPage() {
         {/* INTEGRAÇÕES */}
         <TabsContent value="integracoes" className="space-y-4">
           {[
-            { name: "Google Meu Negócio", desc: hasGmb ? "Conectado — sincronizando avaliações e métricas" : "Não conectado", connected: hasGmb },
-            { name: "Google Ads", desc: hasAds ? "Conectado — gerenciando campanhas" : "Não conectado", connected: hasAds },
-            { name: "Stripe", desc: "Pagamentos gerenciados automaticamente", connected: true },
+            { name: "Google Meu Negócio", desc: hasGmb ? "Conectado — sincronizando avaliações e métricas" : "Não conectado", connected: hasGmb, action: handleGmbReconnect },
+            { name: "Google Ads", desc: hasAds ? "Conectado — gerenciando campanhas" : "Não conectado", connected: hasAds, action: undefined },
+            { name: "Stripe", desc: "Pagamentos gerenciados automaticamente", connected: true, action: undefined },
           ].map((int, i) => (
             <Card key={i}>
               <CardContent className="py-4 flex items-center justify-between">
@@ -804,7 +804,10 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 {int.name !== "Stripe" && (
-                  <Button variant="outline" size="sm">{int.connected ? "Reconectar" : "Conectar"}</Button>
+                  <Button variant="outline" size="sm" onClick={int.action}>
+                    <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                    {int.connected ? "Reconectar" : "Conectar"}
+                  </Button>
                 )}
               </CardContent>
             </Card>
