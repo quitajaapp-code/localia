@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
