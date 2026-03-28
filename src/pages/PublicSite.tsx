@@ -235,13 +235,41 @@ export default function PublicSite() {
           .section-padding { padding: 48px 0 !important; }
           .header-buttons { gap: 4px !important; }
           .header-buttons a { padding: 6px 10px !important; font-size: 12px !important; }
+          .contact-cards-stack { gap: 14px !important; }
+          .contact-card {
+            min-height: 88px;
+            padding: 14px 16px !important;
+            border-radius: 12px !important;
+          }
+          .contact-card-icon {
+            width: 40px !important;
+            height: 40px !important;
+          }
+          .contact-card-label {
+            font-size: 11px !important;
+          }
+          .contact-card-value {
+            font-size: 14px !important;
+            line-height: 1.35 !important;
+          }
+          .contact-card-action {
+            font-size: 11px !important;
+          }
+          .como-chegar-wrap {
+            display: flex !important;
+            justify-content: center !important;
+          }
           .como-chegar-btn {
             width: min(100%, 360px) !important;
-            margin: 12px auto 0 !important;
+            margin: 12px 0 0 !important;
             padding: 11px 14px !important;
             font-size: 13px !important;
             justify-content: center !important;
             text-align: center !important;
+          }
+          .como-chegar-btn svg {
+            flex-shrink: 0;
+            margin-top: 1px;
           }
           .como-chegar-btn .como-chegar-label {
             white-space: normal !important;
@@ -257,6 +285,7 @@ export default function PublicSite() {
             padding: 10px 12px !important;
             gap: 6px !important;
           }
+          .contact-cards-stack { gap: 12px !important; }
         }
       `}</style>
 
@@ -452,20 +481,21 @@ export default function PublicSite() {
 
               {/* Coluna esquerda: informações de contato */}
               <div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                <div className="contact-cards-stack" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
                   {config.contato.telefone && (
                     <Reveal delay={50}>
                       <a href={`tel:+55${cleanPhone(config.contato.telefone)}`}
+                        className="contact-card"
                         style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, textDecoration: 'none', color: fg, transition: 'all 0.2s ease' }}>
-                        <div style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div className="contact-card-icon" style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <Phone style={{ width: 20, height: 20, color: pc }} />
                         </div>
                         <div>
-                          <div style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>Telefone</div>
-                          <div style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.telefone}</div>
+                          <div className="contact-card-label" style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>Telefone</div>
+                          <div className="contact-card-value" style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.telefone}</div>
                         </div>
-                        <div style={{ marginLeft: 'auto', fontSize: 12, color: pc, fontWeight: 500 }}>Ligar →</div>
+                        <div className="contact-card-action" style={{ marginLeft: 'auto', fontSize: 12, color: pc, fontWeight: 500 }}>Ligar →</div>
                       </a>
                     </Reveal>
                   )}
@@ -474,15 +504,16 @@ export default function PublicSite() {
                     <Reveal delay={100}>
                       <a href={`https://wa.me/55${cleanPhone(config.contato.whatsapp)}`}
                         target="_blank" rel="noopener"
+                        className="contact-card"
                         style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.25)', borderRadius: 14, textDecoration: 'none', color: fg, transition: 'all 0.2s ease' }}>
-                        <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(37,211,102,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div className="contact-card-icon" style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(37,211,102,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <MessageSquare style={{ width: 20, height: 20, color: '#25D366' }} />
                         </div>
                         <div>
-                          <div style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>WhatsApp</div>
-                          <div style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.whatsapp}</div>
+                          <div className="contact-card-label" style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>WhatsApp</div>
+                          <div className="contact-card-value" style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.whatsapp}</div>
                         </div>
-                        <div style={{ marginLeft: 'auto', fontSize: 12, color: '#25D366', fontWeight: 500 }}>Abrir →</div>
+                        <div className="contact-card-action" style={{ marginLeft: 'auto', fontSize: 12, color: '#25D366', fontWeight: 500 }}>Abrir →</div>
                       </a>
                     </Reveal>
                   )}
@@ -490,13 +521,14 @@ export default function PublicSite() {
                   {config.contato.email && (
                     <Reveal delay={150}>
                       <a href={`mailto:${config.contato.email}`}
+                        className="contact-card"
                         style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px', background: cardBg, border: `1px solid ${borderC}`, borderRadius: 14, textDecoration: 'none', color: fg }}>
-                        <div style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div className="contact-card-icon" style={{ width: 44, height: 44, borderRadius: '50%', background: `${pc}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <Mail style={{ width: 20, height: 20, color: pc }} />
                         </div>
                         <div>
-                          <div style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>E-mail</div>
-                          <div style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.email}</div>
+                          <div className="contact-card-label" style={{ fontSize: 11, color: fgSec, marginBottom: 2 }}>E-mail</div>
+                          <div className="contact-card-value" style={{ fontSize: 15, fontWeight: 600 }}>{config.contato.email}</div>
                         </div>
                       </a>
                     </Reveal>
@@ -574,27 +606,29 @@ export default function PublicSite() {
                               title={`Localização — ${config.contato.endereco}`}
                             />
                           </div>
-                          <a
-                            href={
-                              config.contato.endereco
-                                ? `https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco)}`
-                                : config.contato.maps_url || '#'
-                            }
-                            target="_blank"
-                            rel="noopener"
-                            style={{
-                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                              marginTop: 10, padding: '11px 20px',
-                              background: pc, color: '#fff',
-                              borderRadius: 10, textDecoration: 'none',
-                              fontSize: 14, fontWeight: 600,
-                              boxShadow: `0 4px 16px ${pc}44`,
-                            }}
-                            className="como-chegar-btn"
-                          >
-                            <MapPin style={{ width: 15, height: 15 }} />
-                            <span className="como-chegar-label">Como chegar — Abrir no Google Maps</span>
-                          </a>
+                          <div className="como-chegar-wrap">
+                            <a
+                              href={
+                                config.contato.endereco
+                                  ? `https://www.google.com/maps/search/${encodeURIComponent(config.contato.endereco)}`
+                                  : config.contato.maps_url || '#'
+                              }
+                              target="_blank"
+                              rel="noopener"
+                              style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                                marginTop: 10, padding: '11px 20px',
+                                background: pc, color: '#fff',
+                                borderRadius: 10, textDecoration: 'none',
+                                fontSize: 14, fontWeight: 600,
+                                boxShadow: `0 4px 16px ${pc}44`,
+                              }}
+                              className="como-chegar-btn"
+                            >
+                              <MapPin style={{ width: 15, height: 15 }} />
+                              <span className="como-chegar-label">Como chegar — Abrir no Google Maps</span>
+                            </a>
+                          </div>
                         </div>
                       </Reveal>
                     );
