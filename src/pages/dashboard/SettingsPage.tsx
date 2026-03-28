@@ -479,8 +479,94 @@ export default function SettingsPage() {
 
         {/* NOTIFICAÇÕES */}
         <TabsContent value="notificacoes" className="space-y-4">
+          {/* Canais de notificação dos agentes IA */}
           <Card>
-            <CardHeader><CardTitle className="text-base">Preferências de notificação</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" /> Alertas dos Agentes IA
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <p className="text-sm text-muted-foreground">
+                Configure como você deseja receber alertas quando os agentes detectarem situações urgentes.
+              </p>
+
+              {/* Canais */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Canais de envio</h4>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 text-primary" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Email</p>
+                      <p className="text-xs text-muted-foreground">Receber alertas no email {email}</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={notifs.agent_alerts_email !== false}
+                    onCheckedChange={(v) => setNotifs(prev => ({ ...prev, agent_alerts_email: v, email_alerts: v }))}
+                  />
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-4 w-4 text-green-500" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">WhatsApp</p>
+                      <p className="text-xs text-muted-foreground">
+                        {bizWhatsapp ? `Enviar para ${bizWhatsapp}` : "Configure o WhatsApp do negócio primeiro"}
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={notifs.agent_alerts_whatsapp === true}
+                    onCheckedChange={(v) => setNotifs(prev => ({ ...prev, agent_alerts_whatsapp: v, whatsapp_alerts: v }))}
+                    disabled={!bizWhatsapp}
+                  />
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Tipos de alerta */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tipos de alerta</h4>
+                <div className="flex items-center justify-between py-2 border-b border-border/50">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
+                    <span className="text-sm text-foreground">Avaliações urgentes (1-2★)</span>
+                  </div>
+                  <Switch
+                    checked={notifs.alert_urgent_reviews !== false}
+                    onCheckedChange={(v) => setNotifs(prev => ({ ...prev, alert_urgent_reviews: v }))}
+                  />
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border/50">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-3.5 w-3.5 text-warning" />
+                    <span className="text-sm text-foreground">Padrões de reclamação detectados</span>
+                  </div>
+                  <Switch
+                    checked={notifs.alert_pattern_complaints !== false}
+                    onCheckedChange={(v) => setNotifs(prev => ({ ...prev, alert_pattern_complaints: v }))}
+                  />
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border/50">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-sm text-foreground">Score do perfil abaixo de 50</span>
+                  </div>
+                  <Switch
+                    checked={notifs.alert_low_score !== false}
+                    onCheckedChange={(v) => setNotifs(prev => ({ ...prev, alert_low_score: v }))}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Notificações gerais existentes */}
+          <Card>
+            <CardHeader><CardTitle className="text-base">Notificações gerais</CardTitle></CardHeader>
             <CardContent>
               <div className="space-y-1 mb-4">
                 <div className="grid grid-cols-[1fr_60px_60px] gap-2 text-xs font-medium text-muted-foreground px-1">
@@ -492,21 +578,22 @@ export default function SettingsPage() {
                   <div key={key} className="grid grid-cols-[1fr_60px_60px] gap-2 items-center py-2 border-b border-border/50 last:border-0">
                     <span className="text-sm text-foreground">{label}</span>
                     <div className="flex justify-center">
-                      <Switch checked={notifs[key].email} onCheckedChange={() => toggleNotif(key, "email")} />
+                      <Switch checked={notifs[key]?.email} onCheckedChange={() => toggleNotif(key, "email")} />
                     </div>
                     <div className="flex justify-center">
                       {emailOnly ? <span className="text-xs text-muted-foreground">—</span> :
-                        <Switch checked={notifs[key].push} onCheckedChange={() => toggleNotif(key, "push")} />}
+                        <Switch checked={notifs[key]?.push} onCheckedChange={() => toggleNotif(key, "push")} />}
                     </div>
                   </div>
                 ))}
               </div>
-              <Button className="mt-6" onClick={saveNotifs} disabled={saving}>
-                {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-                Salvar preferências
-              </Button>
             </CardContent>
           </Card>
+
+          <Button onClick={saveNotifs} disabled={saving} className="w-full">
+            {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+            Salvar preferências de notificação
+          </Button>
         </TabsContent>
 
         {/* PLANO */}
