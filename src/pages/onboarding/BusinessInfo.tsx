@@ -265,14 +265,7 @@ export default function BusinessInfo() {
   }
 
   if (pageState === "manual-gmb" || pageState === "no-gmb") {
-    const handlePlaceSelect = (place: {
-      place_id: string;
-      name: string;
-      formatted_address: string;
-      formatted_phone_number?: string;
-      website?: string;
-      address_components?: Array<{ long_name: string; short_name: string; types: string[] }>;
-    }) => {
+    const handlePlaceSelect = (place: PlaceResult) => {
       setNome(place.name);
       setWebsite(place.website || "");
       setWhatsapp(place.formatted_phone_number || "");
@@ -291,6 +284,17 @@ export default function BusinessInfo() {
         }
       }
 
+      // Save Google reviews to DB if available
+      if (place.reviews && place.reviews.length > 0) {
+        saveGoogleReviews(place.place_id, place.reviews);
+      }
+
+      // Try to detect Instagram from website
+      if (place.website) {
+        const igMatch = place.website.match(/instagram\.com\/([^/?]+)/);
+        if (igMatch) setInstagram(`@${igMatch[1]}`);
+      }
+
       setPageState("form");
       setSelectedLocation({
         name: place.place_id,
@@ -299,7 +303,21 @@ export default function BusinessInfo() {
         phone: place.formatted_phone_number || "",
         website: place.website || "",
         accountName: "",
+        rating: place.rating,
+        totalReviews: place.user_ratings_total,
       });
+    };
+
+    const saveGoogleReviews = async (placeId: string, reviews: NonNullable<PlaceResult["reviews"]>) => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        // We'll save reviews after business is created in handleSave
+        // Store temporarily
+        setPlaceReviews(reviews);
+      } catch (e) {
+        console.warn("Error preparing reviews:", e);
+      }
     };
 
     return (
