@@ -1291,6 +1291,39 @@ export type Database = {
           },
         ]
       }
+      whatsapp_templates: {
+        Row: {
+          ativo: boolean
+          categoria: string
+          created_at: string | null
+          id: string
+          mensagem: string
+          nome: string
+          updated_at: string | null
+          variaveis: string[] | null
+        }
+        Insert: {
+          ativo?: boolean
+          categoria?: string
+          created_at?: string | null
+          id?: string
+          mensagem: string
+          nome: string
+          updated_at?: string | null
+          variaveis?: string[] | null
+        }
+        Update: {
+          ativo?: boolean
+          categoria?: string
+          created_at?: string | null
+          id?: string
+          mensagem?: string
+          nome?: string
+          updated_at?: string | null
+          variaveis?: string[] | null
+        }
+        Relationships: []
+      }
       workflows: {
         Row: {
           ativo: boolean
