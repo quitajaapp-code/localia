@@ -25,6 +25,18 @@ const CATEGORIA_ICON: Record<string, any> = {
   "palavras-chave": Search,
 };
 
+function ScoreDelta({ current, previous }: { current: number; previous: number }) {
+  const diff = current - previous;
+  if (diff === 0) return <span className="text-xs text-muted-foreground mt-1 block">→ Sem mudança</span>;
+  const isPositive = diff > 0;
+  return (
+    <span className={`text-xs font-semibold mt-1 flex items-center justify-center gap-0.5 ${isPositive ? "text-success" : "text-destructive"}`}>
+      {isPositive ? <TrendingUp className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+      {isPositive ? "+" : ""}{diff} pts
+    </span>
+  );
+}
+
 export default function AiOptimizer() {
   usePageTitle("Otimizador GMB | LocalAI");
   const [loading, setLoading] = useState(false);
@@ -34,6 +46,8 @@ export default function AiOptimizer() {
   const [cachedAt, setCachedAt] = useState<string | null>(null);
   const [cacheExpired, setCacheExpired] = useState(false);
   const [loadingCache, setLoadingCache] = useState(true);
+  const [previousScore, setPreviousScore] = useState<number | null>(null);
+  const [previousBreakdown, setPreviousBreakdown] = useState<Record<string, number> | null>(null);
 
   const CACHE_TTL_DAYS = 7;
 
@@ -124,6 +138,11 @@ export default function AiOptimizer() {
         },
       });
       if (error) throw error;
+      // Save previous score for comparison before updating
+      if (report?.score != null) {
+        setPreviousScore(report.score);
+        setPreviousBreakdown(report.score_breakdown || null);
+      }
       setReport(data);
       await saveCache(data);
       toast.success("Análise atualizada e salva no cache!");
@@ -247,17 +266,24 @@ export default function AiOptimizer() {
                 <div>
                   <p className="text-sm font-semibold mb-1">Score do Perfil</p>
                   <p className="text-xs text-muted-foreground">{report.diagnostico}</p>
+                  {previousScore !== null && (
+                    <ScoreDelta current={report.score} previous={previousScore} />
+                  )}
                 </div>
               </CardContent>
             </Card>
-            {report.score_breakdown && Object.entries(report.score_breakdown).map(([key, val]: [string, any]) => (
-              <Card key={key}>
-                <CardContent className="py-4 text-center">
-                  <p className="text-2xl font-bold text-foreground">{val}<span className="text-sm text-muted-foreground">/25</span></p>
-                  <p className="text-xs text-muted-foreground capitalize mt-1">{key}</p>
-                </CardContent>
-              </Card>
-            ))}
+            {report.score_breakdown && Object.entries(report.score_breakdown).map(([key, val]: [string, any]) => {
+              const prevVal = previousBreakdown?.[key];
+              return (
+                <Card key={key}>
+                  <CardContent className="py-4 text-center">
+                    <p className="text-2xl font-bold text-foreground">{val}<span className="text-sm text-muted-foreground">/25</span></p>
+                    <p className="text-xs text-muted-foreground capitalize mt-1">{key}</p>
+                    {prevVal != null && <ScoreDelta current={val} previous={prevVal} />}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           {/* Próxima ação */}
