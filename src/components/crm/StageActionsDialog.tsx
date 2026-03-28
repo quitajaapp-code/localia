@@ -93,7 +93,8 @@ export function StageActionsDialog({ stage, stages, onClose }: StageActionsDialo
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <TemplatePicker
-                onSelect={(msg) => updateAction(action.id, { config: { ...config, message: msg } })}
+                onSelect={(msg, templateId) => updateAction(action.id, { config: { ...config, message: msg, template_id: templateId } })}
+              />
               />
               <span className="text-[10px] text-muted-foreground">ou escreva abaixo</span>
             </div>
