@@ -92,6 +92,9 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const ENCRYPTION_KEY = Deno.env.get("TOKEN_ENCRYPTION_KEY") || "";
+    if (!ENCRYPTION_KEY) {
+      console.error("[gmb-sync] TOKEN_ENCRYPTION_KEY não configurado nos Supabase Secrets. O sync de avaliações não funcionará. Adicione esta variável em: Supabase Dashboard → Settings → Edge Functions → Secrets.");
+    }
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Fetch all businesses with GMB connected
