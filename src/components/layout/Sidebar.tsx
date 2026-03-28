@@ -35,9 +35,10 @@ const navItems = [
 interface SidebarProps {
   negativeReviewCount?: number;
   onReviewsSeen?: () => void;
+  unreadAlerts?: number;
 }
 
-export function Sidebar({ negativeReviewCount = 0, onReviewsSeen }: SidebarProps) {
+export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts = 0 }: SidebarProps) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAdmin } = useAdmin();
@@ -58,6 +59,7 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen }: SidebarProps
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map((item) => {
           const showNegativeBadge = item.to === "/dashboard/reviews" && negativeReviewCount > 0;
+          const showAlertBadge = item.to === "/dashboard/agents" && unreadAlerts > 0;
           return (
             <NavLink
               key={item.to}
@@ -80,10 +82,15 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen }: SidebarProps
                   {negativeReviewCount > 9 ? "9+" : negativeReviewCount}
                 </span>
               )}
-              {!showNegativeBadge && 'badge' in item && (item as any).badge && (
+              {showAlertBadge && (
+                <span className="ml-auto flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold bg-warning text-warning-foreground rounded-full animate-pulse">
+                  {unreadAlerts > 9 ? "9+" : unreadAlerts}
+                </span>
+              )}
+              {!showNegativeBadge && !showAlertBadge && 'badge' in item && (item as any).badge && (
                 <span className="ml-auto text-[10px] font-semibold bg-primary/20 text-primary px-1.5 py-0.5 rounded">{(item as any).badge}</span>
               )}
-              {!showNegativeBadge && isActive(item.to) && !('badge' in item) && (
+              {!showNegativeBadge && !showAlertBadge && isActive(item.to) && !('badge' in item) && (
                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               )}
             </NavLink>
