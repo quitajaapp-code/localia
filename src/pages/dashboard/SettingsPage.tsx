@@ -96,6 +96,11 @@ export default function SettingsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
 
+  // Delete business modal
+  const [deleteBizOpen, setDeleteBizOpen] = useState(false);
+  const [deleteBizConfirm, setDeleteBizConfirm] = useState("");
+  const [deletingBiz, setDeletingBiz] = useState(false);
+
   // Business
   const [bizId, setBizId] = useState("");
   const [bizNome, setBizNome] = useState("");
