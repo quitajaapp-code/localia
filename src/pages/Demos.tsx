@@ -60,6 +60,7 @@ const demos = [
 
 export default function Demos() {
   usePageTitle("Mini Sites Modelo — LocalAI");
+  useLayoutEffect(() => { window.scrollTo(0, 0); }, []);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
