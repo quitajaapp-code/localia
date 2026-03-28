@@ -12,6 +12,7 @@ import {
   Kanban,
   MessageSquare,
   GitBranch,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -26,6 +27,7 @@ const navItems = [
   { to: "/admin/crm",   label: "CRM / Pipeline", icon: Kanban },
   { to: "/admin/inbox", label: "Inbox / Agentes", icon: MessageSquare },
   { to: "/admin/workflows", label: "Workflows", icon: GitBranch },
+  { to: "/admin/templates", label: "Templates WhatsApp", icon: FileText },
 ];
 
 export function AdminSidebar() {
