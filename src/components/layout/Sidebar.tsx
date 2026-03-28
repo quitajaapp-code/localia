@@ -35,9 +35,10 @@ const navItems = [
 interface SidebarProps {
   negativeReviewCount?: number;
   onReviewsSeen?: () => void;
+  unreadAlerts?: number;
 }
 
-export function Sidebar({ negativeReviewCount = 0, onReviewsSeen }: SidebarProps) {
+export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts = 0 }: SidebarProps) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAdmin } = useAdmin();
