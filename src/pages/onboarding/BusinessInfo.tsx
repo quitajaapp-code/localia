@@ -394,11 +394,24 @@ export default function BusinessInfo() {
       </div>
 
       {selectedLocation && (
-        <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/30 flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
-          <span className="text-sm text-foreground">
-            Preenchido com dados de <strong>{selectedLocation.title}</strong>
-          </span>
+        <div className="p-3 rounded-lg bg-primary/10 border border-primary/30 flex items-center gap-2">
+          <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+          <div className="flex-1">
+            <span className="text-sm text-foreground">
+              Preenchido com dados de <strong>{selectedLocation.title}</strong>
+            </span>
+            {selectedLocation.rating && (
+              <span className="text-xs text-muted-foreground ml-2 inline-flex items-center gap-0.5">
+                <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                {selectedLocation.rating} ({selectedLocation.totalReviews || 0} avaliações)
+              </span>
+            )}
+            {placeReviews.length > 0 && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {placeReviews.length} avaliação(ões) serão sincronizadas ao salvar.
+              </p>
+            )}
+          </div>
         </div>
       )}
 
@@ -451,7 +464,14 @@ export default function BusinessInfo() {
         </div>
 
         <div className="space-y-1.5">
-          <Label>Tom de voz da IA</Label>
+          <div className="flex items-center justify-between">
+            <Label>Tom de voz da IA</Label>
+            <AiSuggestButton
+              field="tom_de_voz"
+              context={aiContext}
+              onSuggestion={(s) => setTom(s)}
+            />
+          </div>
           <Select value={tom} onValueChange={setTom}>
             <SelectTrigger><SelectValue placeholder="Como a IA deve escrever?" /></SelectTrigger>
             <SelectContent>
@@ -461,12 +481,32 @@ export default function BusinessInfo() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="publico">Público-alvo</Label>
-          <Input id="publico" placeholder="Ex: Mulheres entre 25-45 anos, classe B/C" value={publicoAlvo} onChange={(e) => setPublicoAlvo(e.target.value)} />
+          <div className="flex items-center justify-between">
+            <Label htmlFor="publico">Público-alvo</Label>
+            <AiSuggestButton
+              field="publico_alvo"
+              context={aiContext}
+              onSuggestion={(s) => setPublicoAlvo(s)}
+            />
+          </div>
+          <Textarea
+            id="publico"
+            placeholder="Ex: Mulheres entre 25-45 anos, classe B/C"
+            value={publicoAlvo}
+            onChange={(e) => setPublicoAlvo(e.target.value)}
+            rows={2}
+          />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="diferenciais">Diferenciais do negócio</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="diferenciais">Diferenciais do negócio</Label>
+            <AiSuggestButton
+              field="diferenciais"
+              context={aiContext}
+              onSuggestion={(s) => setDiferenciais(s)}
+            />
+          </div>
           <Textarea
             id="diferenciais"
             placeholder="O que torna seu negócio especial? Ex: atendimento personalizado, 10 anos de experiência..."
