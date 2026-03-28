@@ -365,6 +365,36 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* Card: IA em ação */}
+      <Card className="border-primary/20">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            IA trabalhando para você
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {recentPosts.slice(0, 2).map((p: any) => (
+            <div key={p.id} className="flex items-center gap-2 text-xs text-muted-foreground">
+              <CheckCircle2 className="h-3 w-3 text-success shrink-0" />
+              <span className="truncate">Post gerado: "{p.texto?.slice(0, 60)}..."</span>
+            </div>
+          ))}
+          {recentReplies.slice(0, 2).map((r: any) => (
+            <div key={r.id} className="flex items-center gap-2 text-xs text-muted-foreground">
+              <CheckCircle2 className="h-3 w-3 text-success shrink-0" />
+              <span className="truncate">Resposta sugerida para {r.autor}</span>
+            </div>
+          ))}
+          {recentPosts.length === 0 && recentReplies.length === 0 && (
+            <p className="text-xs text-muted-foreground">Nenhuma ação da IA ainda. Gere posts ou respostas para começar.</p>
+          )}
+          <Link to="/dashboard/ai-optimizer" className="flex items-center gap-1 text-xs text-primary hover:underline pt-1">
+            <Sparkles className="h-3 w-3" /> Ver otimizações recomendadas
+          </Link>
+        </CardContent>
+      </Card>
+
       {/* AI Suggestion */}
       <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
         <CardContent className="p-6 flex items-start gap-4">
