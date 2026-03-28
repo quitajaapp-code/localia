@@ -325,6 +325,61 @@ export default function SettingsPage() {
 
         {/* NEGÓCIO */}
         <TabsContent value="negocio" className="space-y-6">
+          {/* Google Places Search */}
+          <Card>
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><MapPin className="h-4 w-4" /> Vincular negócio do Google Maps</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              {bizGmbId ? (
+                <div className="p-3 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{connectedPlaceName || "Negócio vinculado"}</p>
+                      <p className="text-xs text-muted-foreground">Place ID: {bizGmbId}</p>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => { setBizGmbId(""); setConnectedPlaceName(""); setHasGmb(false); }}>
+                    Alterar
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label className="text-sm">Buscar empresa no Google Maps</Label>
+                  <GooglePlacesSearch
+                    placeholder="Digite o nome da empresa e cidade..."
+                    onSelect={(place: PlaceResult) => {
+                      setBizGmbId(place.place_id);
+                      setConnectedPlaceName(place.name);
+                      setHasGmb(true);
+                      // Auto-fill empty fields
+                      if (!bizNome) setBizNome(place.name);
+                      if (!bizWebsite && place.website) setBizWebsite(place.website);
+                      if (!bizWhatsapp && place.formatted_phone_number) setBizWhatsapp(place.formatted_phone_number);
+                      if (place.address_components) {
+                        for (const comp of place.address_components) {
+                          if (!bizCidade && (comp.types.includes("locality") || comp.types.includes("administrative_area_level_2"))) {
+                            setBizCidade(comp.long_name);
+                          }
+                          if (!bizEstado && comp.types.includes("administrative_area_level_1")) {
+                            setBizEstado(comp.short_name.toUpperCase());
+                          }
+                        }
+                      }
+                      if (place.website) {
+                        const igMatch = place.website.match(/instagram\.com\/([^/?]+)/);
+                        if (igMatch && !bizInstagram) setBizInstagram(`@${igMatch[1]}`);
+                      }
+                      toast.success(`"${place.name}" vinculado! Clique em Salvar para confirmar.`);
+                    }}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Vincule seu negócio para sincronizar avaliações e usar nos mini sites.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader><CardTitle className="text-base">Dados do negócio</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -339,7 +394,10 @@ export default function SettingsPage() {
                   <SelectContent>{TOM_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label className="text-sm">Website</Label><Input value={bizWebsite} onChange={(e) => setBizWebsite(e.target.value)} /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label className="text-sm">Website</Label><Input value={bizWebsite} onChange={(e) => setBizWebsite(e.target.value)} /></div>
+                <div><Label className="text-sm">Instagram</Label><Input value={bizInstagram} onChange={(e) => setBizInstagram(e.target.value)} placeholder="@seuperfil" /></div>
+              </div>
               <div><Label className="text-sm">WhatsApp</Label><Input value={bizWhatsapp} onChange={(e) => setBizWhatsapp(e.target.value)} /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label className="text-sm">Cidade</Label><Input value={bizCidade} onChange={(e) => setBizCidade(e.target.value)} /></div>
