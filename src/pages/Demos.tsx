@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { useEffect, useRef, useState, useLayoutEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
@@ -60,7 +60,6 @@ const demos = [
 
 export default function Demos() {
   usePageTitle("Mini Sites Modelo — LocalAI");
-  useLayoutEffect(() => { window.scrollTo(0, 0); }, []);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
