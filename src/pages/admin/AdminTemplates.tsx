@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, MessageSquare, Copy, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, MessageSquare, Copy, Search, Send, MessageCircle, TrendingUp } from "lucide-react";
 import { MessagePreview } from "@/components/crm/MessagePreview";
 
 type Template = {
@@ -19,6 +19,13 @@ type Template = {
   variaveis: string[];
   ativo: boolean;
   created_at: string;
+};
+
+type UsageStats = {
+  template_id: string;
+  total_envios: number;
+  total_entregues: number;
+  total_respondidos: number;
 };
 
 const CATEGORIAS = [
@@ -33,6 +40,7 @@ const CATEGORIAS = [
 
 export default function AdminTemplates() {
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [usageMap, setUsageMap] = useState<Record<string, UsageStats>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("all");
@@ -42,12 +50,30 @@ export default function AdminTemplates() {
   useEffect(() => { loadTemplates(); }, []);
 
   const loadTemplates = async () => {
-    const { data } = await supabase
-      .from("whatsapp_templates" as any)
-      .select("*")
-      .order("categoria")
-      .order("nome");
-    setTemplates((data as any[]) || []);
+    const [{ data: tplData }, { data: usageData }] = await Promise.all([
+      supabase
+        .from("whatsapp_templates" as any)
+        .select("*")
+        .order("categoria")
+        .order("nome"),
+      supabase
+        .from("template_usage" as any)
+        .select("template_id, entregue, respondido"),
+    ]);
+
+    setTemplates((tplData as any[]) || []);
+
+    // Aggregate usage stats client-side
+    const map: Record<string, UsageStats> = {};
+    ((usageData as any[]) || []).forEach((row: any) => {
+      if (!map[row.template_id]) {
+        map[row.template_id] = { template_id: row.template_id, total_envios: 0, total_entregues: 0, total_respondidos: 0 };
+      }
+      map[row.template_id].total_envios++;
+      if (row.entregue) map[row.template_id].total_entregues++;
+      if (row.respondido) map[row.template_id].total_respondidos++;
+    });
+    setUsageMap(map);
     setLoading(false);
   };
 
@@ -109,6 +135,12 @@ export default function AdminTemplates() {
     return true;
   });
 
+  // Global stats
+  const globalEnvios = Object.values(usageMap).reduce((s, u) => s + u.total_envios, 0);
+  const globalEntregues = Object.values(usageMap).reduce((s, u) => s + u.total_entregues, 0);
+  const globalRespondidos = Object.values(usageMap).reduce((s, u) => s + u.total_respondidos, 0);
+  const globalTaxaResposta = globalEnvios > 0 ? ((globalRespondidos / globalEnvios) * 100).toFixed(1) : "0";
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -129,6 +161,14 @@ export default function AdminTemplates() {
         <Button onClick={openNew}>
           <Plus className="h-4 w-4 mr-2" /> Novo Template
         </Button>
+      </div>
+
+      {/* Global Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard icon={<MessageSquare className="h-4 w-4 text-primary" />} label="Templates" value={templates.length} />
+        <StatCard icon={<Send className="h-4 w-4 text-success" />} label="Envios totais" value={globalEnvios} />
+        <StatCard icon={<MessageCircle className="h-4 w-4 text-warning" />} label="Respostas" value={globalRespondidos} />
+        <StatCard icon={<TrendingUp className="h-4 w-4 text-accent-foreground" />} label="Taxa de resposta" value={`${globalTaxaResposta}%`} />
       </div>
 
       {/* Filters */}
@@ -163,50 +203,73 @@ export default function AdminTemplates() {
         </div>
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
-          {filtered.map((t) => (
-            <div
-              key={t.id}
-              className="p-4 rounded-lg border border-border bg-card hover:bg-accent/30 transition-colors space-y-2"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-success shrink-0" />
-                  <span className="font-semibold text-sm">{t.nome}</span>
+          {filtered.map((t) => {
+            const usage = usageMap[t.id];
+            const envios = usage?.total_envios || 0;
+            const respondidos = usage?.total_respondidos || 0;
+            const taxa = envios > 0 ? ((respondidos / envios) * 100).toFixed(0) : null;
+
+            return (
+              <div
+                key={t.id}
+                className="p-4 rounded-lg border border-border bg-card hover:bg-accent/30 transition-colors space-y-2"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4 text-success shrink-0" />
+                    <span className="font-semibold text-sm">{t.nome}</span>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] shrink-0">
+                    {CATEGORIAS.find((c) => c.value === t.categoria)?.label || t.categoria}
+                  </Badge>
                 </div>
-                <Badge variant="outline" className="text-[10px] shrink-0">
-                  {CATEGORIAS.find((c) => c.value === t.categoria)?.label || t.categoria}
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                {t.mensagem}
-              </p>
-              {t.variaveis?.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {t.variaveis.map((v) => (
-                    <Badge key={v} variant="secondary" className="text-[9px] py-0">
-                      {`{{${v}}}`}
+                <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                  {t.mensagem}
+                </p>
+
+                {/* Usage metrics inline */}
+                <div className="flex items-center gap-3 text-[11px]">
+                  <span className="flex items-center gap-1 text-muted-foreground">
+                    <Send className="h-3 w-3" /> {envios} envio{envios !== 1 ? "s" : ""}
+                  </span>
+                  <span className="flex items-center gap-1 text-muted-foreground">
+                    <MessageCircle className="h-3 w-3" /> {respondidos} resposta{respondidos !== 1 ? "s" : ""}
+                  </span>
+                  {taxa !== null && (
+                    <Badge variant={Number(taxa) >= 30 ? "default" : "secondary"} className="text-[9px] py-0">
+                      {taxa}% taxa
                     </Badge>
-                  ))}
+                  )}
                 </div>
-              )}
-              <div className="flex items-center gap-1 pt-1">
-                <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => copyMessage(t.mensagem)}>
-                  <Copy className="h-3 w-3 mr-1" /> Copiar
-                </Button>
-                <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => openEdit(t)}>
-                  <Pencil className="h-3 w-3 mr-1" /> Editar
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs text-destructive hover:text-destructive"
-                  onClick={() => handleDelete(t.id)}
-                >
-                  <Trash2 className="h-3 w-3 mr-1" /> Excluir
-                </Button>
+
+                {t.variaveis?.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {t.variaveis.map((v) => (
+                      <Badge key={v} variant="secondary" className="text-[9px] py-0">
+                        {`{{${v}}}`}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                <div className="flex items-center gap-1 pt-1">
+                  <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => copyMessage(t.mensagem)}>
+                    <Copy className="h-3 w-3 mr-1" /> Copiar
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => openEdit(t)}>
+                    <Pencil className="h-3 w-3 mr-1" /> Editar
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs text-destructive hover:text-destructive"
+                    onClick={() => handleDelete(t.id)}
+                  >
+                    <Trash2 className="h-3 w-3 mr-1" /> Excluir
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -258,6 +321,18 @@ export default function AdminTemplates() {
           </div>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-3 flex items-center gap-3">
+      <div className="rounded-md bg-muted p-2">{icon}</div>
+      <div>
+        <p className="text-lg font-bold leading-none">{value}</p>
+        <p className="text-[11px] text-muted-foreground">{label}</p>
+      </div>
     </div>
   );
 }
