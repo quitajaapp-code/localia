@@ -49,7 +49,7 @@ export async function orchestrateCampaignCreation(input: OrchestratorInput) {
   const adCopy = await runAdCopyAgent(context, strategy.urgency_level);
 
   // Step 5: Save to isolated tables
-  const { data: campaign, error: campErr } = await supabase.from("ad_campaigns").insert({
+  const { data: campaign, error: campErr } = await supabase.from("ad_campaigns").insert([{
     user_id: user.id,
     business_name: context.business.name,
     niche: context.business.niche,
@@ -58,7 +58,7 @@ export async function orchestrateCampaignCreation(input: OrchestratorInput) {
     status: "draft",
     strategy_data: strategy as unknown as Record<string, unknown>,
     performance_score: 0,
-  }).select().single();
+  }]).select().single();
 
   if (campErr) throw campErr;
 
