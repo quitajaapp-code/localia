@@ -1,10 +1,31 @@
 /**
  * Google Ads API Service
  * 
- * Placeholder para futura integração com a API do Google Ads.
- * Quando o Developer Token for aprovado, estas funções serão
- * implementadas para comunicar diretamente com a API.
+ * Funções para comunicação com a API do Google Ads.
+ * Tokens são gerenciados via Edge Functions para segurança.
  */
+
+import { supabase } from "@/integrations/supabase/client";
+
+/**
+ * List accessible Google Ads customer accounts.
+ * Calls edge function to decrypt token and query Google Ads API.
+ */
+export async function getAccessibleCustomers(): Promise<string[]> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return [];
+
+  const { data, error } = await supabase.functions.invoke("google-ads-api", {
+    body: { action: "listAccessibleCustomers" },
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+
+  if (error) {
+    console.error("[GoogleAds] getAccessibleCustomers error:", error);
+    return [];
+  }
+  return data?.customerIds || [];
+}
 
 export async function createCampaignOnGoogle(_params: {
   customerId: string;
