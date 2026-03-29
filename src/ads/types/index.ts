@@ -1,5 +1,5 @@
 // ============================================================
-// TYPES — Módulo Ads Isolado
+// TYPES — Módulo Ads Isolado (Decision-Based Agents)
 // ============================================================
 
 // === Tabelas Isoladas ===
@@ -30,7 +30,6 @@ export interface AdCampaign {
   strategy_data: Record<string, unknown>;
   created_at: string;
   updated_at: string;
-  // enriched
   _kwCount?: number;
   _adCount?: number;
   _negCount?: number;
@@ -81,7 +80,53 @@ export interface AdLog {
   created_at: string;
 }
 
-// === Agent Types ===
+// === Context Engine Types ===
+
+export interface BusinessContext {
+  name: string;
+  niche: string;
+  city: string;
+  state: string;
+  ticket: string;
+  differential: string;
+  products: string;
+  years_experience: string;
+  whatsapp: string | null;
+  website_url: string | null;
+  target_audience: string;
+}
+
+export interface PerformanceContext {
+  total_campaigns: number;
+  active_campaigns: number;
+  avg_ctr: number;
+  avg_cpc: number;
+  total_conversions: number;
+  total_spend: number;
+  best_performing_keywords: string[];
+}
+
+export interface HistoryContext {
+  previous_keywords: string[];
+  paused_keywords: string[];
+  best_headlines: string[];
+  failed_ads: string[];
+}
+
+export interface LocationContext {
+  radius: string;
+  target_areas: string[];
+  competitors_density: "high" | "medium" | "low";
+}
+
+export interface FullAgentContext {
+  business: BusinessContext;
+  performance: PerformanceContext;
+  history: HistoryContext;
+  location: LocationContext;
+}
+
+// === Agent Input/Output Types (Structured Decision) ===
 
 export interface AgentContext {
   business_name: string;
@@ -96,23 +141,20 @@ export interface AgentContext {
   years_experience?: string;
   whatsapp?: string;
   website_url?: string;
+  target_audience?: string;
 }
 
 export interface StrategyResult {
-  urgency_level: string;
-  campaign_type: string;
-  bidding_strategy: string;
+  urgency_level: "high" | "medium" | "low";
+  search_intent: "transactional" | "urgent" | "exploratory";
+  campaign_type: "search" | "display" | "local" | "performance_max";
+  bidding_strategy: "maximize_conversions" | "maximize_clicks" | "target_cpa" | "manual_cpc";
   geo_radius_km: number;
-  conversion_focus: string;
+  conversion_focus: "calls" | "website" | "directions" | "whatsapp";
+  risk_level: "low" | "medium" | "high";
   reasoning: string;
-  // legacy fields
-  targeting?: {
-    location_radius: string;
-    schedule: string;
-    networks: string;
-    bid_strategy: string;
-  };
-  budget_split?: {
+  schedule: string;
+  budget_split: {
     main_pct: number;
     local_pct: number;
     remarketing_pct: number;
@@ -121,44 +163,50 @@ export interface StrategyResult {
 
 export interface KeywordResult {
   high_intent_keywords: Array<{
-    termo: string;
-    match_type: "exact" | "phrase" | "broad";
-    intent: "alta" | "moderada" | "branding";
-    cpc_estimado?: number;
+    term: string;
+    match_type: "exact" | "phrase";
+    intent: "alta" | "moderada";
+    urgency: boolean;
+    estimated_cpc: number;
   }>;
-  negative_keywords: Record<string, string[]>;
-  // legacy
-  positives?: Array<{
-    termo: string;
-    match_type: string;
-    intent: string;
-    cpc_estimado: number;
-  }>;
-  negatives?: Record<string, string[]>;
+  negative_keywords: {
+    employment: string[];
+    diy_educational: string[];
+    out_of_region: string[];
+    unrealistic_price: string[];
+    competitors: string[];
+  };
 }
 
 export interface AdCopyResult {
   ads: Array<{
-    headlines: string[];
-    descriptions: string[];
-    description?: string;
+    headline1: string;
+    headline2: string;
+    headline3: string;
+    description: string;
+    targeting_rationale: string;
   }>;
 }
 
 export interface OptimizationResult {
-  performance_level: string;
-  issues_detected: string[];
-  suggested_actions: Array<{
-    type: "pause_keyword" | "adjust_bid" | "add_negative" | "pause_campaign" | "create_ad";
-    target_id?: string;
+  performance_level: "excellent" | "good" | "needs_attention" | "critical";
+  issues_detected: Array<{
+    type: string;
+    severity: "high" | "medium" | "low";
+    detail: string;
+  }>;
+  actions: Array<{
+    type: "pause_keyword" | "adjust_bid" | "add_negative" | "pause_campaign" | "create_ad" | "increase_budget" | "change_schedule";
+    target: string;
     reason: string;
     expected_impact: string;
-    params?: Record<string, unknown>;
+    priority: number;
   }>;
   summary: string;
+  roi_assessment: string;
 }
 
-// === Legacy compatibility (for existing campaigns table) ===
+// === Legacy compatibility ===
 
 export interface LegacyCampaign {
   id: string;
