@@ -1,3 +1,7 @@
+// ============================================================
+// Módulo Ads — Exports centralizados
+// ============================================================
+
 // Agents
 export { runStrategyAgent } from "./agents/strategyAgent";
 export { runKeywordAgent } from "./agents/keywordAgent";
@@ -8,6 +12,9 @@ export { runOptimizationAgent } from "./agents/optimizationAgent";
 export { connectGoogleAds, getAdAccount, disconnectGoogleAds, getCustomerId } from "./services/adsAuthService";
 export { createCampaignWithAI, launchCampaign, pauseCampaign, syncCampaign } from "./services/adsService";
 export { getLatestMetrics, getMetricsHistory, saveMetricsSnapshot, getCampaignPerformance } from "./services/metricsService";
+export { orchestrateCampaignCreation } from "./services/campaignOrchestrator";
+export { buildAgentContext } from "./services/contextEngine";
+export * from "./services/googleAdsService";
 
 // Hooks
 export { useAds } from "./hooks/useAds";
