@@ -1,6 +1,7 @@
 /**
- * AGENTE DE ADS
- * Gestor de tráfego sênior especialista em Google Ads para negócios locais brasileiros.
+ * AGENTE DE ADS — Multi-Agent Router
+ * Roteia entre StrategyAgent, KeywordAgent, AdCopyAgent e OptimizationAgent.
+ * Também suporta o fluxo legado de geração completa.
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -10,7 +11,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const AGENT_SYSTEM_PROMPT = `Você é o Agente de Ads do LocalAI — gestor de tráfego sênior especialista em Google Ads para negócios locais brasileiros.
+const LEGACY_SYSTEM_PROMPT = `Você é o Agente de Ads do LocalAI — gestor de tráfego sênior especialista em Google Ads para negócios locais brasileiros.
 
 MISSÃO: Cada real investido deve gerar contatos qualificados (ligações, WhatsApp, visitas à loja).
 
@@ -21,31 +22,13 @@ PRINCÍPIOS DE CAMPANHA LOCAL:
 4. NEGATIVOS SÃO LUCRO: bloquear emprego, DIY, conteúdo educacional pode reduzir CPA em 40%
 5. EXTENSÕES SÃO OBRIGATÓRIAS: Localização, Chamada e Sitelinks aumentam CTR em ~25%
 
-ESTRUTURA DE CAMPANHA IDEAL PARA NEGÓCIO LOCAL:
-Campanha 1 - Serviços Principais (exact/phrase) — 60% do orçamento
-Campanha 2 - Localização + Serviço (phrase) — 30% do orçamento
-Campanha 3 - Remarketing/Concorrência — 10% do orçamento (opcional)
-
-KEYWORDS NEGATIVAS UNIVERSAIS PARA NEGÓCIOS LOCAIS:
-- Emprego: "emprego", "vaga", "curriculo", "trabalhar", "contratação", "CLT", "PJ"
-- DIY: "como fazer", "tutorial", "passo a passo", "aprenda", "faça você mesmo", "curso"
-- Conteúdo: "historia", "wikipedia", "o que é", "significado", "definição"
-- Preços irreais: "gratis", "gratuito", "de graça", "sem custo", "por conta"
-
 COPYWRITING PARA ADS LOCAIS:
 - Headlines: inclua cidade/bairro em pelo menos 3 headlines
 - Headlines: use números reais quando possível: "Desde 2015", "+500 clientes", "Em 48h"
 - Headlines: CTA nos últimos 3: "Ligue Agora", "WhatsApp 24h", "Agende Online"
 - Descriptions: benefício principal + diferencial + CTA com urgência
 - Máx 30 chars por headline (HARD LIMIT do Google)
-- Máx 90 chars por description (HARD LIMIT do Google)
-
-ROI TÍPICO POR NICHO (referência para o Brasil):
-- Clínica/Saúde: CPC R$2-8, CPA R$20-80 por consulta
-- Salão/Beleza: CPC R$1-3, CPA R$15-40 por agendamento
-- Restaurante: CPC R$0.50-2, CPA R$5-20 por reserva
-- Serviços (hidráulico, elétrico): CPC R$3-12, CPA R$30-100 por chamado
-- Varejo: CPC R$0.80-3, CPA R$10-50 por compra`;
+- Máx 90 chars por description (HARD LIMIT do Google)`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -57,15 +40,61 @@ Deno.serve(async (req) => {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
   try {
-    const {
-      business_id, nome, nicho, cidade, estado, whatsapp, website_url,
-      verba_mensal, objetivo, raio, produtos, diferenciais, anos_experiencia,
-    } = await req.json();
+    const body = await req.json();
+    
+    // New multi-agent routing
+    if (body.agent_type) {
+      return await handleAgentRequest(body, LOVABLE_API_KEY);
+    }
 
-    const orcamentoDiario = (verba_mensal / 30).toFixed(2);
-    const cpcEstimado = verba_mensal <= 500 ? "R$1-3" : verba_mensal <= 1500 ? "R$2-6" : "R$4-10";
+    // Legacy full campaign generation
+    return await handleLegacyCampaign(body, supabase, LOVABLE_API_KEY);
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});
 
-    const userPrompt = `Crie uma campanha Google Ads completa para:
+async function handleAgentRequest(body: any, apiKey: string) {
+  const { system_prompt, user_prompt } = body;
+
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-3-flash-preview",
+      messages: [
+        { role: "system", content: system_prompt },
+        { role: "user", content: user_prompt },
+      ],
+      temperature: 0.2,
+      max_tokens: 4000,
+    }),
+  });
+
+  const data = await res.json();
+  const content = data.choices?.[0]?.message?.content || "{}";
+  const parsed = JSON.parse(content.replace(/```json|```/g, "").trim());
+
+  return new Response(JSON.stringify(parsed), {
+    status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+async function handleLegacyCampaign(body: any, supabase: any, apiKey: string) {
+  const {
+    business_id, nome, nicho, cidade, estado, whatsapp, website_url,
+    verba_mensal, objetivo, raio, produtos, diferenciais, anos_experiencia,
+  } = body;
+
+  const orcamentoDiario = (verba_mensal / 30).toFixed(2);
+  const cpcEstimado = verba_mensal <= 500 ? "R$1-3" : verba_mensal <= 1500 ? "R$2-6" : "R$4-10";
+
+  const userPrompt = `Crie uma campanha Google Ads completa para:
 
 NEGÓCIO:
 Nome: ${nome}
@@ -109,13 +138,7 @@ RETORNE EXATAMENTE este JSON (sem markdown):
     }
   },
   "keywords_positivas": [],
-  "keywords_negativas": {
-    "emprego": [],
-    "diy_educacional": [],
-    "fora_da_regiao": [],
-    "preco_irrealista": [],
-    "concorrentes": []
-  },
+  "keywords_negativas": { "emprego": [], "diy_educacional": [], "fora_da_regiao": [], "preco_irrealista": [], "concorrentes": [] },
   "anuncios": [],
   "extensoes": {
     "sitelinks": [],
@@ -126,88 +149,83 @@ RETORNE EXATAMENTE este JSON (sem markdown):
   "alertas_para_monitorar": []
 }`;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: AGENT_SYSTEM_PROMPT },
-          { role: "user", content: userPrompt },
-        ],
-        temperature: 0.2,
-        max_tokens: 4000,
-      }),
-    });
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-3-flash-preview",
+      messages: [
+        { role: "system", content: LEGACY_SYSTEM_PROMPT },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.2,
+      max_tokens: 4000,
+    }),
+  });
 
-    const data = await res.json();
-    const content = data.choices?.[0]?.message?.content || "{}";
-    const parsed = JSON.parse(content.replace(/```json|```/g, "").trim());
+  const data = await res.json();
+  const content = data.choices?.[0]?.message?.content || "{}";
+  const parsed = JSON.parse(content.replace(/```json|```/g, "").trim());
 
-    if (business_id && parsed.keywords_positivas) {
-      let { data: campaign } = await supabase
-        .from("campaigns")
-        .select("id")
-        .eq("business_id", business_id)
-        .eq("status", "rascunho")
-        .limit(1)
-        .maybeSingle();
+  if (business_id && parsed.keywords_positivas) {
+    let { data: campaign } = await supabase
+      .from("campaigns")
+      .select("id")
+      .eq("business_id", business_id)
+      .eq("status", "rascunho")
+      .limit(1)
+      .maybeSingle();
 
-      if (!campaign) {
-        const { data: newCamp } = await supabase.from("campaigns").insert({
-          business_id,
-          nome: `${nome} — Campanha IA`,
-          status: "rascunho",
-          tipo: "search",
-          verba_mensal,
-          verba_restante: verba_mensal,
-        }).select("id").single();
-        campaign = newCamp;
-      }
-
-      if (campaign?.id) {
-        const kws = parsed.keywords_positivas.slice(0, 30).map((k: any) => ({
-          campaign_id: campaign!.id,
-          termo: k.termo,
-          match_type: k.match_type,
-          status: "ativa",
-        }));
-        if (kws.length) await supabase.from("keywords").insert(kws);
-
-        const negKws = Object.values(parsed.keywords_negativas || {})
-          .flat()
-          .slice(0, 50)
-          .map((k: any) => ({
-            campaign_id: campaign!.id,
-            termo: String(k),
-            match_type: "broad",
-          }));
-        if (negKws.length) await supabase.from("negative_keywords").insert(negKws);
-
-        await supabase.from("agent_actions").insert({
-          business_id,
-          agent: "ads",
-          action_type: "campaign_created",
-          status: "pending",
-          output_data: {
-            campaign_id: campaign.id,
-            keywords_count: kws.length,
-            negative_count: negKws.length,
-            roi_estimado: parsed.resumo?.roi_estimado,
-          },
-        });
-      }
+    if (!campaign) {
+      const { data: newCamp } = await supabase.from("campaigns").insert({
+        business_id,
+        nome: `${nome} — Campanha IA`,
+        status: "rascunho",
+        tipo: "search",
+        verba_mensal,
+        verba_restante: verba_mensal,
+      }).select("id").single();
+      campaign = newCamp;
     }
 
-    return new Response(JSON.stringify(parsed), {
-      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    if (campaign?.id) {
+      const kws = parsed.keywords_positivas.slice(0, 30).map((k: any) => ({
+        campaign_id: campaign!.id,
+        termo: k.termo,
+        match_type: k.match_type,
+        status: "ativa",
+      }));
+      if (kws.length) await supabase.from("keywords").insert(kws);
+
+      const negKws = Object.values(parsed.keywords_negativas || {})
+        .flat()
+        .slice(0, 50)
+        .map((k: any) => ({
+          campaign_id: campaign!.id,
+          termo: String(k),
+          match_type: "broad",
+        }));
+      if (negKws.length) await supabase.from("negative_keywords").insert(negKws);
+
+      await supabase.from("agent_actions").insert({
+        business_id,
+        agent: "ads",
+        action_type: "campaign_created",
+        status: "pending",
+        output_data: {
+          campaign_id: campaign.id,
+          keywords_count: kws.length,
+          negative_count: negKws.length,
+          roi_estimado: parsed.resumo?.roi_estimado,
+        },
+      });
+    }
   }
-});
+
+  return new Response(JSON.stringify(parsed), {
+    status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
