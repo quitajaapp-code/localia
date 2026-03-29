@@ -1,10 +1,7 @@
 /**
- * ADS-OPTIMIZER
- * Roda periodicamente. Analisa métricas e aplica decisões do OptimizationAgent.
- * - Pausa keywords com CTR baixo
- * - Ajusta lances
- * - Adiciona negativas
- * - Pausa campanha se gasto excessivo
+ * ADS-OPTIMIZER Edge Function
+ * Roda periodicamente. Aplica regras determinísticas + análise IA.
+ * Salva decisões em ad_logs (modo passivo — não executa ações automaticamente).
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -21,15 +18,14 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
   try {
     const body = await req.json().catch(() => ({}));
-    const businessId = body.business_id;
+    const campaignId = body.campaign_id;
 
     // Get active campaigns
-    let query = supabase.from("campaigns").select("*").eq("status", "ativa");
-    if (businessId) query = query.eq("business_id", businessId);
+    let query = supabase.from("ad_campaigns").select("*").eq("status", "active");
+    if (campaignId) query = query.eq("id", campaignId);
 
     const { data: campaigns } = await query;
     if (!campaigns?.length) {
@@ -39,59 +35,88 @@ Deno.serve(async (req) => {
     }
 
     const results = [];
+    const currentDay = new Date().getDate();
+    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
 
     for (const campaign of campaigns) {
-      // Get keywords and ads
-      const [kwRes, adRes] = await Promise.all([
-        supabase.from("keywords").select("*").eq("campaign_id", campaign.id).eq("status", "ativa"),
-        supabase.from("ads").select("*").eq("campaign_id", campaign.id),
+      // Fetch keywords and metrics
+      const [kwRes, metricsRes, creativesRes] = await Promise.all([
+        supabase.from("ad_keywords").select("*").eq("campaign_id", campaign.id).eq("is_negative", false),
+        supabase.from("ad_metrics").select("*").eq("campaign_id", campaign.id).order("created_at", { ascending: false }).limit(30),
+        supabase.from("ad_creatives").select("*").eq("campaign_id", campaign.id),
       ]);
 
       const keywords = kwRes.data || [];
-      const ads = adRes.data || [];
+      const metrics = metricsRes.data || [];
+      const creatives = creativesRes.data || [];
 
-      // Auto-optimization rules (no AI needed for simple rules)
-      const actions: Array<{ type: string; target: string; reason: string }> = [];
+      // Calculate totals
+      const totalSpent = metrics.reduce((s: number, m: any) => s + (m.cost || 0), 0);
+      const budgetMonthly = (campaign.budget_daily || 0) * 30;
 
-      // Rule 1: Pause keywords with 0 clicks and > 100 impressions
+      // Deterministic rules
+      const actions: Array<{ type: string; target: string; reason: string; priority: number }> = [];
+      const issues: Array<{ type: string; severity: string; detail: string }> = [];
+
+      // Rule 1: Budget pacing
+      const expectedSpend = (budgetMonthly / daysInMonth) * currentDay;
+      if (totalSpent > expectedSpend * 1.3 && currentDay < 20) {
+        actions.push({ type: "pause_campaign", target: campaign.business_name, reason: `Overspending: R$${totalSpent.toFixed(2)} vs esperado R$${expectedSpend.toFixed(2)}`, priority: 1 });
+        issues.push({ type: "overspending", severity: "high", detail: `Gasto acima do esperado` });
+      }
+
+      // Rule 2: Zero-click keywords
       for (const kw of keywords) {
-        if ((kw.impressoes || 0) > 100 && (kw.cliques || 0) === 0) {
-          await supabase.from("keywords").update({ status: "pausada" }).eq("id", kw.id);
-          actions.push({ type: "pause_keyword", target: kw.termo, reason: "0 cliques com 100+ impressões" });
+        const kwMetrics = metrics.filter((m: any) => m.campaign_id === campaign.id);
+        const totalImpr = kwMetrics.reduce((s: number, m: any) => s + (m.impressions || 0), 0);
+        const totalClicks = kwMetrics.reduce((s: number, m: any) => s + (m.clicks || 0), 0);
+
+        if (totalImpr > 100 && totalClicks === 0) {
+          actions.push({ type: "pause_keyword", target: kw.keyword, reason: "0 cliques após 100+ impressões", priority: 2 });
         }
       }
 
-      // Rule 2: Auto-pause if spending > 90% of budget
-      const spent = (campaign.verba_mensal || 0) - (campaign.verba_restante || 0);
-      const dayOfMonth = new Date().getDate();
-      if (dayOfMonth < 20 && spent > (campaign.verba_mensal || 0) * 0.9) {
-        await supabase.from("campaigns").update({ status: "pausada" }).eq("id", campaign.id);
-        actions.push({ type: "pause_campaign", target: campaign.nome, reason: "Gasto > 90% da verba antes do dia 20" });
+      // Rule 3: Low CTR campaign
+      const campImpr = metrics.reduce((s: number, m: any) => s + (m.impressions || 0), 0);
+      const campClicks = metrics.reduce((s: number, m: any) => s + (m.clicks || 0), 0);
+      const campCtr = campImpr > 500 ? (campClicks / campImpr) * 100 : null;
+
+      if (campCtr !== null && campCtr < 0.5) {
+        actions.push({ type: "create_ad", target: campaign.business_name, reason: `CTR campanha: ${campCtr.toFixed(2)}%`, priority: 2 });
+        issues.push({ type: "low_ctr", severity: "high", detail: `CTR ${campCtr.toFixed(2)}% abaixo do mínimo` });
       }
 
-      // Rule 3: CTR check - if campaign CTR < 0.5% after significant impressions
-      const totalImpr = keywords.reduce((s: number, k: any) => s + (k.impressoes || 0), 0);
-      const totalClicks = keywords.reduce((s: number, k: any) => s + (k.cliques || 0), 0);
-      const campaignCtr = totalImpr > 500 ? (totalClicks / totalImpr) * 100 : null;
+      // Assess performance level
+      let performanceLevel = "needs_attention";
+      if (campCtr && campCtr > 3) performanceLevel = "excellent";
+      else if (campCtr && campCtr > 1.5) performanceLevel = "good";
+      else if (campCtr !== null && campCtr < 0.5) performanceLevel = "critical";
 
-      if (campaignCtr !== null && campaignCtr < 0.5) {
-        actions.push({ type: "alert_low_ctr", target: campaign.nome, reason: `CTR campanha: ${campaignCtr.toFixed(2)}% (abaixo de 0.5%)` });
-      }
-
-      // Log all actions
-      if (actions.length) {
+      // Log decisions
+      if (actions.length || issues.length) {
         await supabase.from("ad_logs").insert({
           campaign_id: campaign.id,
-          action: "auto_optimization",
+          action: "optimization_analysis",
           agent: "ads-optimizer",
-          payload: { actions, timestamp: new Date().toISOString() },
+          payload: {
+            performance_level: performanceLevel,
+            issues_detected: issues,
+            actions_suggested: actions,
+            metrics_snapshot: { impressions: campImpr, clicks: campClicks, ctr: campCtr, spent: totalSpent },
+            timestamp: new Date().toISOString(),
+          },
         });
       }
 
-      results.push({ campaign: campaign.nome, actions_taken: actions.length, actions });
+      results.push({
+        campaign: campaign.business_name,
+        performance_level: performanceLevel,
+        actions_suggested: actions.length,
+        issues: issues.length,
+      });
     }
 
-    return new Response(JSON.stringify({ optimized: results.length, results }), {
+    return new Response(JSON.stringify({ analyzed: results.length, results }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

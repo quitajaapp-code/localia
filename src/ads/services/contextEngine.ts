@@ -1,42 +1,12 @@
 /**
- * Context Engine — Constrói o contexto compartilhado para os agentes de Ads.
- * Centraliza dados do negócio, performance e localização.
+ * Context Engine — Constrói o contexto completo e estruturado para todos os agentes.
+ * Centraliza dados do negócio, performance, histórico e localização.
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import type { FullAgentContext } from "../types";
 
-export interface AdsAgentContext {
-  business: {
-    name: string;
-    niche: string;
-    city: string;
-    state: string;
-    ticket: string;
-    differential: string;
-    products: string;
-    years_experience: string;
-    whatsapp: string | null;
-    website_url: string | null;
-  };
-  performance: {
-    total_campaigns: number;
-    active_campaigns: number;
-    avg_ctr: number;
-    avg_cpc: number;
-    total_conversions: number;
-  };
-  history: {
-    previous_keywords: string[];
-    paused_keywords: string[];
-    best_headlines: string[];
-  };
-  location: {
-    radius: string;
-    target_areas: string[];
-  };
-}
-
-export async function buildAgentContext(userId: string): Promise<AdsAgentContext> {
+export async function buildAgentContext(userId: string): Promise<FullAgentContext> {
   // Fetch business data
   const { data: biz } = await supabase
     .from("businesses")
@@ -45,50 +15,47 @@ export async function buildAgentContext(userId: string): Promise<AdsAgentContext
     .limit(1)
     .maybeSingle();
 
-  // Fetch existing campaigns from ad_campaigns
-  const { data: campaigns } = await supabase
-    .from("ad_campaigns")
-    .select("id, status, performance_score")
-    .eq("user_id", userId);
+  // Fetch campaigns and metrics in parallel
+  const [campaignsRes, metricsHistoryRes] = await Promise.all([
+    supabase.from("ad_campaigns").select("id, status, performance_score").eq("user_id", userId),
+    supabase.from("ad_metrics").select("ctr, cost, clicks, conversions, campaign_id").limit(200),
+  ]);
 
-  // Fetch metrics from ad_metrics for active campaigns
-  const activeCampIds = (campaigns || []).filter(c => c.status === "active").map(c => c.id);
-  let avgCtr = 0, avgCpc = 0, totalConv = 0;
+  const campaigns = campaignsRes.data || [];
+  const activeCampIds = campaigns.filter(c => c.status === "active").map(c => c.id);
 
-  if (activeCampIds.length) {
-    const { data: metrics } = await supabase
-      .from("ad_metrics")
-      .select("ctr, cost, clicks, conversions")
-      .in("campaign_id", activeCampIds);
+  // Calculate performance metrics
+  let avgCtr = 0, avgCpc = 0, totalConv = 0, totalSpend = 0;
+  const userMetrics = (metricsHistoryRes.data || []).filter(m =>
+    campaigns.some(c => c.id === m.campaign_id)
+  );
 
-    if (metrics?.length) {
-      avgCtr = metrics.reduce((s, m) => s + (m.ctr || 0), 0) / metrics.length;
-      const totalClicks = metrics.reduce((s, m) => s + (m.clicks || 0), 0);
-      const totalCost = metrics.reduce((s, m) => s + (m.cost || 0), 0);
-      avgCpc = totalClicks > 0 ? totalCost / totalClicks : 0;
-      totalConv = metrics.reduce((s, m) => s + (m.conversions || 0), 0);
-    }
+  if (userMetrics.length) {
+    avgCtr = userMetrics.reduce((s, m) => s + (m.ctr || 0), 0) / userMetrics.length;
+    const totalClicks = userMetrics.reduce((s, m) => s + (m.clicks || 0), 0);
+    totalSpend = userMetrics.reduce((s, m) => s + (m.cost || 0), 0);
+    avgCpc = totalClicks > 0 ? totalSpend / totalClicks : 0;
+    totalConv = userMetrics.reduce((s, m) => s + (m.conversions || 0), 0);
   }
 
-  // Fetch keyword history
-  const { data: keywords } = await supabase
-    .from("ad_keywords")
-    .select("keyword, status")
-    .in("campaign_id", (campaigns || []).map(c => c.id))
-    .limit(100);
+  // Fetch keyword history and best performing keywords
+  const campIds = campaigns.map(c => c.id);
+  const [keywordsRes, creativesRes] = await Promise.all([
+    campIds.length
+      ? supabase.from("ad_keywords").select("keyword, status, performance_score").in("campaign_id", campIds).limit(100)
+      : Promise.resolve({ data: [] }),
+    campIds.length
+      ? supabase.from("ad_creatives").select("headline1, performance_score").in("campaign_id", campIds).order("performance_score", { ascending: false }).limit(10)
+      : Promise.resolve({ data: [] }),
+  ]);
 
-  const previousKeywords = (keywords || []).map(k => k.keyword);
-  const pausedKeywords = (keywords || []).filter(k => k.status === "paused").map(k => k.keyword);
+  const keywords = keywordsRes.data || [];
+  const creatives = creativesRes.data || [];
 
-  // Fetch best headlines
-  const { data: creatives } = await supabase
-    .from("ad_creatives")
-    .select("headline1, performance_score")
-    .in("campaign_id", (campaigns || []).map(c => c.id))
-    .order("performance_score", { ascending: false })
-    .limit(5);
-
-  const bestHeadlines = (creatives || []).map(c => c.headline1).filter(Boolean) as string[];
+  const bestKeywords = keywords
+    .filter(k => k.status === "active" && (k.performance_score || 0) > 50)
+    .map(k => k.keyword)
+    .slice(0, 10);
 
   return {
     business: {
@@ -102,22 +69,29 @@ export async function buildAgentContext(userId: string): Promise<AdsAgentContext
       years_experience: biz?.anos_experiencia || "",
       whatsapp: biz?.whatsapp || null,
       website_url: biz?.website_url || null,
+      target_audience: biz?.publico_alvo || "",
     },
     performance: {
-      total_campaigns: (campaigns || []).length,
+      total_campaigns: campaigns.length,
       active_campaigns: activeCampIds.length,
       avg_ctr: avgCtr,
       avg_cpc: avgCpc,
       total_conversions: totalConv,
+      total_spend: totalSpend,
+      best_performing_keywords: bestKeywords,
     },
     history: {
-      previous_keywords: previousKeywords,
-      paused_keywords: pausedKeywords,
-      best_headlines: bestHeadlines,
+      previous_keywords: keywords.map(k => k.keyword),
+      paused_keywords: keywords.filter(k => k.status === "paused").map(k => k.keyword),
+      best_headlines: creatives.map(c => c.headline1).filter(Boolean) as string[],
+      failed_ads: creatives.filter(c => (c.performance_score || 0) < 20).map(c => c.headline1).filter(Boolean) as string[],
     },
     location: {
       radius: "10km",
       target_areas: [biz?.cidade || ""].filter(Boolean),
+      competitors_density: "medium",
     },
   };
 }
+
+export type { FullAgentContext };
