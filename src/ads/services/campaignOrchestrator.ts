@@ -56,7 +56,7 @@ export async function orchestrateCampaignCreation(input: OrchestratorInput) {
     city: context.business.city,
     budget_daily: input.budgetDaily,
     status: "draft",
-    strategy_data: strategy as unknown as Record<string, unknown>,
+    strategy_data: JSON.parse(JSON.stringify(strategy)),
     performance_score: 0,
   }]).select().single();
 
