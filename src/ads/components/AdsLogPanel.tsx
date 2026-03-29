@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot, Clock, Zap, ShieldCheck, Sparkles } from "lucide-react";
-import type { AdLog } from "../../types";
+import type { AdLog } from "../types";
 
 const ACTION_LABELS: Record<string, { label: string; icon: typeof Bot; color: string }> = {
   campaign_created_by_ai: { label: "Campanha criada por IA", icon: Sparkles, color: "text-primary" },
