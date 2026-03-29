@@ -59,6 +59,68 @@ export type Database = {
           },
         ]
       }
+      ad_accounts: {
+        Row: {
+          created_at: string | null
+          google_ads_customer_id: string | null
+          id: string
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          google_ads_customer_id?: string | null
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          google_ads_customer_id?: string | null
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ad_logs: {
+        Row: {
+          action: string
+          agent: string | null
+          campaign_id: string
+          created_at: string | null
+          id: string
+          payload: Json | null
+        }
+        Insert: {
+          action: string
+          agent?: string | null
+          campaign_id: string
+          created_at?: string | null
+          id?: string
+          payload?: Json | null
+        }
+        Update: {
+          action?: string
+          agent?: string | null
+          campaign_id?: string
+          created_at?: string | null
+          id?: string
+          payload?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_logs_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ads: {
         Row: {
           ads_ad_id: string | null
@@ -67,7 +129,11 @@ export type Database = {
           cpc: number | null
           created_at: string | null
           ctr: number | null
+          description_text: string | null
           descriptions: Json | null
+          headline1: string | null
+          headline2: string | null
+          headline3: string | null
           headlines: Json | null
           id: string
           impressoes: number | null
@@ -80,7 +146,11 @@ export type Database = {
           cpc?: number | null
           created_at?: string | null
           ctr?: number | null
+          description_text?: string | null
           descriptions?: Json | null
+          headline1?: string | null
+          headline2?: string | null
+          headline3?: string | null
           headlines?: Json | null
           id?: string
           impressoes?: number | null
@@ -93,7 +163,11 @@ export type Database = {
           cpc?: number | null
           created_at?: string | null
           ctr?: number | null
+          description_text?: string | null
           descriptions?: Json | null
+          headline1?: string | null
+          headline2?: string | null
+          headline3?: string | null
           headlines?: Json | null
           id?: string
           impressoes?: number | null
@@ -438,7 +512,9 @@ export type Database = {
       }
       campaigns: {
         Row: {
+          ad_account_id: string | null
           ads_campaign_id: string | null
+          budget_daily: number | null
           business_id: string
           created_at: string | null
           id: string
@@ -449,7 +525,9 @@ export type Database = {
           verba_restante: number | null
         }
         Insert: {
+          ad_account_id?: string | null
           ads_campaign_id?: string | null
+          budget_daily?: number | null
           business_id: string
           created_at?: string | null
           id?: string
@@ -460,7 +538,9 @@ export type Database = {
           verba_restante?: number | null
         }
         Update: {
+          ad_account_id?: string | null
           ads_campaign_id?: string | null
+          budget_daily?: number | null
           business_id?: string
           created_at?: string | null
           id?: string
@@ -471,6 +551,13 @@ export type Database = {
           verba_restante?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "campaigns_ad_account_id_fkey"
+            columns: ["ad_account_id"]
+            isOneToOne: false
+            referencedRelation: "ad_accounts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "campaigns_business_id_fkey"
             columns: ["business_id"]
