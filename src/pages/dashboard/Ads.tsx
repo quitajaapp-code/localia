@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { OnboardingTooltip } from "@/components/shared/OnboardingTooltip";
 import { MetricSkeleton } from "@/components/shared/LoadingStates";
@@ -12,25 +11,24 @@ import { useAdMetrics } from "@/ads/hooks/useAdMetrics";
 import { AdsLogPanel } from "@/ads/components/AdsLogPanel";
 import { AgentStatusPanel } from "@/ads/components/AgentStatusPanel";
 import {
-  Plus, AlertTriangle, Eye, MousePointerClick, DollarSign, TrendingUp,
+  Plus, Eye, MousePointerClick, DollarSign, TrendingUp,
   BarChart3, Pause, Play, Sparkles, Megaphone, Target, Zap, ArrowRight
 } from "lucide-react";
 
 const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  ativa: { label: "Ativa", variant: "default" },
-  pausada: { label: "Pausada", variant: "secondary" },
-  rascunho: { label: "Rascunho", variant: "outline" },
-  encerrada: { label: "Encerrada", variant: "destructive" },
+  active: { label: "Ativa", variant: "default" },
+  paused: { label: "Pausada", variant: "secondary" },
+  draft: { label: "Rascunho", variant: "outline" },
+  ended: { label: "Encerrada", variant: "destructive" },
 };
 
 export default function Ads() {
   usePageTitle("Anúncios Google");
   const navigate = useNavigate();
-  const { campaigns, loading, toggleCampaign } = useAds();
-  const { metrics, loading: metricsLoading } = useAdMetrics();
+  const { campaigns, loading, updateStatus } = useAds();
+  const { totals, loading: metricsLoading } = useAdMetrics();
 
-  const gastoTotal = metrics?.gasto_total || 0;
-  const totalVerba = campaigns.reduce((s, c) => s + (c.verba_mensal || 0), 0);
+  const totalBudget = campaigns.reduce((s, c) => s + (c.budget_daily || 0) * 30, 0);
 
   if (loading) {
     return (
@@ -45,7 +43,6 @@ export default function Ads() {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-heading font-bold text-foreground">Anúncios Google</h1>
         <Button onClick={() => navigate("/dashboard/ads/new")} className="btn-press">
@@ -59,12 +56,11 @@ export default function Ads() {
       </OnboardingTooltip>
 
       {campaigns.length === 0 ? (
-        /* Empty state */
         <div className="text-center py-16">
           <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
             <Megaphone className="h-10 w-10 text-primary" />
           </div>
-          <h2 className="text-2xl font-heading font-bold text-foreground mb-2">Você ainda não tem campanhas ativas</h2>
+          <h2 className="text-2xl font-heading font-bold text-foreground mb-2">Você ainda não tem campanhas</h2>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             Nossa IA vai criar uma campanha completa de Google Ads otimizada para o seu negócio em segundos.
           </p>
@@ -77,7 +73,7 @@ export default function Ads() {
             {[
               { icon: Target, title: "Palavras-chave inteligentes", desc: "A IA seleciona e nega termos automaticamente" },
               { icon: Zap, title: "Anúncios otimizados", desc: "Textos criados para maximizar cliques e conversões" },
-              { icon: TrendingUp, title: "Otimização contínua", desc: "Ajustes semanais baseados em performance real" },
+              { icon: TrendingUp, title: "Otimização contínua", desc: "Ajustes baseados em performance real" },
             ].map((item, i) => (
               <Card key={i} className="text-center">
                 <CardContent className="pt-6">
@@ -88,19 +84,17 @@ export default function Ads() {
               </Card>
             ))}
           </div>
-
           <AgentStatusPanel />
         </div>
       ) : (
         <>
-          {/* Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             {[
-              { label: "Gasto / Verba", value: `R$${gastoTotal.toLocaleString("pt-BR")} / R$${totalVerba.toLocaleString("pt-BR")}`, icon: DollarSign },
-              { label: "Impressões", value: (metrics?.impressoes || 0).toLocaleString("pt-BR"), icon: Eye },
-              { label: "Cliques", value: (metrics?.cliques || 0).toLocaleString("pt-BR"), icon: MousePointerClick },
-              { label: "CPC médio", value: `R$${(metrics?.cpc_medio || 0).toFixed(2)}`, icon: BarChart3 },
-              { label: "Conversões", value: (metrics?.conversoes || 0).toLocaleString("pt-BR"), icon: TrendingUp },
+              { label: "Gasto / Verba", value: `R$${totals.cost.toLocaleString("pt-BR")} / R$${totalBudget.toLocaleString("pt-BR")}`, icon: DollarSign },
+              { label: "Impressões", value: totals.impressions.toLocaleString("pt-BR"), icon: Eye },
+              { label: "Cliques", value: totals.clicks.toLocaleString("pt-BR"), icon: MousePointerClick },
+              { label: "CTR médio", value: `${totals.ctr.toFixed(2)}%`, icon: BarChart3 },
+              { label: "Conversões", value: totals.conversions.toLocaleString("pt-BR"), icon: TrendingUp },
             ].map((m, i) => (
               <Card key={i}>
                 <CardContent className="pt-5 pb-4">
@@ -114,12 +108,10 @@ export default function Ads() {
             ))}
           </div>
 
-          {/* Campaign list */}
           <div className="space-y-4 mb-8">
             {campaigns.map((camp) => {
-              const st = STATUS_MAP[camp.status || "rascunho"] || STATUS_MAP.rascunho;
-              const verbaUsada = (camp.verba_mensal || 0) - (camp.verba_restante || 0);
-              const pct = camp.verba_mensal ? Math.min(100, (verbaUsada / camp.verba_mensal) * 100) : 0;
+              const st = STATUS_MAP[camp.status] || STATUS_MAP.draft;
+              const budgetMonthly = (camp.budget_daily || 0) * 30;
 
               return (
                 <Card key={camp.id} className="hover:shadow-md transition-shadow">
@@ -127,21 +119,19 @@ export default function Ads() {
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-foreground truncate">{camp.nome}</h3>
+                          <h3 className="font-semibold text-foreground truncate">{camp.business_name}</h3>
                           <Badge variant={st.variant}>{st.label}</Badge>
-                        </div>
-
-                        <div className="flex items-center gap-3 mb-3">
-                          <Progress value={pct} className="h-2 flex-1" />
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">
-                            R${verbaUsada.toLocaleString("pt-BR")} / R${(camp.verba_mensal || 0).toLocaleString("pt-BR")}
-                          </span>
+                          {camp.performance_score > 0 && (
+                            <Badge variant="outline" className="text-xs">Score: {camp.performance_score}</Badge>
+                          )}
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                          <span>R${budgetMonthly.toLocaleString("pt-BR")}/mês</span>
                           <span>{camp._kwCount || 0} keywords</span>
                           <span>{camp._adCount || 0} anúncios</span>
-                          <span>Tipo: {camp.tipo || "search"}</span>
+                          <span>{camp._negCount || 0} negativas</span>
+                          {camp.city && <span>{camp.city}</span>}
                         </div>
                       </div>
 
@@ -149,9 +139,9 @@ export default function Ads() {
                         <Button variant="outline" size="sm" onClick={() => navigate(`/dashboard/ads/${camp.id}`)}>
                           Ver detalhes <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
-                        {camp.status !== "rascunho" && camp.status !== "encerrada" && (
-                          <Button variant="ghost" size="icon" onClick={() => toggleCampaign(camp.id, camp.status)}>
-                            {camp.status === "ativa" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                        {camp.status !== "draft" && camp.status !== "ended" && (
+                          <Button variant="ghost" size="icon" onClick={() => updateStatus(camp.id, camp.status === "active" ? "paused" : "active")}>
+                            {camp.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                           </Button>
                         )}
                       </div>
@@ -162,7 +152,6 @@ export default function Ads() {
             })}
           </div>
 
-          {/* Agent panels */}
           <div className="grid md:grid-cols-2 gap-6">
             <AgentStatusPanel />
             <AdsLogPanel />

@@ -2,40 +2,30 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { AdCampaign } from "../types";
-import { launchCampaign, pauseCampaign } from "../services/adsService";
+import { orchestrateCampaignCreation } from "../services/campaignOrchestrator";
 
 export function useAds() {
   const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
   const [loading, setLoading] = useState(true);
-  const [businessId, setBusinessId] = useState<string | null>(null);
 
   const loadCampaigns = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: biz } = await supabase
-        .from("businesses")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(1)
-        .maybeSingle();
-
-      if (!biz) { setLoading(false); return; }
-      setBusinessId(biz.id);
-
       const { data: camps } = await supabase
-        .from("campaigns")
+        .from("ad_campaigns")
         .select("*")
-        .eq("business_id", biz.id)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (camps?.length) {
         const enriched: AdCampaign[] = [];
         for (const c of camps) {
-          const { count: adCount } = await supabase.from("ads").select("*", { count: "exact", head: true }).eq("campaign_id", c.id);
-          const { count: kwCount } = await supabase.from("keywords").select("*", { count: "exact", head: true }).eq("campaign_id", c.id);
-          enriched.push({ ...c, _adCount: adCount || 0, _kwCount: kwCount || 0 } as AdCampaign);
+          const { count: kwCount } = await supabase.from("ad_keywords").select("*", { count: "exact", head: true }).eq("campaign_id", c.id).eq("is_negative", false);
+          const { count: adCount } = await supabase.from("ad_creatives").select("*", { count: "exact", head: true }).eq("campaign_id", c.id);
+          const { count: negCount } = await supabase.from("ad_keywords").select("*", { count: "exact", head: true }).eq("campaign_id", c.id).eq("is_negative", true);
+          enriched.push({ ...c, _kwCount: kwCount || 0, _adCount: adCount || 0, _negCount: negCount || 0 } as AdCampaign);
         }
         setCampaigns(enriched);
       }
@@ -48,22 +38,33 @@ export function useAds() {
 
   useEffect(() => { loadCampaigns(); }, [loadCampaigns]);
 
-  const toggleCampaign = async (id: string, currentStatus: string | null) => {
-    try {
-      if (currentStatus === "ativa") {
-        await pauseCampaign(id);
-        toast.success("Campanha pausada");
-      } else {
-        await launchCampaign(id);
-        toast.success("Campanha ativada");
-      }
-      setCampaigns(prev => prev.map(c =>
-        c.id === id ? { ...c, status: currentStatus === "ativa" ? "pausada" : "ativa" } : c
-      ));
-    } catch {
-      toast.error("Erro ao atualizar campanha");
-    }
+  const createCampaign = async (input: {
+    businessName: string;
+    niche: string;
+    city: string;
+    state: string;
+    budgetDaily: number;
+    objective: string;
+    radius: string;
+  }) => {
+    const result = await orchestrateCampaignCreation(input);
+    await loadCampaigns();
+    return result;
   };
 
-  return { campaigns, loading, businessId, toggleCampaign, reload: loadCampaigns };
+  const updateStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("ad_campaigns").update({ status }).eq("id", id);
+    if (error) { toast.error("Erro ao atualizar campanha"); return; }
+    toast.success(status === "active" ? "Campanha ativada" : status === "paused" ? "Campanha pausada" : "Status atualizado");
+    setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status } : c));
+
+    // Log
+    await supabase.from("ad_logs").insert({
+      campaign_id: id,
+      action: `status_changed_to_${status}`,
+      agent: "manual",
+    });
+  };
+
+  return { campaigns, loading, createCampaign, updateStatus, reload: loadCampaigns };
 }

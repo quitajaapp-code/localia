@@ -61,30 +61,183 @@ export type Database = {
       }
       ad_accounts: {
         Row: {
+          access_token_encrypted: string | null
           created_at: string | null
+          expires_at: string | null
           google_ads_customer_id: string | null
           id: string
+          refresh_token_encrypted: string | null
           status: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          access_token_encrypted?: string | null
           created_at?: string | null
+          expires_at?: string | null
           google_ads_customer_id?: string | null
           id?: string
+          refresh_token_encrypted?: string | null
           status?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          access_token_encrypted?: string | null
           created_at?: string | null
+          expires_at?: string | null
           google_ads_customer_id?: string | null
           id?: string
+          refresh_token_encrypted?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: []
+      }
+      ad_campaigns: {
+        Row: {
+          ad_account_id: string | null
+          budget_daily: number | null
+          business_name: string
+          city: string | null
+          created_at: string | null
+          google_campaign_id: string | null
+          id: string
+          niche: string | null
+          performance_score: number | null
+          status: string | null
+          strategy_data: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ad_account_id?: string | null
+          budget_daily?: number | null
+          business_name: string
+          city?: string | null
+          created_at?: string | null
+          google_campaign_id?: string | null
+          id?: string
+          niche?: string | null
+          performance_score?: number | null
+          status?: string | null
+          strategy_data?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ad_account_id?: string | null
+          budget_daily?: number | null
+          business_name?: string
+          city?: string | null
+          created_at?: string | null
+          google_campaign_id?: string | null
+          id?: string
+          niche?: string | null
+          performance_score?: number | null
+          status?: string | null
+          strategy_data?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_campaigns_ad_account_id_fkey"
+            columns: ["ad_account_id"]
+            isOneToOne: false
+            referencedRelation: "ad_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_creatives: {
+        Row: {
+          campaign_id: string
+          created_at: string | null
+          description: string | null
+          google_ad_id: string | null
+          headline1: string | null
+          headline2: string | null
+          headline3: string | null
+          id: string
+          performance_score: number | null
+          status: string | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string | null
+          description?: string | null
+          google_ad_id?: string | null
+          headline1?: string | null
+          headline2?: string | null
+          headline3?: string | null
+          id?: string
+          performance_score?: number | null
+          status?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string | null
+          description?: string | null
+          google_ad_id?: string | null
+          headline1?: string | null
+          headline2?: string | null
+          headline3?: string | null
+          id?: string
+          performance_score?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_creatives_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_keywords: {
+        Row: {
+          campaign_id: string
+          created_at: string | null
+          id: string
+          is_negative: boolean | null
+          keyword: string
+          match_type: string | null
+          performance_score: number | null
+          status: string | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string | null
+          id?: string
+          is_negative?: boolean | null
+          keyword: string
+          match_type?: string | null
+          performance_score?: number | null
+          status?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string | null
+          id?: string
+          is_negative?: boolean | null
+          keyword?: string
+          match_type?: string | null
+          performance_score?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_keywords_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ad_logs: {
         Row: {
@@ -94,6 +247,7 @@ export type Database = {
           created_at: string | null
           id: string
           payload: Json | null
+          performance_score: number | null
         }
         Insert: {
           action: string
@@ -102,6 +256,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           payload?: Json | null
+          performance_score?: number | null
         }
         Update: {
           action?: string
@@ -110,6 +265,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           payload?: Json | null
+          performance_score?: number | null
         }
         Relationships: [
           {
@@ -117,6 +273,47 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_metrics: {
+        Row: {
+          campaign_id: string
+          clicks: number | null
+          conversions: number | null
+          cost: number | null
+          created_at: string | null
+          ctr: number | null
+          id: string
+          impressions: number | null
+        }
+        Insert: {
+          campaign_id: string
+          clicks?: number | null
+          conversions?: number | null
+          cost?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          id?: string
+          impressions?: number | null
+        }
+        Update: {
+          campaign_id?: string
+          clicks?: number | null
+          conversions?: number | null
+          cost?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          id?: string
+          impressions?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_metrics_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
             referencedColumns: ["id"]
           },
         ]
