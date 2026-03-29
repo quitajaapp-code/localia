@@ -477,9 +477,10 @@ export default function Landing() {
           <div>
             <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Empresa</span>
             <div className="flex flex-col gap-2">
-              {["Blog", "Termos", "Privacidade", "Contato"].map((label) => (
-                <span key={label} style={{ fontSize: 13, color: "#475569", cursor: "default" }}>{label}</span>
-              ))}
+              <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos</Link>
+              <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Privacidade</Link>
+              <span style={{ fontSize: 13, color: "#475569", cursor: "default" }}>Blog</span>
+              <span style={{ fontSize: 13, color: "#475569", cursor: "default" }}>Contato</span>
             </div>
           </div>
         </div>
