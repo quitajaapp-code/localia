@@ -1,39 +1,20 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { OnboardingTooltip } from "@/components/shared/OnboardingTooltip";
 import { MetricSkeleton } from "@/components/shared/LoadingStates";
+import { useAds } from "@/ads/hooks/useAds";
+import { useAdMetrics } from "@/ads/hooks/useAdMetrics";
+import { AdsLogPanel } from "@/ads/components/AdsLogPanel";
+import { AgentStatusPanel } from "@/ads/components/AgentStatusPanel";
 import {
   Plus, AlertTriangle, Eye, MousePointerClick, DollarSign, TrendingUp,
   BarChart3, Pause, Play, Sparkles, Megaphone, Target, Zap, ArrowRight
-}from "lucide-react";
-
-type Campaign = {
-  id: string;
-  nome: string;
-  status: string | null;
-  tipo: string | null;
-  verba_mensal: number | null;
-  verba_restante: number | null;
-  created_at: string | null;
-  _adCount: number;
-  _kwCount: number;
-};
-
-type AdsMetrics = {
-  impressoes: number | null;
-  cliques: number | null;
-  cpc_medio: number | null;
-  conversoes: number | null;
-  gasto_total: number | null;
-};
+} from "lucide-react";
 
 const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   ativa: { label: "Ativa", variant: "default" },
@@ -45,77 +26,11 @@ const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondar
 export default function Ads() {
   usePageTitle("Anúncios Google");
   const navigate = useNavigate();
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [metrics, setMetrics] = useState<AdsMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [hasAdsAccount, setHasAdsAccount] = useState(true);
-  const [totalVerba, setTotalVerba] = useState(0);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: biz } = await supabase
-        .from("businesses")
-        .select("id, ads_customer_id")
-        .eq("user_id", user.id)
-        .limit(1)
-        .maybeSingle();
-
-      if (!biz) { setLoading(false); return; }
-      setHasAdsAccount(!!biz.ads_customer_id);
-
-      // Campaigns
-      const { data: camps } = await supabase
-        .from("campaigns")
-        .select("*")
-        .eq("business_id", biz.id)
-        .order("created_at", { ascending: false });
-
-      if (camps && camps.length > 0) {
-        // Get counts
-        const campIds = camps.map(c => c.id);
-        const enriched: Campaign[] = [];
-        for (const c of camps) {
-          const { count: adCount } = await supabase.from("ads").select("*", { count: "exact", head: true }).eq("campaign_id", c.id);
-          const { count: kwCount } = await supabase.from("keywords").select("*", { count: "exact", head: true }).eq("campaign_id", c.id);
-          enriched.push({ ...c, _adCount: adCount || 0, _kwCount: kwCount || 0 });
-        }
-        setCampaigns(enriched);
-        setTotalVerba(camps.reduce((s, c) => s + (c.verba_mensal || 0), 0));
-      }
-
-      // Metrics
-      const { data: met } = await supabase
-        .from("ads_metrics")
-        .select("*")
-        .eq("business_id", biz.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      setMetrics(met);
-    } catch {
-      /* silently fail */
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleCampaign = async (id: string, currentStatus: string | null) => {
-    const newStatus = currentStatus === "ativa" ? "pausada" : "ativa";
-    const { error } = await supabase.from("campaigns").update({ status: newStatus }).eq("id", id);
-    if (error) { toast.error("Erro ao atualizar campanha"); return; }
-    toast.success(newStatus === "ativa" ? "Campanha ativada" : "Campanha pausada");
-    setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c));
-  };
+  const { campaigns, loading, toggleCampaign } = useAds();
+  const { metrics, loading: metricsLoading } = useAdMetrics();
 
   const gastoTotal = metrics?.gasto_total || 0;
+  const totalVerba = campaigns.reduce((s, c) => s + (c.verba_mensal || 0), 0);
 
   if (loading) {
     return (
@@ -143,15 +58,6 @@ export default function Ads() {
         Nossa IA pesquisa as melhores palavras-chave para o seu negócio
       </OnboardingTooltip>
 
-      {!hasAdsAccount && (
-        <Alert className="mb-6 border-warning/40 bg-warning/5">
-          <AlertTriangle className="h-4 w-4 text-warning" />
-          <AlertDescription className="text-sm">
-            Conecte sua conta Google Ads para ativar este módulo e sincronizar métricas em tempo real.
-          </AlertDescription>
-        </Alert>
-      )}
-
       {campaigns.length === 0 ? (
         /* Empty state */
         <div className="text-center py-16">
@@ -167,7 +73,7 @@ export default function Ads() {
             Criar minha primeira campanha com IA
           </Button>
 
-          <div className="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <div className="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
             {[
               { icon: Target, title: "Palavras-chave inteligentes", desc: "A IA seleciona e nega termos automaticamente" },
               { icon: Zap, title: "Anúncios otimizados", desc: "Textos criados para maximizar cliques e conversões" },
@@ -182,6 +88,8 @@ export default function Ads() {
               </Card>
             ))}
           </div>
+
+          <AgentStatusPanel />
         </div>
       ) : (
         <>
@@ -207,7 +115,7 @@ export default function Ads() {
           </div>
 
           {/* Campaign list */}
-          <div className="space-y-4">
+          <div className="space-y-4 mb-8">
             {campaigns.map((camp) => {
               const st = STATUS_MAP[camp.status || "rascunho"] || STATUS_MAP.rascunho;
               const verbaUsada = (camp.verba_mensal || 0) - (camp.verba_restante || 0);
@@ -223,7 +131,6 @@ export default function Ads() {
                           <Badge variant={st.variant}>{st.label}</Badge>
                         </div>
 
-                        {/* Verba bar */}
                         <div className="flex items-center gap-3 mb-3">
                           <Progress value={pct} className="h-2 flex-1" />
                           <span className="text-xs text-muted-foreground whitespace-nowrap">
@@ -232,8 +139,8 @@ export default function Ads() {
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                          <span>{camp._kwCount} keywords</span>
-                          <span>{camp._adCount} anúncios</span>
+                          <span>{camp._kwCount || 0} keywords</span>
+                          <span>{camp._adCount || 0} anúncios</span>
                           <span>Tipo: {camp.tipo || "search"}</span>
                         </div>
                       </div>
@@ -253,6 +160,12 @@ export default function Ads() {
                 </Card>
               );
             })}
+          </div>
+
+          {/* Agent panels */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <AgentStatusPanel />
+            <AdsLogPanel />
           </div>
         </>
       )}
