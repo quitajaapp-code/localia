@@ -1,8 +1,14 @@
+/**
+ * adsService.ts — Serviço legado para campanhas na tabela `campaigns`.
+ * Usa os novos agentes com a interface atualizada.
+ */
+
 import { supabase } from "@/integrations/supabase/client";
-import type { AgentContext } from "../types";
+import { buildAgentContext } from "./contextEngine";
 import { runStrategyAgent } from "../agents/strategyAgent";
 import { runKeywordAgent } from "../agents/keywordAgent";
 import { runAdCopyAgent } from "../agents/adCopyAgent";
+import type { AgentContext } from "../types";
 
 interface CreateCampaignParams {
   businessId: string;
@@ -10,23 +16,30 @@ interface CreateCampaignParams {
 }
 
 /**
- * Full AI-assisted campaign creation flow:
- * 1. Strategy agent defines campaign structure
- * 2. Keyword agent generates keywords
- * 3. AdCopy agent creates ad creatives
- * 4. Save everything to Supabase
+ * Full AI-assisted campaign creation flow (legacy tables).
  */
 export async function createCampaignWithAI({ businessId, context }: CreateCampaignParams) {
-  // Run agents in parallel where possible
-  const [strategy, keywords, adCopy] = await Promise.all([
-    runStrategyAgent(context),
-    runKeywordAgent(context),
-    runAdCopyAgent(context),
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
+  const fullContext = await buildAgentContext(user.id);
+
+  // Override context with provided data
+  if (context.business_name) fullContext.business.name = context.business_name;
+  if (context.niche) fullContext.business.niche = context.niche;
+  if (context.city) fullContext.business.city = context.city;
+  if (context.state) fullContext.business.state = context.state;
+
+  // Run agents sequentially (strategy → keywords/adcopy)
+  const strategy = await runStrategyAgent(fullContext, context.budget_monthly, context.objective);
+  const [keywords, adCopy] = await Promise.all([
+    runKeywordAgent(fullContext, strategy.urgency_level),
+    runAdCopyAgent(fullContext, strategy.urgency_level),
   ]);
 
   const budgetDaily = +(context.budget_monthly / 30).toFixed(2);
 
-  // Create campaign
+  // Create campaign in legacy table
   const { data: campaign, error: campErr } = await supabase.from("campaigns").insert({
     business_id: businessId,
     nome: `${context.business_name} — ${context.objective}`,
@@ -40,20 +53,21 @@ export async function createCampaignWithAI({ businessId, context }: CreateCampai
   if (campErr) throw campErr;
 
   // Insert keywords
-  if (keywords.positives?.length) {
+  const positiveKws = (keywords.high_intent_keywords || []).slice(0, 30);
+  if (positiveKws.length) {
     await supabase.from("keywords").insert(
-      keywords.positives.slice(0, 30).map(k => ({
+      positiveKws.map(k => ({
         campaign_id: campaign.id,
-        termo: k.termo,
+        termo: k.term,
         match_type: k.match_type,
-        cpc_atual: k.cpc_estimado,
+        cpc_atual: k.estimated_cpc || 0,
         status: "ativa",
       }))
     );
   }
 
   // Insert negative keywords
-  const allNegs = Object.values(keywords.negatives || {}).flat();
+  const allNegs = Object.values(keywords.negative_keywords || {}).flat();
   if (allNegs.length) {
     await supabase.from("negative_keywords").insert(
       allNegs.slice(0, 50).map(t => ({
@@ -69,12 +83,10 @@ export async function createCampaignWithAI({ businessId, context }: CreateCampai
     await supabase.from("ads").insert(
       adCopy.ads.map(a => ({
         campaign_id: campaign.id,
-        headlines: a.headlines,
-        descriptions: a.descriptions,
-        headline1: a.headlines[0] || null,
-        headline2: a.headlines[1] || null,
-        headline3: a.headlines[2] || null,
-        description_text: a.descriptions[0] || null,
+        headline1: a.headline1 || null,
+        headline2: a.headline2 || null,
+        headline3: a.headline3 || null,
+        description_text: a.description || null,
         status: "rascunho",
       }))
     );
@@ -86,8 +98,9 @@ export async function createCampaignWithAI({ businessId, context }: CreateCampai
     action: "campaign_created_by_ai",
     agent: "strategy+keyword+adcopy",
     payload: {
-      strategy: strategy.reasoning,
-      keywords_count: keywords.positives?.length || 0,
+      strategy_decision: strategy.reasoning,
+      urgency: strategy.urgency_level,
+      keywords_count: positiveKws.length,
       negatives_count: allNegs.length,
       ads_count: adCopy.ads?.length || 0,
     },
@@ -96,9 +109,6 @@ export async function createCampaignWithAI({ businessId, context }: CreateCampai
   return { campaign, strategy, keywords, adCopy };
 }
 
-/**
- * Launch a draft campaign (change status to active).
- */
 export async function launchCampaign(campaignId: string) {
   const { error } = await supabase
     .from("campaigns")
@@ -113,9 +123,6 @@ export async function launchCampaign(campaignId: string) {
   });
 }
 
-/**
- * Pause an active campaign.
- */
 export async function pauseCampaign(campaignId: string) {
   const { error } = await supabase
     .from("campaigns")
@@ -130,11 +137,7 @@ export async function pauseCampaign(campaignId: string) {
   });
 }
 
-/**
- * Sync campaign data (placeholder for future Google Ads API integration).
- */
 export async function syncCampaign(campaignId: string) {
-  // Future: call Google Ads API to sync metrics
   await supabase.from("ad_logs").insert({
     campaign_id: campaignId,
     action: "campaign_synced",
