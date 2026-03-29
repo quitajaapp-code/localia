@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { AdMetrics } from "../types";
+import type { AdMetric } from "../types";
 
 /**
  * Get latest metrics for a business.
