@@ -1,18 +1,21 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { OnboardingTooltip } from "@/components/shared/OnboardingTooltip";
 import { MetricSkeleton } from "@/components/shared/LoadingStates";
 import { useAds } from "@/ads/hooks/useAds";
 import { useAdMetrics } from "@/ads/hooks/useAdMetrics";
+import { useGoogleAdsAuth } from "@/ads/hooks/useGoogleAdsAuth";
 import { AdsLogPanel } from "@/ads/components/AdsLogPanel";
 import { AgentStatusPanel } from "@/ads/components/AgentStatusPanel";
+import { toast } from "sonner";
 import {
   Plus, Eye, MousePointerClick, DollarSign, TrendingUp,
-  BarChart3, Pause, Play, Sparkles, Megaphone, Target, Zap, ArrowRight
+  BarChart3, Pause, Play, Sparkles, Megaphone, Target, Zap, ArrowRight,
+  Link2, Unlink, CheckCircle2, Loader2
 } from "lucide-react";
 
 const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -25,8 +28,29 @@ const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondar
 export default function Ads() {
   usePageTitle("Anúncios Google");
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { campaigns, loading, updateStatus } = useAds();
   const { totals, loading: metricsLoading } = useAdMetrics();
+  const { isConnected, loading: authLoading, connect, disconnect, account, refetch } = useGoogleAdsAuth();
+
+  // Handle OAuth callback params
+  useEffect(() => {
+    if (searchParams.get("ads_success") === "1") {
+      const customerId = searchParams.get("customer_id");
+      toast.success(
+        customerId
+          ? `Google Ads conectado! Customer ID: ${customerId}`
+          : "Google Ads conectado com sucesso!"
+      );
+      setSearchParams({}, { replace: true });
+      refetch();
+    }
+    if (searchParams.get("ads_error")) {
+      const err = searchParams.get("ads_error");
+      toast.error(`Erro na conexão Google Ads: ${err}`);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams, refetch]);
 
   const totalBudget = campaigns.reduce((s, c) => s + (c.budget_daily || 0) * 30, 0);
 
@@ -45,10 +69,37 @@ export default function Ads() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-heading font-bold text-foreground">Anúncios Google</h1>
-        <Button onClick={() => navigate("/dashboard/ads/new")} className="btn-press">
-          <Plus className="h-4 w-4 mr-2" />
-          Nova campanha
-        </Button>
+        <div className="flex items-center gap-2">
+          {authLoading ? (
+            <Button variant="outline" disabled>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Verificando...
+            </Button>
+          ) : isConnected ? (
+            <div className="flex items-center gap-2">
+              <Badge variant="default" className="gap-1">
+                <CheckCircle2 className="h-3 w-3" />
+                Google Ads conectado
+                {account?.google_ads_customer_id && (
+                  <span className="text-xs opacity-75 ml-1">({account.google_ads_customer_id})</span>
+                )}
+              </Badge>
+              <Button variant="ghost" size="sm" onClick={disconnect}>
+                <Unlink className="h-4 w-4 mr-1" />
+                Desconectar
+              </Button>
+            </div>
+          ) : (
+            <Button variant="outline" onClick={connect}>
+              <Link2 className="h-4 w-4 mr-2" />
+              Conectar Google Ads
+            </Button>
+          )}
+          <Button onClick={() => navigate("/dashboard/ads/new")} className="btn-press">
+            <Plus className="h-4 w-4 mr-2" />
+            Nova campanha
+          </Button>
+        </div>
       </div>
 
       <OnboardingTooltip id="ads-ai">
@@ -61,9 +112,26 @@ export default function Ads() {
             <Megaphone className="h-10 w-10 text-primary" />
           </div>
           <h2 className="text-2xl font-heading font-bold text-foreground mb-2">Você ainda não tem campanhas</h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+          <p className="text-muted-foreground mb-4 max-w-md mx-auto">
             Nossa IA vai criar uma campanha completa de Google Ads otimizada para o seu negócio em segundos.
           </p>
+
+          {!isConnected && !authLoading && (
+            <Card className="max-w-md mx-auto mb-6 border-dashed border-primary/30">
+              <CardContent className="pt-6 text-center">
+                <Link2 className="h-8 w-8 text-primary mx-auto mb-3" />
+                <p className="font-semibold text-sm mb-2">Conecte sua conta Google Ads</p>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Para publicar campanhas automaticamente, conecte sua conta do Google Ads.
+                </p>
+                <Button onClick={connect} variant="outline" size="sm">
+                  <Link2 className="h-4 w-4 mr-2" />
+                  Conectar Google Ads
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           <Button size="lg" onClick={() => navigate("/dashboard/ads/new")} className="mb-10">
             <Sparkles className="h-5 w-5 mr-2" />
             Criar minha primeira campanha com IA
