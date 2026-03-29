@@ -41,6 +41,8 @@ import PublicSite from "./pages/PublicSite";
 import Demos from "./pages/Demos";
 import Agents from "./pages/dashboard/Agents";
 import AlertHistory from "./pages/dashboard/AlertHistory";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
