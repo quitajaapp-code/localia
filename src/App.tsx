@@ -41,6 +41,8 @@ import PublicSite from "./pages/PublicSite";
 import Demos from "./pages/Demos";
 import Agents from "./pages/dashboard/Agents";
 import AlertHistory from "./pages/dashboard/AlertHistory";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +64,8 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/demos" element={<Demos />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="/onboarding" element={<OnboardingLayout />}>

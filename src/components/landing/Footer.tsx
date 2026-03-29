@@ -13,6 +13,8 @@ export function Footer() {
             <a href="#como-funciona" className="hover:text-secondary-foreground/70 transition-colors duration-200">Como funciona</a>
             <a href="#funcionalidades" className="hover:text-secondary-foreground/70 transition-colors duration-200">Funcionalidades</a>
             <Link to="/pricing" className="hover:text-secondary-foreground/70 transition-colors duration-200">Preços</Link>
+            <Link to="/privacy" className="hover:text-secondary-foreground/70 transition-colors duration-200">Privacidade</Link>
+            <Link to="/terms" className="hover:text-secondary-foreground/70 transition-colors duration-200">Termos</Link>
             <Link to="/auth" className="hover:text-secondary-foreground/70 transition-colors duration-200">Entrar</Link>
           </div>
           <p className="text-xs text-secondary-foreground/25">© {new Date().getFullYear()} LocalAI</p>
