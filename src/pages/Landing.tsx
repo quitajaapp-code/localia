@@ -396,7 +396,7 @@ export default function Landing() {
               <div style={{ position: "relative" }}>
                 <div style={{ position: "absolute", inset: -40, background: "radial-gradient(ellipse at center, rgba(99,102,241,0.15), transparent 70%)", pointerEvents: "none" }} />
                 <div style={{ border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, overflow: "hidden", boxShadow: "0 40px 80px -20px rgba(0,0,0,0.8), 0 0 60px rgba(99,102,241,0.08)", position: "relative" }}>
-                  <img src={demoPreview} alt="Exemplo de mini site — Estúdio Bela & Arte" style={{ width: "100%", display: "block" }} />
+                  <img src={demoPreview} alt="Exemplo de mini site — Estúdio Bela & Arte" width={600} height={900} loading="lazy" decoding="async" style={{ width: "100%", height: "auto", display: "block" }} />
                 </div>
                 <div style={{ position: "absolute", top: -12, right: -12, background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", fontSize: 10, fontWeight: 600, padding: "6px 12px", borderRadius: 999, boxShadow: "0 4px 16px rgba(99,102,241,0.4)", border: "1px solid rgba(255,255,255,0.2)" }}>
                   ✦ Incluso no Presença + Ads
