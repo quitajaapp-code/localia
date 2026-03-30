@@ -17,10 +17,10 @@ export function Header({ darkLogo = false }: { darkLogo?: boolean }) {
   }, []);
 
   const navLinks = [
-    { href: "#como-funciona", label: "Como funciona" },
-    { href: "#funcionalidades", label: "Funcionalidades" },
-    { href: "#depoimentos", label: "Depoimentos" },
-    { href: "#precos", label: "Preços" },
+    { href: "/#como-funciona", label: "Como funciona" },
+    { href: "/#funcionalidades", label: "Funcionalidades" },
+    { href: "/#depoimentos", label: "Depoimentos" },
+    { href: "/#precos", label: "Preços" },
   ];
 
   return (
