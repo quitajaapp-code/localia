@@ -1,8 +1,10 @@
 import BlogArticleLayout from "@/components/blog/BlogArticleLayout";
+import heroImage from "@/assets/blog-caso-real-hero.jpg";
 
 export default function CasoReal40Porcento() {
   return (
     <BlogArticleLayout title="+40% de Ligações em 60 Dias – Um Caso Real com LocalAI" category="Casos de Sucesso" date="10 de março de 2026">
+      <img src={heroImage} alt="Caso real: +40% de ligações em 60 dias com LocalAI" width={1920} height={1080} style={{ borderRadius: 12, marginBottom: 32, width: "100%", height: "auto" }} />
       <p>Resultados reais falam mais do que promessas. Neste artigo, compartilhamos o caso de uma <strong>clínica odontológica em São Paulo</strong> que aumentou em 40% o número de ligações recebidas pelo Google em apenas 60 dias usando o LocalAI.</p>
 
       <h2>O cenário antes do LocalAI</h2>
