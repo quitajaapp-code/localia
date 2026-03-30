@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import localaiLogo from "@/assets/localai-logo.png";
+import localaiLogoDark from "@/assets/localai-logo-dark.png";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function Header() {
+export function Header({ darkLogo = false }: { darkLogo?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -32,7 +33,7 @@ export function Header() {
     >
       <div className="container flex items-center justify-between h-14 md:h-16">
         <Link to="/" className="flex items-center group">
-          <img src={localaiLogo} alt="LocalAI" className="h-7" />
+          <img src={darkLogo ? localaiLogoDark : localaiLogo} alt="LocalAI" className="h-7" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-7 text-[13px] font-medium text-muted-foreground">
