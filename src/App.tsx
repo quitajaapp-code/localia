@@ -44,6 +44,7 @@ import AlertHistory from "./pages/dashboard/AlertHistory";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import SeoLocal from "./pages/SeoLocal";
+import Blog from "./pages/Blog";
 
 const queryClient = new QueryClient();
 
