@@ -45,6 +45,14 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import SeoLocal from "./pages/SeoLocal";
 import Blog from "./pages/Blog";
+import SeoLocal2026 from "./pages/blog/SeoLocal2026";
+import IaAvaliacoesNegativas from "./pages/blog/IaAvaliacoesNegativas";
+import MiniSiteGratis from "./pages/blog/MiniSiteGratis";
+import ErrosGoogleAds from "./pages/blog/ErrosGoogleAds";
+import ChecklistGMN from "./pages/blog/ChecklistGMN";
+import CasoReal40Porcento from "./pages/blog/CasoReal40Porcento";
+import Postar4Vezes from "./pages/blog/Postar4Vezes";
+import LgpdSeguranca from "./pages/blog/LgpdSeguranca";
 
 const queryClient = new QueryClient();
 

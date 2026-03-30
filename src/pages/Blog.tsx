@@ -3,14 +3,14 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { ArrowRight, Calendar, Tag } from "lucide-react";
 
 const articles = [
-  { title: "Estratégias de SEO Local em 2026: Como ranquear no Google Maps", summary: "Descubra os pilares do SEO Local e como aplicá-los para aparecer nas primeiras posições do Maps.", date: "28 de março de 2026", category: "SEO Local", slug: "/seo-local" },
-  { title: "Como a IA responde avaliações negativas sem perder clientes", summary: "Respostas empáticas e rápidas transformam críticas em oportunidades de fidelização.", date: "25 de março de 2026", category: "Dicas para Donos", slug: "#" },
-  { title: "Mini Site grátis: Por que ele está mudando o jogo em 2026", summary: "Um site otimizado para SEO local, atualizado automaticamente e incluso no seu plano.", date: "22 de março de 2026", category: "Mini Site", slug: "#" },
-  { title: "Google Ads para negócios locais: Erros que você deve evitar", summary: "Os erros mais comuns em campanhas locais e como a IA evita cada um deles.", date: "18 de março de 2026", category: "Google Ads", slug: "#" },
-  { title: "Checklist: Como configurar seu Google Meu Negócio corretamente", summary: "Passo a passo para preencher 100% do seu perfil e maximizar visualizações e ligações.", date: "14 de março de 2026", category: "Google Meu Negócio", slug: "#" },
-  { title: "+40% de ligações em 60 dias – Caso real com LocalAI", summary: "Como uma clínica odontológica aumentou drasticamente seus contatos com automação.", date: "10 de março de 2026", category: "Casos de Sucesso", slug: "#" },
-  { title: "Como publicar 4 vezes por semana sem esforço", summary: "A IA cria e publica posts relevantes no seu Google Meu Negócio automaticamente.", date: "6 de março de 2026", category: "Dicas para Donos", slug: "#" },
-  { title: "LGPD e segurança no Google Meu Negócio", summary: "Entenda como proteger os dados do seu negócio e dos seus clientes com boas práticas.", date: "2 de março de 2026", category: "Google Meu Negócio", slug: "#" },
+  { title: "Estratégias de SEO Local em 2026: Como ranquear no Google Maps", summary: "Descubra os pilares do SEO Local e como aplicá-los para aparecer nas primeiras posições do Maps.", date: "28 de março de 2026", category: "SEO Local", slug: "/blog/estrategias-seo-local-2026" },
+  { title: "Como a IA responde avaliações negativas sem perder clientes", summary: "Respostas empáticas e rápidas transformam críticas em oportunidades de fidelização.", date: "25 de março de 2026", category: "Dicas para Donos", slug: "/blog/ia-responde-avaliacoes-negativas" },
+  { title: "Mini Site grátis: Por que ele está mudando o jogo em 2026", summary: "Um site otimizado para SEO local, atualizado automaticamente e incluso no seu plano.", date: "22 de março de 2026", category: "Mini Site", slug: "/blog/mini-site-gratis-negocios-locais" },
+  { title: "Google Ads para negócios locais: Erros que você deve evitar", summary: "Os erros mais comuns em campanhas locais e como a IA evita cada um deles.", date: "18 de março de 2026", category: "Google Ads", slug: "/blog/erros-google-ads-restaurantes-2026" },
+  { title: "Checklist: Como configurar seu Google Meu Negócio corretamente", summary: "Passo a passo para preencher 100% do seu perfil e maximizar visualizações e ligações.", date: "14 de março de 2026", category: "Google Meu Negócio", slug: "/blog/checklist-google-meu-negocio" },
+  { title: "+40% de ligações em 60 dias – Caso real com LocalAI", summary: "Como uma clínica odontológica aumentou drasticamente seus contatos com automação.", date: "10 de março de 2026", category: "Casos de Sucesso", slug: "/blog/caso-real-40-porcento-ligacoes" },
+  { title: "Como publicar 4 vezes por semana sem esforço", summary: "A IA cria e publica posts relevantes no seu Google Meu Negócio automaticamente.", date: "6 de março de 2026", category: "Dicas para Donos", slug: "/blog/postar-4-vezes-por-semana" },
+  { title: "LGPD e segurança no Google Meu Negócio", summary: "Entenda como proteger os dados do seu negócio e dos seus clientes com boas práticas.", date: "2 de março de 2026", category: "Google Meu Negócio", slug: "/blog/lgpd-seguranca-google-meu-negocio" },
 ];
 
 const categories = ["SEO Local", "Google Meu Negócio", "Google Ads", "Mini Site", "Dicas para Donos", "Casos de Sucesso"];
