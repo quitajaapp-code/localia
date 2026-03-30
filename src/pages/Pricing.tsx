@@ -248,10 +248,9 @@ const Pricing = () => {
                   className="w-full"
                   size="lg"
                   variant={plan.popular ? "default" : "outline"}
-                  disabled={loadingPlan === plan.id}
-                  onClick={() => handleCheckout(plan.id)}
+                  asChild
                 >
-                  {loadingPlan === plan.id ? "Redirecionando..." : "Começar grátis por 14 dias"}
+                  <Link to="/auth">Começar grátis por 14 dias</Link>
                 </Button>
               </div>
             ))}

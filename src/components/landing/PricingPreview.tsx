@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,12 +6,14 @@ import { cn } from "@/lib/utils";
 import { Reveal } from "./Reveal";
 
 const plans = [
-  { name: "Presença", price: "97", features: ["1 negócio", "Posts automáticos 4x/sem", "Respostas com IA", "Score de otimização", "Relatório mensal"] },
-  { name: "Presença + Ads", price: "197", popular: true, features: ["3 negócios", "Tudo do Presença", "Gestão de Google Ads com IA", "Otimização semanal", "Relatório unificado GMB+Ads"] },
-  { name: "Agência", price: "397", features: ["10 negócios", "Tudo do Presença+Ads", "Painel multi-cliente", "White-label", "Suporte prioritário"] },
+  { name: "Presença", monthlyPrice: "97", annualPrice: "970", features: ["1 negócio", "Posts automáticos 4x/sem", "Respostas com IA", "Score de otimização", "Relatório mensal"] },
+  { name: "Presença + Ads", monthlyPrice: "197", annualPrice: "1.970", popular: true, features: ["3 negócios", "Tudo do Presença", "Gestão de Google Ads com IA", "Otimização semanal", "Relatório unificado GMB+Ads"] },
+  { name: "Agência", monthlyPrice: "397", annualPrice: "3.970", features: ["10 negócios", "Tudo do Presença+Ads", "Painel multi-cliente", "White-label", "Suporte prioritário"] },
 ];
 
 export function PricingPreview() {
+  const [annual, setAnnual] = useState(false);
+
   return (
     <section id="precos" className="py-28 md:py-36 bg-background relative">
       <div className="container max-w-4xl space-y-16">
@@ -18,6 +21,36 @@ export function PricingPreview() {
           <h2 className="text-3xl md:text-4xl font-heading font-bold tracking-tight">Planos para cada fase do seu negócio</h2>
           <p className="text-muted-foreground text-base leading-relaxed">14 dias grátis em todos os planos. Cancele quando quiser.</p>
         </Reveal>
+
+        {/* Monthly/Annual Toggle */}
+        <div className="flex items-center justify-center gap-3">
+          <span className={cn("text-sm font-medium transition-colors", !annual ? "text-foreground" : "text-muted-foreground")}>
+            Mensal
+          </span>
+          <button
+            onClick={() => setAnnual(!annual)}
+            className={cn(
+              "relative w-14 h-7 rounded-full transition-colors",
+              annual ? "bg-primary" : "bg-muted"
+            )}
+          >
+            <span
+              className={cn(
+                "absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-background shadow-sm transition-transform",
+                annual && "translate-x-7"
+              )}
+            />
+          </button>
+          <span className={cn("text-sm font-medium transition-colors", annual ? "text-foreground" : "text-muted-foreground")}>
+            Anual
+          </span>
+          {annual && (
+            <span className="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-full">
+              Economia
+            </span>
+          )}
+        </div>
+
         <div className="grid md:grid-cols-3 gap-6">
           {plans.map((p, i) => (
             <Reveal key={i} delay={i * 80}>
@@ -37,8 +70,12 @@ export function PricingPreview() {
                 <div>
                   <h3 className="text-base font-heading font-semibold">{p.name}</h3>
                   <p className="mt-3">
-                    <span className="text-3xl font-heading font-bold tracking-tight">R${p.price}</span>
-                    <span className="text-sm text-muted-foreground ml-1">/mês</span>
+                    <span className="text-3xl font-heading font-bold tracking-tight">
+                      R${annual ? p.annualPrice : p.monthlyPrice}
+                    </span>
+                    <span className="text-sm text-muted-foreground ml-1">
+                      /{annual ? "ano" : "mês"}
+                    </span>
                   </p>
                 </div>
                 <ul className="space-y-3 flex-1">
@@ -57,7 +94,7 @@ export function PricingPreview() {
                   variant={p.popular ? "default" : "outline"}
                   asChild
                 >
-                  <Link to="/pricing">Começar grátis</Link>
+                  <Link to="/auth">Começar grátis</Link>
                 </Button>
               </div>
             </Reveal>
