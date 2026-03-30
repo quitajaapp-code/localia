@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Mail, Lock, User, Eye, EyeOff, Chrome, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Chrome, CheckCircle2, XCircle, Loader2, Phone } from "lucide-react";
 import localaiLogo from "@/assets/localai-logo.png";
 
 function translateError(msg: string): string {
@@ -42,6 +42,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [nome, setNome] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -169,6 +170,16 @@ const Auth = () => {
     };
   }, [navigate]);
 
+  const formatWhatsapp = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 13);
+    if (digits.length === 0) return "";
+    if (digits.length <= 2) return `+${digits}`;
+    if (digits.length <= 4) return `+${digits.slice(0, 2)} (${digits.slice(2)}`;
+    if (digits.length <= 9) return `+${digits.slice(0, 2)} (${digits.slice(2, 4)}) ${digits.slice(4)}`;
+    return `+${digits.slice(0, 2)} (${digits.slice(2, 4)}) ${digits.slice(4, 9)}-${digits.slice(9)}`;
+  };
+
+  const whatsappValid = /^\+55 \(\d{2}\) \d{5}-\d{4}$/.test(whatsapp);
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const passwordValid = password.length >= 8;
   const passwordsMatch = password === confirmPassword;
@@ -178,16 +189,29 @@ const Auth = () => {
     if (!emailValid) return toast({ title: "Email inválido", variant: "destructive" });
     if (!passwordValid) return toast({ title: "Senha deve ter no mínimo 8 caracteres", variant: "destructive" });
     if (mode === "signup" && !passwordsMatch) return toast({ title: "As senhas não coincidem", variant: "destructive" });
+    if (mode === "signup" && !whatsappValid) return toast({ title: "WhatsApp inválido. Use o formato +55 (XX) XXXXX-XXXX", variant: "destructive" });
 
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { nome } },
+          options: { data: { nome, whatsapp } },
         });
         if (error) throw error;
+
+        // Create CRM lead on signup
+        if (data.user) {
+          await supabase.from("leads" as any).insert({
+            nome,
+            email,
+            whatsapp,
+            source: "site",
+            pipeline_stage: "novo",
+          } as any).then(() => {});
+        }
+
         toast({ title: "Cadastro realizado!", description: "Verifique seu email para confirmar a conta." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -414,20 +438,40 @@ const Auth = () => {
               className="space-y-4"
             >
               {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="nome">Nome</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="nome"
-                      placeholder="Seu nome"
-                      value={nome}
-                      onChange={(e) => setNome(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="nome">Nome</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="nome"
+                        placeholder="Seu nome"
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsapp">WhatsApp *</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="whatsapp"
+                        placeholder="+55 (51) 99999-9999"
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(formatWhatsapp(e.target.value))}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                    {whatsapp && !whatsappValid && (
+                      <p className="text-xs text-destructive">Formato: +55 (XX) XXXXX-XXXX</p>
+                    )}
+                  </div>
+                </>
               )}
 
               <div className="space-y-2">

@@ -119,9 +119,15 @@ const Pricing = () => {
     }
   };
 
-  const getPrice = (monthly: number) => {
-    if (annual) return Math.round(monthly * 12 * 0.8);
-    return monthly;
+  const annualPrices: Record<string, number> = {
+    price_presenca: 970,
+    price_ads: 1970,
+    price_agencia: 3970,
+  };
+
+  const getPrice = (plan: typeof plans[0]) => {
+    if (annual) return annualPrices[plan.id] || Math.round(plan.monthlyPrice * 12 * 0.8);
+    return plan.monthlyPrice;
   };
 
   return (
@@ -210,7 +216,7 @@ const Pricing = () => {
                   <h3 className="text-xl font-heading font-bold">{plan.name}</h3>
                   <div className="mt-3">
                     <span className="text-4xl font-heading font-extrabold">
-                      R${getPrice(plan.monthlyPrice)}
+                      R${getPrice(plan).toLocaleString("pt-BR")}
                     </span>
                     <span className="text-muted-foreground text-sm">
                       /{annual ? "ano" : "mês"}
@@ -218,7 +224,7 @@ const Pricing = () => {
                   </div>
                   {annual && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      equivale a R${Math.round((plan.monthlyPrice * 12 * 0.8) / 12)}/mês
+                      equivale a R${Math.round(getPrice(plan) / 12)}/mês
                     </p>
                   )}
                 </div>
@@ -242,10 +248,9 @@ const Pricing = () => {
                   className="w-full"
                   size="lg"
                   variant={plan.popular ? "default" : "outline"}
-                  disabled={loadingPlan === plan.id}
-                  onClick={() => handleCheckout(plan.id)}
+                  asChild
                 >
-                  {loadingPlan === plan.id ? "Redirecionando..." : "Começar grátis por 14 dias"}
+                  <Link to="/auth">Começar grátis por 14 dias</Link>
                 </Button>
               </div>
             ))}
