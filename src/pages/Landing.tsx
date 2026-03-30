@@ -366,7 +366,7 @@ export default function Landing() {
                  <div className="space-y-3">
                    {[
                      "Domínio exclusivo: seunegocio.localai.app.br",
-                     "SEO local otimizado para Google Maps e busca",
+                     { text: "SEO local otimizado para Google Maps e busca", link: "/seo-local" },
                      "Avaliações do Google exibidas em tempo real",
                      "Atualizado automaticamente com seus posts",
                      "WhatsApp e contato com 1 clique",
