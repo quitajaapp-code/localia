@@ -438,38 +438,40 @@ const Auth = () => {
               className="space-y-4"
             >
               {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="nome">Nome</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="nome"
-                      placeholder="Seu nome"
-                      value={nome}
-                      onChange={(e) => setNome(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="nome">Nome</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="nome"
+                        placeholder="Seu nome"
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="whatsapp">WhatsApp *</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="whatsapp"
-                      placeholder="+55 (51) 99999-9999"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(formatWhatsapp(e.target.value))}
-                      className="pl-10"
-                      required
-                    />
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsapp">WhatsApp *</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="whatsapp"
+                        placeholder="+55 (51) 99999-9999"
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(formatWhatsapp(e.target.value))}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                    {whatsapp && !whatsappValid && (
+                      <p className="text-xs text-destructive">Formato: +55 (XX) XXXXX-XXXX</p>
+                    )}
                   </div>
-                  {whatsapp && !whatsappValid && (
-                    <p className="text-xs text-destructive">Formato: +55 (XX) XXXXX-XXXX</p>
-                  )}
-                </div>
+                </>
               )}
 
               <div className="space-y-2">
