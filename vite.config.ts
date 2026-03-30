@@ -27,8 +27,15 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react-dom')) return 'vendor';
-            if (id.includes('react-router-dom')) return 'vendor';
+            if (
+              id.includes('/react/') ||
+              id.includes('/react-dom/') ||
+              id.includes('/react-router/') ||
+              id.includes('/react-router-dom/') ||
+              id.includes('/scheduler/') ||
+              id.includes('/react/jsx-runtime') ||
+              id.includes('/react/jsx-dev-runtime')
+            ) return 'vendor';
             if (id.includes('recharts') || id.includes('d3-')) return 'charts';
             if (id.includes('@radix-ui')) return 'ui';
             if (id.includes('framer-motion')) return 'motion';
