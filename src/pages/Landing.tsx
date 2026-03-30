@@ -186,14 +186,14 @@ export default function Landing() {
             <span className="inline-flex items-center gap-2" style={{ border: "1px solid rgba(99,102,241,0.4)", background: "rgba(99,102,241,0.1)", padding: "6px 16px", borderRadius: 999, fontSize: 13, color: "#A5B4FC" }}>✦ Novo — Mini Site profissional incluso no plano Presença + Ads</span>
           </Reveal>
           <Reveal delay={100}>
-            <h1 className="font-heading" style={{ fontSize: "clamp(40px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", marginTop: 32 }}>
-              Mais ligações, mais clientes.<br />
-              <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Tudo no piloto automático.</span>
-            </h1>
+             <h1 className="font-heading" style={{ fontSize: "clamp(40px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", marginTop: 32 }}>
+               Apareça no Google. Receba mais ligações.<br />
+               <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Sem mover um dedo.</span>
+             </h1>
           </Reveal>
           <Reveal delay={200}>
             <p style={{ maxWidth: 600, margin: "24px auto 0", fontSize: 18, color: "#94A3B8", lineHeight: 1.7 }}>
-              Você não precisa postar, responder avaliações ou gerenciar Ads. A IA do LocalAI faz tudo — posts automáticos, respostas inteligentes, campanhas otimizadas e até um <strong style={{ color: "#C7D2FE" }}>Mini Site profissional</strong> — enquanto você cuida do que importa: <strong style={{ color: "#F8FAFC" }}>seu negócio</strong>.
+              Posts automáticos, respostas com IA, Google Ads otimizado e um <strong style={{ color: "#C7D2FE" }}>Mini Site profissional</strong> — tudo rodando no piloto automático. Você cuida do seu negócio, a gente cuida do seu <strong style={{ color: "#F8FAFC" }}>Google</strong>.
             </p>
           </Reveal>
           <Reveal delay={300}>
@@ -356,13 +356,13 @@ export default function Landing() {
             <Reveal>
               <div>
                 <span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>MINI SITE PROFISSIONAL</span>
-                <h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 16 }}>
-                  Seu negócio online em minutos.<br />
-                  <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Grátis no plano Presença + Ads.</span>
-                </h2>
-                <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 32 }}>
-                  Seu negócio ganha um site profissional com domínio exclusivo, otimizado para aparecer no Google. Atualizado automaticamente com seus posts e avaliações — sem precisar de desenvolvedor, designer ou agência.
-                </p>
+                 <h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 16 }}>
+                   Seu concorrente ainda não tem isso.<br />
+                   <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Grátis no plano mais vendido.</span>
+                 </h2>
+                 <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 32 }}>
+                   Um site profissional com domínio exclusivo, otimizado para SEO local, atualizado automaticamente com seus posts e avaliações — sem precisar de desenvolvedor, designer ou agência. Incluso no plano Presença + Ads.
+                 </p>
                 <div className="space-y-3">
                   {[
                     "Domínio exclusivo: seunegocio.localai.app.br",
