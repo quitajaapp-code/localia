@@ -655,7 +655,6 @@ export default function Landing() {
              <div className="flex flex-col gap-2">
                <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
                <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
-               <span style={{ fontSize: 13, color: "#475569", cursor: "default" }}>Blog</span>
                <a href="mailto:contato@localai.com.br" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Contato</a>
              </div>
            </div>

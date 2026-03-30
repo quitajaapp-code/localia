@@ -3,14 +3,14 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { ArrowRight, Calendar, Tag } from "lucide-react";
 
 const articles = [
-  { title: "Estratégias de SEO Local em 2026: Como ranquear no Google Maps", summary: "Descubra os 3 pilares do SEO Local e como aplicá-los para aparecer nas primeiras posições do Maps.", date: "28 de março de 2026", category: "SEO Local", slug: "/seo-local" },
-  { title: "Como a IA responde avaliações negativas sem perder clientes", summary: "Veja como respostas empáticas e rápidas transformam críticas em oportunidades de fidelização.", date: "25 de março de 2026", category: "Dicas para Donos", slug: "#" },
-  { title: "Mini Site grátis: Por que ele está mudando o jogo para negócios locais", summary: "Um site otimizado para SEO local, atualizado automaticamente e incluso no seu plano.", date: "22 de março de 2026", category: "Mini Site", slug: "#" },
-  { title: "Google Ads para restaurantes: Erros que custam caro em 2026", summary: "Os 5 erros mais comuns em campanhas locais e como a IA evita cada um deles.", date: "18 de março de 2026", category: "Google Ads", slug: "#" },
-  { title: "Checklist completo: Configure seu Google Meu Negócio do jeito certo", summary: "Passo a passo para preencher 100% do seu perfil e maximizar visualizações e ligações.", date: "14 de março de 2026", category: "Google Meu Negócio", slug: "#" },
-  { title: "+40% de ligações em 60 dias – Um caso real com LocalAI", summary: "Como uma clínica odontológica em BH aumentou drasticamente seus contatos com automação.", date: "10 de março de 2026", category: "Casos de Sucesso", slug: "#" },
-  { title: "Como postar 4 vezes por semana sem gastar tempo", summary: "A IA cria e publica posts relevantes no seu Google Meu Negócio automaticamente.", date: "6 de março de 2026", category: "Dicas para Donos", slug: "#" },
-  { title: "LGPD e segurança de dados no Google Meu Negócio", summary: "Entenda como proteger os dados do seu negócio e dos seus clientes com boas práticas.", date: "2 de março de 2026", category: "Google Meu Negócio", slug: "#" },
+  { title: "Estratégias de SEO Local em 2026: Como ranquear no Google Maps", summary: "Descubra os pilares do SEO Local e como aplicá-los para aparecer nas primeiras posições do Maps.", date: "28 de março de 2026", category: "SEO Local", slug: "/seo-local" },
+  { title: "Como a IA responde avaliações negativas sem perder clientes", summary: "Respostas empáticas e rápidas transformam críticas em oportunidades de fidelização.", date: "25 de março de 2026", category: "Dicas para Donos", slug: "#" },
+  { title: "Mini Site grátis: Por que ele está mudando o jogo em 2026", summary: "Um site otimizado para SEO local, atualizado automaticamente e incluso no seu plano.", date: "22 de março de 2026", category: "Mini Site", slug: "#" },
+  { title: "Google Ads para negócios locais: Erros que você deve evitar", summary: "Os erros mais comuns em campanhas locais e como a IA evita cada um deles.", date: "18 de março de 2026", category: "Google Ads", slug: "#" },
+  { title: "Checklist: Como configurar seu Google Meu Negócio corretamente", summary: "Passo a passo para preencher 100% do seu perfil e maximizar visualizações e ligações.", date: "14 de março de 2026", category: "Google Meu Negócio", slug: "#" },
+  { title: "+40% de ligações em 60 dias – Caso real com LocalAI", summary: "Como uma clínica odontológica aumentou drasticamente seus contatos com automação.", date: "10 de março de 2026", category: "Casos de Sucesso", slug: "#" },
+  { title: "Como publicar 4 vezes por semana sem esforço", summary: "A IA cria e publica posts relevantes no seu Google Meu Negócio automaticamente.", date: "6 de março de 2026", category: "Dicas para Donos", slug: "#" },
+  { title: "LGPD e segurança no Google Meu Negócio", summary: "Entenda como proteger os dados do seu negócio e dos seus clientes com boas práticas.", date: "2 de março de 2026", category: "Google Meu Negócio", slug: "#" },
 ];
 
 const categories = ["SEO Local", "Google Meu Negócio", "Google Ads", "Mini Site", "Dicas para Donos", "Casos de Sucesso"];
@@ -44,7 +44,7 @@ export default function Blog() {
             </span>
           </h1>
           <p style={{ fontSize: 16, color: "#94A3B8", lineHeight: 1.7, marginTop: 20, maxWidth: 600, margin: "20px auto 0" }}>
-            Artigos atualizados sobre Google Meu Negócio, SEO Local, Google Ads, Mini Site e automação para donos de negócios locais.
+            Artigos úteis sobre Google Meu Negócio, SEO Local, Google Ads e automação para donos de negócios locais.
           </p>
         </div>
       </section>
@@ -95,10 +95,10 @@ export default function Blog() {
       <section style={{ paddingTop: 48, paddingBottom: 96, position: "relative", zIndex: 10 }}>
         <div className="max-w-3xl mx-auto px-6 text-center" style={{ background: "radial-gradient(ellipse at center, rgba(99,102,241,0.12), transparent 70%)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 24, padding: "56px 32px" }}>
           <h2 className="font-heading" style={{ fontSize: "clamp(22px, 3.5vw, 36px)", fontWeight: 700, marginBottom: 16 }}>
-            Quer colocar todas essas estratégias para funcionar no piloto automático?
+            Quer automatizar todas essas estratégias? Teste grátis por 14 dias
           </h2>
           <p style={{ fontSize: 16, color: "#64748B", marginBottom: 32 }}>
-            Teste o LocalAI grátis por 14 dias — sem cartão de crédito.
+            Sem cartão de crédito. Configure em 2 minutos.
           </p>
           <Link to="/auth" className="inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "14px 28px", borderRadius: 10, fontWeight: 600, fontSize: 16, boxShadow: "0 0 40px rgba(99,102,241,0.35)" }}>
             Comece grátis agora <ArrowRight size={16} />
