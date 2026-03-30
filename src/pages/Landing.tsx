@@ -186,10 +186,10 @@ export default function Landing() {
             <span className="inline-flex items-center gap-2" style={{ border: "1px solid rgba(99,102,241,0.4)", background: "rgba(99,102,241,0.1)", padding: "6px 16px", borderRadius: 999, fontSize: 13, color: "#A5B4FC" }}>✦ Novo — Mini Site profissional incluso no plano Presença + Ads</span>
           </Reveal>
           <Reveal delay={100}>
-            <h1 className="font-heading" style={{ fontSize: "clamp(40px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", marginTop: 32 }}>
-              Mais ligações, mais clientes.<br />
-              <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Tudo no piloto automático.</span>
-            </h1>
+             <h1 className="font-heading" style={{ fontSize: "clamp(40px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", marginTop: 32 }}>
+               Apareça no Google. Receba mais ligações.<br />
+               <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Sem mover um dedo.</span>
+             </h1>
           </Reveal>
           <Reveal delay={200}>
             <p style={{ maxWidth: 600, margin: "24px auto 0", fontSize: 18, color: "#94A3B8", lineHeight: 1.7 }}>
