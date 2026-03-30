@@ -151,6 +151,8 @@ const App = () => (
                   <Route path="workflows" element={<AdminWorkflows />} />
                   <Route path="templates" element={<AdminTemplates />} />
                   <Route path="whatsapp-inbox" element={<WhatsAppInbox />} />
+                  <Route path="whatsapp-settings" element={<WhatsAppSettings />} />
+                  <Route path="whatsapp-reports" element={<WhatsAppReports />} />
                 </Route>
               </Route>
 
