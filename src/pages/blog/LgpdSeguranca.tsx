@@ -1,8 +1,10 @@
 import BlogArticleLayout from "@/components/blog/BlogArticleLayout";
+import heroImage from "@/assets/blog-lgpd-seguranca-hero.jpg";
 
 export default function LgpdSeguranca() {
   return (
     <BlogArticleLayout title="LGPD e Segurança de Dados no Google Meu Negócio" category="Google Meu Negócio" date="2 de março de 2026">
+      <img src={heroImage} alt="LGPD e segurança de dados com cadeado digital e escudo de proteção" width={1920} height={1080} style={{ borderRadius: 12, marginBottom: 32, width: "100%", height: "auto" }} />
       <p>Se você tem um negócio local no Brasil, a <strong>LGPD (Lei Geral de Proteção de Dados)</strong> se aplica a você — mesmo que você ache que "só tem um perfil no Google". Neste artigo, explicamos o que você precisa saber e fazer para proteger seu negócio e seus clientes.</p>
 
       <h2>O que é a LGPD e por que importa para negócios locais?</h2>
