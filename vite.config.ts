@@ -24,12 +24,15 @@ export default defineConfig(({ mode }) => ({
     cssMinify: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom", "react-router-dom"],
-          query: ["@tanstack/react-query"],
-          ui: ["@radix-ui/react-dialog", "@radix-ui/react-tooltip", "@radix-ui/react-popover"],
-          charts: ["recharts"],
-          motion: ["framer-motion"],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom')) return 'vendor';
+            if (id.includes('react-router-dom')) return 'vendor';
+            if (id.includes('recharts') || id.includes('d3-')) return 'charts';
+            if (id.includes('@radix-ui')) return 'ui';
+            if (id.includes('framer-motion')) return 'motion';
+            if (id.includes('@tanstack/react-query')) return 'query';
+          }
         },
       },
     },
