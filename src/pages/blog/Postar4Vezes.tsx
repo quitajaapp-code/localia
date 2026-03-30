@@ -1,8 +1,10 @@
 import BlogArticleLayout from "@/components/blog/BlogArticleLayout";
+import heroImage from "@/assets/blog-postar-4-vezes-hero.jpg";
 
 export default function Postar4Vezes() {
   return (
     <BlogArticleLayout title="Como Postar 4 Vezes por Semana sem Gastar Tempo" category="Dicas para Donos" date="6 de março de 2026">
+      <img src={heroImage} alt="Calendário semanal com posts automáticos e dona de negócio relaxada" width={1920} height={1080} style={{ borderRadius: 12, marginBottom: 32, width: "100%", height: "auto" }} />
       <p>Você já ouviu que precisa postar regularmente no Google Meu Negócio. Mas entre atender clientes, gerenciar equipe e cuidar do financeiro, <strong>quem tem tempo para criar conteúdo 4 vezes por semana?</strong></p>
       <p>A resposta é simples: ninguém. Por isso a automação com IA existe.</p>
 
