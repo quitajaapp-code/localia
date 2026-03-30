@@ -1,8 +1,10 @@
 import BlogArticleLayout from "@/components/blog/BlogArticleLayout";
+import heroImage from "@/assets/blog-erros-google-ads-hero.jpg";
 
 export default function ErrosGoogleAds() {
   return (
     <BlogArticleLayout title="Google Ads para Restaurantes: Erros que Custam Caro em 2026" category="Google Ads" date="18 de março de 2026">
+      <img src={heroImage} alt="Google Ads para restaurantes com dashboard de cliques, ligações e ROI" width={1920} height={1080} style={{ borderRadius: 12, marginBottom: 32, width: "100%", height: "auto" }} />
       <p>Google Ads pode ser a melhor ferramenta para atrair clientes para o seu restaurante — ou um buraco negro que engole seu dinheiro sem resultado. A diferença está nos <strong>detalhes da configuração</strong>. Neste artigo, listamos os erros mais comuns e como evitá-los.</p>
 
       <h2>Por que Google Ads faz sentido para restaurantes?</h2>
