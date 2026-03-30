@@ -193,7 +193,7 @@ export default function Landing() {
           </Reveal>
           <Reveal delay={200}>
             <p style={{ maxWidth: 600, margin: "24px auto 0", fontSize: 18, color: "#94A3B8", lineHeight: 1.7 }}>
-              Você não precisa postar, responder avaliações ou gerenciar Ads. A IA do LocalAI faz tudo — posts automáticos, respostas inteligentes, campanhas otimizadas e até um <strong style={{ color: "#C7D2FE" }}>Mini Site profissional</strong> — enquanto você cuida do que importa: <strong style={{ color: "#F8FAFC" }}>seu negócio</strong>.
+              Posts automáticos, respostas com IA, Google Ads otimizado e um <strong style={{ color: "#C7D2FE" }}>Mini Site profissional</strong> — tudo rodando no piloto automático. Você cuida do seu negócio, a gente cuida do seu <strong style={{ color: "#F8FAFC" }}>Google</strong>.
             </p>
           </Reveal>
           <Reveal delay={300}>
