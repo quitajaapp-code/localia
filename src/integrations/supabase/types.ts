@@ -953,6 +953,234 @@ export type Database = {
           },
         ]
       }
+      internal_wa_agent_stats: {
+        Row: {
+          agent_id: string
+          avg_response_time: string | null
+          conversations_closed: number
+          conversations_open: number
+          last_activity_at: string | null
+          messages_received: number
+          messages_sent: number
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          avg_response_time?: string | null
+          conversations_closed?: number
+          conversations_open?: number
+          last_activity_at?: string | null
+          messages_received?: number
+          messages_sent?: number
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          avg_response_time?: string | null
+          conversations_closed?: number
+          conversations_open?: number
+          last_activity_at?: string | null
+          messages_received?: number
+          messages_sent?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      internal_wa_connections: {
+        Row: {
+          assigned_agents: string[] | null
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["internal_wa_conn_status"]
+          twilio_account_sid: string | null
+          twilio_phone_number: string
+          twilio_webhook_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_agents?: string[] | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["internal_wa_conn_status"]
+          twilio_account_sid?: string | null
+          twilio_phone_number: string
+          twilio_webhook_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_agents?: string[] | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["internal_wa_conn_status"]
+          twilio_account_sid?: string | null
+          twilio_phone_number?: string
+          twilio_webhook_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      internal_wa_conversations: {
+        Row: {
+          assigned_agent_id: string | null
+          business_id: string | null
+          connection_id: string
+          contact_name: string | null
+          contact_phone: string
+          created_at: string
+          id: string
+          last_message_at: string | null
+          lead_id: string | null
+          priority: Database["public"]["Enums"]["internal_wa_priority"]
+          status: Database["public"]["Enums"]["internal_wa_conv_status"]
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_agent_id?: string | null
+          business_id?: string | null
+          connection_id: string
+          contact_name?: string | null
+          contact_phone: string
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          lead_id?: string | null
+          priority?: Database["public"]["Enums"]["internal_wa_priority"]
+          status?: Database["public"]["Enums"]["internal_wa_conv_status"]
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_agent_id?: string | null
+          business_id?: string | null
+          connection_id?: string
+          contact_name?: string | null
+          contact_phone?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          lead_id?: string | null
+          priority?: Database["public"]["Enums"]["internal_wa_priority"]
+          status?: Database["public"]["Enums"]["internal_wa_conv_status"]
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_wa_conversations_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_wa_conversations_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "internal_wa_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_wa_conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      internal_wa_messages: {
+        Row: {
+          agent_id: string | null
+          content: string | null
+          conversation_id: string
+          created_at: string
+          direction: Database["public"]["Enums"]["internal_wa_direction"]
+          from_number: string | null
+          id: string
+          media_urls: string[] | null
+          message_type: Database["public"]["Enums"]["internal_wa_msg_type"]
+          read_at: string | null
+          status: Database["public"]["Enums"]["internal_wa_msg_status"]
+          to_number: string | null
+          twilio_sid: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          content?: string | null
+          conversation_id: string
+          created_at?: string
+          direction: Database["public"]["Enums"]["internal_wa_direction"]
+          from_number?: string | null
+          id?: string
+          media_urls?: string[] | null
+          message_type?: Database["public"]["Enums"]["internal_wa_msg_type"]
+          read_at?: string | null
+          status?: Database["public"]["Enums"]["internal_wa_msg_status"]
+          to_number?: string | null
+          twilio_sid?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          content?: string | null
+          conversation_id?: string
+          created_at?: string
+          direction?: Database["public"]["Enums"]["internal_wa_direction"]
+          from_number?: string | null
+          id?: string
+          media_urls?: string[] | null
+          message_type?: Database["public"]["Enums"]["internal_wa_msg_type"]
+          read_at?: string | null
+          status?: Database["public"]["Enums"]["internal_wa_msg_status"]
+          to_number?: string | null
+          twilio_sid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_wa_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "internal_wa_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      internal_wa_templates: {
+        Row: {
+          body_content: string
+          category: Database["public"]["Enums"]["internal_wa_template_cat"]
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          usage_count: number
+          variables: Json | null
+        }
+        Insert: {
+          body_content: string
+          category?: Database["public"]["Enums"]["internal_wa_template_cat"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          usage_count?: number
+          variables?: Json | null
+        }
+        Update: {
+          body_content?: string
+          category?: Database["public"]["Enums"]["internal_wa_template_cat"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          usage_count?: number
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       keywords: {
         Row: {
           campaign_id: string
@@ -2003,6 +2231,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      internal_wa_conn_status: "active" | "inactive" | "suspended"
+      internal_wa_conv_status: "open" | "pending" | "closed" | "archived"
+      internal_wa_direction: "inbound" | "outbound"
+      internal_wa_msg_status: "sent" | "delivered" | "read" | "failed"
+      internal_wa_msg_type: "text" | "image" | "audio" | "document"
+      internal_wa_priority: "low" | "normal" | "high" | "urgent"
+      internal_wa_template_cat: "sales" | "support" | "onboarding"
       whatsapp_connection_status:
         | "pending"
         | "active"
@@ -2153,6 +2388,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      internal_wa_conn_status: ["active", "inactive", "suspended"],
+      internal_wa_conv_status: ["open", "pending", "closed", "archived"],
+      internal_wa_direction: ["inbound", "outbound"],
+      internal_wa_msg_status: ["sent", "delivered", "read", "failed"],
+      internal_wa_msg_type: ["text", "image", "audio", "document"],
+      internal_wa_priority: ["low", "normal", "high", "urgent"],
+      internal_wa_template_cat: ["sales", "support", "onboarding"],
       whatsapp_connection_status: [
         "pending",
         "active",
