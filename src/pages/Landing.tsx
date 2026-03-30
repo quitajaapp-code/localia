@@ -361,28 +361,31 @@ export default function Landing() {
                    <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Grátis no plano mais vendido.</span>
                  </h2>
                  <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 32 }}>
-                   Um site profissional com domínio exclusivo, otimizado para SEO local, atualizado automaticamente com seus posts e avaliações — sem precisar de desenvolvedor, designer ou agência. Incluso no plano Presença + Ads.
+                   Um site profissional com domínio exclusivo, <Link to="/seo-local" style={{ color: "#818CF8", textDecoration: "underline", textUnderlineOffset: 3 }}>otimizado para SEO local</Link>, atualizado automaticamente com seus posts e avaliações — sem precisar de desenvolvedor, designer ou agência. Incluso no plano Presença + Ads.
                  </p>
-                <div className="space-y-3">
-                  {[
-                    "Domínio exclusivo: seunegocio.localai.app.br",
-                    "SEO local otimizado para Google Maps e busca",
-                    "Avaliações do Google exibidas em tempo real",
-                    "Atualizado automaticamente com seus posts",
-                    "WhatsApp e contato com 1 clique",
-                    "Funciona no celular, tablet e desktop",
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3" style={{ fontSize: 14, color: "#94A3B8" }}>
-                      <Check size={14} style={{ color: "#22C55E", flexShrink: 0 }} />
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: 32 }}>
-                  <Link to="/demos" className="cta-primary inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "12px 24px", borderRadius: 10, fontWeight: 500, fontSize: 14, boxShadow: "0 0 30px rgba(99,102,241,0.3)" }}>
-                    Ver exemplo de Mini Site <ArrowRight size={14} />
-                  </Link>
-                </div>
+                 <div className="space-y-3">
+                   {[
+                     "Domínio exclusivo: seunegocio.localai.app.br",
+                     "SEO local otimizado para Google Maps e busca",
+                     "Avaliações do Google exibidas em tempo real",
+                     "Atualizado automaticamente com seus posts",
+                     "WhatsApp e contato com 1 clique",
+                     "Funciona no celular, tablet e desktop",
+                   ].map((item, i) => (
+                     <div key={i} className="flex items-center gap-3" style={{ fontSize: 14, color: "#94A3B8" }}>
+                       <Check size={14} style={{ color: "#22C55E", flexShrink: 0 }} />
+                       {item}
+                     </div>
+                   ))}
+                 </div>
+                 <div className="flex flex-col sm:flex-row items-start gap-4" style={{ marginTop: 32 }}>
+                   <Link to="/demos" className="cta-primary inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "12px 24px", borderRadius: 10, fontWeight: 500, fontSize: 14, boxShadow: "0 0 30px rgba(99,102,241,0.3)" }}>
+                     Ver exemplo de Mini Site <ArrowRight size={14} />
+                   </Link>
+                   <Link to="/seo-local" style={{ fontSize: 14, color: "#818CF8", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                     Saiba mais sobre Estratégias de SEO Local em 2026 <ArrowRight size={14} />
+                   </Link>
+                 </div>
               </div>
             </Reveal>
 
