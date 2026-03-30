@@ -1,28 +1,10 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, MapPin, MousePointerClick, Phone, Route, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import dashboardPreview from "@/assets/dashboard-preview.jpg";
 
 const ease = [0.16, 1, 0.3, 1] as const;
-
-function MetricMini({ icon: Icon, label, value, change, delay }: { icon: typeof MapPin; label: string; value: string; change: string; delay: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5, ease }}
-      className="rounded-xl bg-background p-4 space-y-1.5 border border-border/60"
-    >
-      <div className="flex items-center gap-1.5">
-        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-[11px] text-muted-foreground font-medium tracking-wide">{label}</span>
-      </div>
-      <p className="text-xl font-heading font-bold tracking-tight">{value}</p>
-      <span className="text-[10px] font-semibold text-success">{change}</span>
-    </motion.div>
-  );
-}
-
 export function Hero() {
   return (
     <section className="pt-28 pb-20 md:pt-36 md:pb-28 lg:pt-40 lg:pb-32 bg-background relative overflow-hidden">
