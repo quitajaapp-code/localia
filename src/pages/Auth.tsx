@@ -194,12 +194,24 @@ const Auth = () => {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { nome } },
+          options: { data: { nome, whatsapp } },
         });
         if (error) throw error;
+
+        // Create CRM lead on signup
+        if (data.user) {
+          await supabase.from("leads" as any).insert({
+            nome,
+            email,
+            whatsapp,
+            source: "site",
+            pipeline_stage: "novo",
+          } as any).then(() => {});
+        }
+
         toast({ title: "Cadastro realizado!", description: "Verifique seu email para confirmar a conta." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
