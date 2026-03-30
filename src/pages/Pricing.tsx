@@ -216,7 +216,7 @@ const Pricing = () => {
                   <h3 className="text-xl font-heading font-bold">{plan.name}</h3>
                   <div className="mt-3">
                     <span className="text-4xl font-heading font-extrabold">
-                      R${getPrice(plan.monthlyPrice)}
+                      R${getPrice(plan).toLocaleString("pt-BR")}
                     </span>
                     <span className="text-muted-foreground text-sm">
                       /{annual ? "ano" : "mês"}
