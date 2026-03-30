@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import localaiLogo from "@/assets/localai-logo.png";
+import localaiLogoDark from "@/assets/localai-logo-dark.png";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function Header() {
+export function Header({ darkLogo = false }: { darkLogo?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
