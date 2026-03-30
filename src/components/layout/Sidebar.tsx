@@ -26,6 +26,7 @@ const navItems = [
   { to: "/dashboard/posts", label: "Posts", icon: FileText },
   { to: "/dashboard/ai-optimizer", label: "IA Optimizer", icon: Sparkles, badge: "Novo" },
   { to: "/dashboard/agents", label: "Agentes IA", icon: Bot, badge: "Auto" },
+  { to: "/dashboard/whatsapp", label: "WhatsApp", icon: MessageCircle, badge: "Novo" },
   { to: "/dashboard/ads", label: "Anúncios", icon: Megaphone },
   { to: "/dashboard/materials", label: "Materiais", icon: FolderOpen },
   { to: "/dashboard/report", label: "Relatório", icon: BarChart3 },

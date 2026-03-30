@@ -132,6 +132,7 @@ const App = () => (
                   <Route path="ai-optimizer" element={<AiOptimizer />} />
                   <Route path="agents" element={<Agents />} />
                   <Route path="agents/alerts" element={<AlertHistory />} />
+                  <Route path="whatsapp" element={<WhatsAppPage />} />
                 </Route>
               </Route>
 
