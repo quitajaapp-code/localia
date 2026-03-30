@@ -418,7 +418,7 @@ export default function Landing() {
           {niches.map((n, i) => (
             <Reveal key={i} delay={i * 80}>
               <div className="niche-card" style={{ height: 280, borderRadius: 16, overflow: "hidden", position: "relative", cursor: "default" }}>
-                <img src={n.img} alt={n.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={n.img} alt={n.name} width={600} height={400} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(2,8,23,0.92) 0%, rgba(2,8,23,0.4) 50%, transparent 100%)" }} />
                 <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 20 }}>
                   <n.icon size={20} style={{ color: "#6366F1", marginBottom: 8 }} />
