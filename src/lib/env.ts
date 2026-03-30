@@ -32,20 +32,11 @@ export function getEnvConfig(): EnvConfig {
 }
 
 /**
- * Valida se os secrets do Twilio estão configurados no Supabase.
- * Chamado apenas nas Edge Functions (Deno), não no frontend.
+ * Lista de secrets Twilio necessários nas Edge Functions.
+ * Use como referência — a validação real acontece nas Edge Functions (Deno).
  */
-export function validateTwilioSecrets(): {
-  valid: boolean;
-  missing: string[];
-} {
-  const required = ["TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_WHATSAPP_NUMBER"];
-
-  // No frontend, não temos acesso — retorna ok
-  if (typeof Deno === "undefined") {
-    return { valid: true, missing: [] };
-  }
-
-  const missing = required.filter((k) => !(globalThis as any).Deno?.env?.get(k));
-  return { valid: missing.length === 0, missing };
-}
+export const TWILIO_REQUIRED_SECRETS = [
+  "TWILIO_ACCOUNT_SID",
+  "TWILIO_AUTH_TOKEN",
+  "TWILIO_WHATSAPP_NUMBER",
+] as const;
