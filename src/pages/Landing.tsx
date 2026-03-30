@@ -96,7 +96,7 @@ export default function Landing() {
   usePageTitle("LocalAI — Seu negócio local no topo do Google");
   const [scrolled, setScrolled] = useState(false);
   const [mockupTilt, setMockupTilt] = useState(true);
-
+  const [annualPricing, setAnnualPricing] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
