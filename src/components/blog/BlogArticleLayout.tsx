@@ -1,16 +1,94 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Calendar, Tag, ArrowRight } from "lucide-react";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { useEffect } from "react";
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
 
 interface Props {
   title: string;
   category: string;
   date: string;
   children: React.ReactNode;
+  metaDescription?: string;
+  slug?: string;
+  imageUrl?: string;
+  faq?: FAQItem[];
 }
 
-export default function BlogArticleLayout({ title, category, date, children }: Props) {
-  usePageTitle(title);
+export default function BlogArticleLayout({ title, category, date, children, metaDescription, slug, imageUrl, faq }: Props) {
+  useEffect(() => {
+    document.title = `${title} | LocalAI`;
+
+    // Meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute("content", metaDescription || title);
+
+    // Canonical
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", `https://localai.app.br${slug || ""}`);
+
+    // Article + FAQPage structured data
+    const articleSchema: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": title,
+      "description": metaDescription || title,
+      "datePublished": dateToISO(date),
+      "dateModified": dateToISO(date),
+      "author": { "@type": "Organization", "name": "LocalAI", "url": "https://localai.app.br" },
+      "publisher": {
+        "@type": "Organization",
+        "name": "LocalAI",
+        "url": "https://localai.app.br",
+        "logo": { "@type": "ImageObject", "url": "https://localai.app.br/favicon.ico" }
+      },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": `https://localai.app.br${slug || ""}` }
+    };
+    if (imageUrl) {
+      articleSchema["image"] = imageUrl;
+    }
+
+    const schemas = [articleSchema];
+
+    if (faq && faq.length > 0) {
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faq.map(f => ({
+          "@type": "Question",
+          "name": f.question,
+          "acceptedAnswer": { "@type": "Answer", "text": f.answer }
+        }))
+      });
+    }
+
+    let scriptEl = document.getElementById("blog-article-schema") as HTMLScriptElement;
+    if (!scriptEl) {
+      scriptEl = document.createElement("script");
+      scriptEl.id = "blog-article-schema";
+      scriptEl.type = "application/ld+json";
+      document.head.appendChild(scriptEl);
+    }
+    scriptEl.textContent = JSON.stringify(schemas);
+
+    return () => {
+      metaDesc?.setAttribute("content", "");
+      scriptEl?.remove();
+    };
+  }, [title, metaDescription, slug, imageUrl, faq, date]);
 
   return (
     <div style={{ background: "#020817", color: "#F8FAFC", minHeight: "100vh" }}>
@@ -45,14 +123,28 @@ export default function BlogArticleLayout({ title, category, date, children }: P
           <Tag size={11} /> {category}
         </span>
         <h1 className="font-heading" style={{ fontSize: "clamp(26px, 4vw, 40px)", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.02em", marginTop: 12 }}>{title}</h1>
-        <div className="flex items-center gap-2 mt-4" style={{ fontSize: 13, color: "#64748B" }}>
-          <Calendar size={13} /> {date}
+        <div className="flex items-center gap-4 mt-4" style={{ fontSize: 13, color: "#64748B" }}>
+          <span className="flex items-center gap-1.5"><Calendar size={13} /> {date}</span>
+          <span>· Escrito pela equipe LocalAI · +500 negócios atendidos</span>
         </div>
       </header>
 
       {/* Content */}
       <article className="max-w-3xl mx-auto px-6 pb-16 blog-article" style={{ fontSize: 16, lineHeight: 1.8, color: "#CBD5E1" }}>
         {children}
+
+        {/* FAQ Section */}
+        {faq && faq.length > 0 && (
+          <section style={{ marginTop: 48 }}>
+            <h2>Perguntas Frequentes (FAQ)</h2>
+            {faq.map((item, idx) => (
+              <div key={idx} style={{ marginBottom: 24 }}>
+                <h3 style={{ color: "#F8FAFC", marginBottom: 6 }}>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </section>
+        )}
       </article>
 
       {/* CTA */}
@@ -61,7 +153,7 @@ export default function BlogArticleLayout({ title, category, date, children }: P
           <h2 className="font-heading" style={{ fontSize: "clamp(20px, 3vw, 30px)", fontWeight: 700, marginBottom: 12 }}>
             Quer automatizar seu marketing local? Teste grátis por 14 dias
           </h2>
-          <p style={{ fontSize: 15, color: "#64748B", marginBottom: 28 }}>Sem cartão de crédito. Configure em 2 minutos.</p>
+          <p style={{ fontSize: 15, color: "#64748B", marginBottom: 28 }}>Usado por +500 negócios locais no Brasil. Sem cartão de crédito.</p>
           <Link to="/auth" className="inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "14px 28px", borderRadius: 10, fontWeight: 600, fontSize: 16, boxShadow: "0 0 40px rgba(99,102,241,0.35)" }}>
             Comece grátis agora <ArrowRight size={16} />
           </Link>
@@ -91,4 +183,20 @@ export default function BlogArticleLayout({ title, category, date, children }: P
       `}</style>
     </div>
   );
+}
+
+function dateToISO(dateBR: string): string {
+  const months: Record<string, string> = {
+    "janeiro": "01", "fevereiro": "02", "março": "03", "abril": "04",
+    "maio": "05", "junho": "06", "julho": "07", "agosto": "08",
+    "setembro": "09", "outubro": "10", "novembro": "11", "dezembro": "12"
+  };
+  const parts = dateBR.replace(/ de /g, " ").split(" ");
+  if (parts.length === 3) {
+    const day = parts[0].padStart(2, "0");
+    const month = months[parts[1].toLowerCase()] || "01";
+    const year = parts[2];
+    return `${year}-${month}-${day}`;
+  }
+  return "2026-03-01";
 }
