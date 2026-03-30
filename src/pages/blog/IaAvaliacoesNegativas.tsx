@@ -1,8 +1,10 @@
 import BlogArticleLayout from "@/components/blog/BlogArticleLayout";
+import heroImage from "@/assets/blog-ia-avaliacoes-hero.jpg";
 
 export default function IaAvaliacoesNegativas() {
   return (
     <BlogArticleLayout title="Como a IA Responde Avaliações Negativas sem Perder Clientes" category="Dicas para Donos" date="25 de março de 2026">
+      <img src={heroImage} alt="IA respondendo avaliações negativas no Google Meu Negócio com empatia" width={1920} height={1080} style={{ borderRadius: 12, marginBottom: 32, width: "100%", height: "auto" }} />
       <p>Uma avaliação de 1 estrela no Google pode parecer o fim do mundo. Mas, acredite: <strong>o problema não é receber uma crítica — é não responder</strong> (ou responder mal). Neste artigo, vamos mostrar como a inteligência artificial transforma avaliações negativas em oportunidades de fidelização.</p>
 
       <h2>Por que avaliações negativas não são o inimigo?</h2>
