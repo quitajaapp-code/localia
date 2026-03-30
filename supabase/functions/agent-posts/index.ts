@@ -1,8 +1,3 @@
-/**
- * AGENTE DE POSTS
- * Copywriter especialista em conteúdo para Google Meu Negócio.
- */
-
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -10,42 +5,35 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const AGENT_SYSTEM_PROMPT = `Você é o Agente de Conteúdo do LocalAI — copywriter especialista em posts para Google Meu Negócio de negócios locais brasileiros.
+const SYSTEM_PROMPT = `Você é o Agente de Conteúdo do LocalAI.
+Copywriter especialista em posts para Google Meu Negócio de negócios locais brasileiros.
 
-MISSÃO: Criar posts que fazem o Google entender que o negócio está ativo e relevante, e que fazem o cliente querer entrar em contato.
+REGRAS TÉCNICAS (não negociáveis):
+- MÁXIMO 300 caracteres por post (o Google trunca o restante)
+- Os PRIMEIROS 100 chars são o gancho — devem prender a atenção sozinhos
+- 1-2 emojis apenas — mais que isso parece spam e reduz credibilidade
+- SEMPRE termine com CTA específico: "Ligue", "WhatsApp", "Agende", "Visite", "Reserve"
+- Inclua cidade ou bairro NATURALMENTE em pelo menos 1 post do plano semanal
+- NUNCA use maiúsculas excessivas ou múltiplos "!!!"
 
-REGRAS DE COPYWRITING PARA GMB:
-- Máximo 300 caracteres (o Google trunca o restante nos resultados de busca)
-- Os primeiros 100 caracteres são os mais importantes — devem ser o gancho
-- Use 1-2 emojis no máximo — mais que isso parece spam
-- SEMPRE termine com um CTA claro: "Ligue", "WhatsApp", "Agende", "Visite", "Saiba mais"
-- Palavras-chave locais devem aparecer naturalmente: "em [cidade]", "no [bairro]", "perto de você"
-- NUNCA use maiúsculas desnecessárias ou pontos de exclamação em excesso
+CRITÉRIO DE QUALIDADE — um post é bom quando:
+✓ Não serve para qualquer outro negócio (é específico)
+✓ Menciona algo concreto do negócio (produto, serviço, localização, diferencial)
+✓ Tem ganchos diferentes na semana (não é sempre "venha nos visitar!")
+✓ Soa como uma pessoa real falando, não como uma empresa
+✓ O leitor sabe exatamente o que fazer depois de ler
 
-TIPOS DE POST E QUANDO USAR:
-- institucional: apresenta o negócio, valores, história (1x/mês)
-- produto_servico: destaca um produto ou serviço específico com benefício (2x/semana)
-- promocao: oferta com prazo definido ou condição especial (máx 1x/semana)
-- dica: conteúdo educativo relacionado ao nicho (1x/semana)
-- engajamento: pergunta ou convite à interação (1x/semana)
-- data_comemorativa: associa o negócio a uma data especial brasileira (conforme calendário)
-- prova_social: menciona avaliações positivas ou número de clientes (1x/mês)
+AUTOCRÍTICA OBRIGATÓRIA antes de finalizar:
+- Este post serve para um concorrente do mesmo nicho? Se sim, reescreva.
+- Tem CTA claro? Se não, adicione.
+- Passa de 300 chars? Reduza.
+- É o segundo post seguido com o mesmo tom/estrutura? Varie.
 
-CALENDÁRIO SAZONAL BRASILEIRO (priorize quando próximo):
-Jan: Ano Novo, Verão, Liquidação pós-Natal
-Fev: Carnaval, Verão
-Mar: Dia da Mulher (8/3), Início das aulas
-Abr: Páscoa, Semana Santa, Dia do Consumidor (15/4)
-Mai: Dia das Mães (2º domingo), Dia do Trabalho (1/5)
-Jun: Festas Juninas, Dia dos Namorados (12/6)
-Jul: Férias escolares
-Ago: Dia dos Pais (2º domingo)
-Set: Dia do Cliente (15/9), Independência (7/9)
-Out: Dia das Crianças (12/10), Outubro Rosa
-Nov: Black Friday, Dia da Consciência Negra (20/11)
-Dez: Natal, Ano Novo, Férias
-
-APRENDA COM O HISTÓRICO: evite repetir o mesmo tipo de post da semana anterior.`;
+CALENDÁRIO SAZONAL BRASILEIRO — priorize quando próximo:
+Jan: Verão, Liquidação, Ano Novo | Fev: Carnaval | Mar: Mulher (8/3), Aulas
+Abr: Páscoa | Mai: Mães (2º dom), Trabalho (1/5) | Jun: Namorados (12/6), Festas Juninas
+Jul: Férias | Ago: Pais (2º dom) | Set: Cliente (15/9)
+Out: Crianças (12/10), Rosa | Nov: Black Friday | Dez: Natal`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -58,11 +46,10 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const { business_id, modo, tipo_solicitado } = body;
+    const { business_id, modo, tipo_solicitado, _context } = body;
 
-    const bizQuery = supabase
-      .from("businesses")
-      .select("id, nome, nicho, tom_de_voz, cidade, estado, produtos, promocoes, diferenciais, whatsapp");
+    const bizQuery = supabase.from("businesses")
+      .select("id, nome, nicho, tom_de_voz, cidade, estado, produtos, promocoes, diferenciais, whatsapp, publico_alvo, anos_experiencia");
     const { data: businesses } = business_id
       ? await bizQuery.eq("id", business_id)
       : await bizQuery.not("gmb_location_id", "is", null);
@@ -76,111 +63,124 @@ Deno.serve(async (req) => {
     const results = [];
 
     for (const biz of businesses) {
+      const ctx = _context || {};
+
       const { data: settings } = await supabase
         .from("agent_settings")
         .select("posts_auto_publish, posts_frequency, posts_best_time")
-        .eq("business_id", biz.id)
-        .maybeSingle();
+        .eq("business_id", biz.id).maybeSingle();
 
       const { data: recentPosts } = await supabase
-        .from("posts")
-        .select("texto, tipo, created_at")
+        .from("posts").select("texto, tipo, created_at")
         .eq("business_id", biz.id)
-        .order("created_at", { ascending: false })
-        .limit(10);
+        .order("created_at", { ascending: false }).limit(8);
 
-      const historicoTexto = recentPosts?.map(p =>
-        `[${p.tipo || "generico"}] ${p.texto?.slice(0, 80)}`
+      const historicoTexto = (recentPosts || []).map(p =>
+        `[${p.tipo || "generico"}] ${p.texto?.slice(0, 100)}`
       ).join("\n") || "nenhum post anterior";
 
       const hoje = new Date().toLocaleDateString("pt-BR", {
         weekday: "long", day: "numeric", month: "long", year: "numeric",
       });
 
-      const numPosts = modo === "weekly_plan" ? 4 : 1;
+      const numPosts = (modo === "weekly_plan" || !modo) ? 4 : 1;
 
-      const userPrompt = `Negócio: ${biz.nome}
+      const userPrompt = `NEGÓCIO:
+Nome: ${biz.nome}
 Nicho: ${biz.nicho}
 Cidade: ${biz.cidade}, ${biz.estado}
-Tom de voz: ${biz.tom_de_voz || "descontraído e próximo"}
+Tom de voz: ${biz.tom_de_voz || ctx.tom_padrao || "descontraído e próximo"}
+Público-alvo: ${biz.publico_alvo || "não especificado"}
 Produtos/Serviços: ${biz.produtos || "não especificado"}
 Promoções ativas: ${biz.promocoes || "nenhuma"}
 Diferenciais: ${biz.diferenciais || "não especificado"}
+Anos no mercado: ${biz.anos_experiencia || "não informado"}
 WhatsApp: ${biz.whatsapp || "não informado"}
+
+CONTEXTO ESTRATÉGICO DO NICHO:
+Horário de pico dos clientes: ${ctx.horario_pico_clientes || "horário comercial"}
+Melhor dia para publicar: ${ctx.melhor_dia_post || "Segunda e Quarta"}
+Sazonalidade relevante: ${ctx.sazonalidade || "verificar datas comemorativas"}
+Palavras-chave de busca local: ${(ctx.palavras_chave_busca || []).join(", ")}
+
+CONTEXTO REGIONAL (${biz.estado}):
+${ctx.perfil_consumidor_local || "consumidor brasileiro padrão"}
+Competitividade: ${ctx.competitividade_regiao || "MÉDIA"}
+
 Data de hoje: ${hoje}
 
-HISTÓRICO RECENTE (evitar repetição):
+HISTÓRICO RECENTE — NÃO repita a mesma estrutura ou gancho:
 ${historicoTexto}
 
-${tipo_solicitado ? `Tipo solicitado: ${tipo_solicitado}` : ""}
+${tipo_solicitado ? `Tipo específico solicitado: ${tipo_solicitado}` : ""}
 
-Crie ${numPosts === 1 ? "1 post com 3 variações" : "um plano de 4 posts para a semana (Segunda, Quarta, Sexta, Sábado)"}.
+Crie ${numPosts === 1 ? "1 post com 3 variações" : "4 posts para a semana (Segunda, Quarta, Sexta, Sábado)"}.
 
-RETORNE EXATAMENTE este JSON (sem markdown):
+Para CADA post, faça autocrítica interna:
+1. É específico para este negócio? Não serve para o concorrente?
+2. Tem CTA claro?
+3. Está abaixo de 300 chars?
+4. Varia em tom/estrutura dos anteriores?
+
+Retorne EXATAMENTE este JSON (sem markdown):
 ${numPosts === 1 ? `{
-  "tipo": "<tipo do post>",
-  "justificativa": "<por que este tipo agora>",
-  "variações": [
-    { "texto": "<post completo com emoji e CTA>", "angulo": "<ex: urgência|benefício|curiosidade>" },
-    { "texto": "<variação 2>", "angulo": "<ângulo diferente>" },
-    { "texto": "<variação 3>", "angulo": "<ângulo diferente>" }
+  "tipo": "<tipo>",
+  "justificativa": "<por que este tipo agora, dado o contexto>",
+  "variacoes": [
+    { "texto": "<post com max 300 chars>", "angulo": "<urgência|benefício|curiosidade|prova social>", "chars": <número> },
+    { "texto": "<variação 2>", "angulo": "<ângulo diferente>", "chars": <número> },
+    { "texto": "<variação 3>", "angulo": "<ângulo diferente>", "chars": <número> }
   ],
-  "melhor_horario": "<dia e hora sugeridos>",
-  "dica_seo": "<uma palavra-chave local para incluir nos próximos posts>"
+  "melhor_horario": "<dia e hora baseado no nicho>",
+  "qualidade_validada": true
 }` : `{
-  "semana": "<descrição da semana>",
+  "semana": "<descrição>",
   "posts": [
-    {
-      "dia": "Segunda-feira",
-      "data": "<YYYY-MM-DD>",
-      "horario": "09:00",
-      "tipo": "<tipo>",
-      "texto": "<post completo>",
-      "justificativa": "<por que este post neste dia>"
-    },
-    { "dia": "Quarta-feira", "data": "<YYYY-MM-DD>", "horario": "10:00", "tipo": "<tipo>", "texto": "<post>", "justificativa": "<motivo>" },
-    { "dia": "Sexta-feira", "data": "<YYYY-MM-DD>", "horario": "09:00", "tipo": "<tipo>", "texto": "<post>", "justificativa": "<motivo>" },
-    { "dia": "Sábado", "data": "<YYYY-MM-DD>", "horario": "10:00", "tipo": "<tipo>", "texto": "<post>", "justificativa": "<motivo>" }
+    { "dia": "Segunda-feira", "data": "<YYYY-MM-DD>", "horario": "<HH:MM>", "tipo": "<tipo>", "texto": "<post max 300 chars>", "justificativa": "<por que este post neste dia>", "chars": <número> },
+    { "dia": "Quarta-feira", "data": "<YYYY-MM-DD>", "horario": "<HH:MM>", "tipo": "<tipo>", "texto": "<post>", "justificativa": "<motivo>", "chars": <número> },
+    { "dia": "Sexta-feira", "data": "<YYYY-MM-DD>", "horario": "<HH:MM>", "tipo": "<tipo>", "texto": "<post>", "justificativa": "<motivo>", "chars": <número> },
+    { "dia": "Sábado", "data": "<YYYY-MM-DD>", "horario": "<HH:MM>", "tipo": "<tipo>", "texto": "<post>", "justificativa": "<motivo>", "chars": <número> }
   ],
-  "dica_semana": "<dica de SEO local específica para o nicho>"
+  "dica_seo_local": "<palavra-chave ou estratégia específica para este nicho nesta região>",
+  "qualidade_validada": true
 }`}`;
 
       const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "google/gemini-3-flash-preview",
           messages: [
-            { role: "system", content: AGENT_SYSTEM_PROMPT },
+            { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: userPrompt },
           ],
-          temperature: 0.8,
+          temperature: 0.75,
         }),
       });
 
       const data = await res.json();
-      const content = data.choices?.[0]?.message?.content || "{}";
-      const parsed = JSON.parse(content.replace(/```json|```/g, "").trim());
+      const raw = data.choices?.[0]?.message?.content || "{}";
+      const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
 
       const postsToSave = numPosts === 1
-        ? [{ texto: parsed.variações?.[0]?.texto, tipo: parsed.tipo, status: "rascunho" }]
-        : (parsed.posts || []).map((p: any) => ({
+        ? (parsed.variacoes || []).slice(0, 1).map((v: Record<string, unknown>) => ({
+            texto: v.texto, tipo: parsed.tipo, status: "rascunho",
+          }))
+        : (parsed.posts || []).map((p: Record<string, unknown>) => ({
             texto: p.texto,
             tipo: p.tipo,
             status: settings?.posts_auto_publish ? "agendado" : "rascunho",
             agendado_para: p.data && p.horario ? `${p.data}T${p.horario}:00` : null,
           }));
 
-      for (const post of postsToSave) {
-        if (!post.texto) continue;
+      const validPosts = postsToSave.filter((p: Record<string, unknown>) =>
+        p.texto && typeof p.texto === "string" && (p.texto as string).length >= 50 && (p.texto as string).length <= 350
+      );
+
+      for (const post of validPosts) {
         const { data: savedPost } = await supabase
-          .from("posts")
-          .insert({ business_id: biz.id, ...post })
-          .select("id")
-          .single();
+          .from("posts").insert({ business_id: biz.id, ...post })
+          .select("id").single();
 
         await supabase.from("agent_actions").insert({
           business_id: biz.id,
@@ -188,14 +188,15 @@ ${numPosts === 1 ? `{
           action_type: "post_created",
           status: settings?.posts_auto_publish ? "auto_applied" : "pending",
           auto_applied: settings?.posts_auto_publish || false,
-          input_data: { modo, tipo: post.tipo },
-          output_data: { post_id: savedPost?.id, texto_preview: post.texto.slice(0, 100) },
+          input_data: { modo, tipo: post.tipo, nicho: biz.nicho, regiao: biz.estado },
+          output_data: { post_id: savedPost?.id, chars: (post.texto as string).length, texto_preview: (post.texto as string).slice(0, 100) },
         });
       }
 
       results.push({
         business_id: biz.id,
-        posts_created: postsToSave.length,
+        posts_created: validPosts.length,
+        posts_blocked: postsToSave.length - validPosts.length,
         data: parsed,
       });
     }

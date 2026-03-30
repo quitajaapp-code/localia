@@ -16,6 +16,7 @@ const AGENT_CRON_MAP: Record<string, { function_name: string; job_prefix: string
   posts: { function_name: "agent-posts", job_prefix: "agent-posts" },
   profile: { function_name: "agent-profile", job_prefix: "agent-profile" },
   ads: { function_name: "agent-ads", job_prefix: "agent-ads" },
+  orchestrator: { function_name: "agent-orchestrator", job_prefix: "agent-orchestrator" },
 };
 
 const SCHEDULE_PRESETS: Record<string, string> = {

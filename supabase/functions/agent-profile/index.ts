@@ -1,8 +1,3 @@
-/**
- * AGENTE DE PERFIL GMB
- * Consultor especialista em SEO local e otimização de perfil Google Meu Negócio.
- */
-
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -10,36 +5,46 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const AGENT_SYSTEM_PROMPT = `Você é o Agente de Perfil do LocalAI — consultor sênior em SEO local e otimização de Google Meu Negócio para o mercado brasileiro.
+const SYSTEM_PROMPT = `Você é o Agente de Perfil do LocalAI.
+Consultor sênior em SEO local e otimização de Google Meu Negócio para o mercado brasileiro.
 
-MISSÃO: Fazer o negócio aparecer antes dos concorrentes quando alguém busca no Google Maps ou Google Search.
+MISSÃO: Dar ao dono do negócio um plano de ação ESPECÍFICO para subir no ranking local.
+Não diagnósticos genéricos. Ações concretas, priorizadas, com impacto estimado real.
 
-COMO O GOOGLE RANKEIA NEGÓCIOS LOCAIS (os 3 fatores):
-1. RELEVÂNCIA: O perfil descreve bem o que o negócio faz? Categorias corretas? Palavras-chave presentes?
-2. DISTÂNCIA: Proximidade do usuário — não controlamos, mas podemos otimizar para aparecer além do raio imediato
-3. PROEMINÊNCIA: Avaliações, quantidade de posts, fotos, interações, autoridade do site
+OS 3 FATORES DE RANKING DO GOOGLE LOCAL (em ordem de impacto):
+1. RELEVÂNCIA (40%): O perfil descreve bem o que o negócio faz?
+   - Categoria primária correta
+   - Descrição com palavras-chave naturais
+   - Serviços/produtos listados
+   - Atributos do negócio preenchidos
 
-O QUE MAIS IMPACTA O RANKING (em ordem):
-1. Número e qualidade das avaliações (e respostas a elas)
-2. Completude do perfil (fotos, horários, serviços, descrição)
-3. Frequência de posts
-4. Consistência NAP na internet (Nome, Endereço, Telefone iguais em todos os lugares)
-5. Categorias primária e secundárias corretas
+2. PROEMINÊNCIA (40%): O negócio é reconhecido online?
+   - Número e qualidade de avaliações
+   - Respostas a avaliações
+   - Frequência de posts
+   - Menções em outros sites
 
-OTIMIZAÇÃO DE DESCRIÇÃO (750 caracteres):
-- Inclua cidade e estado naturalmente (ex: "em Porto Alegre, RS")
-- Mencione o bairro/região se relevante
-- Use variações do serviço principal (ex: "corte de cabelo", "cabelereiro", "salão de beleza")
-- Inclua diferenciais competitivos
-- NÃO use apenas palavras-chave (parece spam e o Google penaliza)
-- Tom natural, como um dono orgulhoso descreveria seu negócio
+3. DISTÂNCIA (20%): Proximidade do buscador
+   - Não controlável diretamente
+   - Mas pode ampliar raio com conteúdo local bem otimizado
 
-ALERTAS CRÍTICOS:
-- Score caindo > 10 pontos: investigar causa
-- Menos de 10 avaliações: prioridade máxima
-- Última foto há mais de 30 dias
-- Perfil sem foto de capa ou logo
-- Horários não preenchidos`;
+REGRAS DE DIAGNÓSTICO:
+- Score abaixo de 40: CRÍTICO — negócio praticamente invisível no Maps
+- Score 40-60: RUIM — aparece, mas perde para concorrentes básicos
+- Score 60-75: REGULAR — competitivo mas com gaps importantes
+- Score 75-85: BOM — bom desempenho, otimizações pontuais restam
+- Score 85+: ÓTIMO — benchmark do nicho, foco em manutenção
+
+CALIBRAÇÃO POR NICHO:
+- Clínica/Saúde: avaliações valem 50% do score (pacientes pesquisam muito antes de ir)
+- Restaurante: fotos valem 30% extra (comida se vende com os olhos)
+- Advocacia: descrição técnica com especialidades vale 40% extra
+- Academia: horários e fotos do espaço valem 35% extra
+
+AUTOCRÍTICA:
+Antes de retornar, verifique: as otimizações são específicas para este nicho e região?
+Uma sugestão como "adicione fotos" não é suficiente — diga "adicione 5 fotos do ambiente
+interno com boa iluminação, pois clínicas com fotos claras do espaço têm 40% mais cliques".`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -51,7 +56,7 @@ Deno.serve(async (req) => {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
   try {
-    const { business_id } = await req.json().catch(() => ({}));
+    const { business_id, _context } = await req.json().catch(() => ({}));
 
     const bizQuery = supabase.from("businesses").select("*");
     const { data: businesses } = business_id
@@ -67,99 +72,117 @@ Deno.serve(async (req) => {
     const results = [];
 
     for (const biz of businesses) {
-      const { data: reviews } = await supabase
-        .from("reviews").select("rating, respondido, created_at")
-        .eq("business_id", biz.id);
-      const { data: posts } = await supabase
-        .from("posts").select("created_at, status")
-        .eq("business_id", biz.id)
-        .order("created_at", { ascending: false }).limit(10);
+      const ctx = _context || {};
 
-      const totalReviews = reviews?.length || 0;
+      const [reviewsRes, postsRes, prevAuditRes] = await Promise.all([
+        supabase.from("reviews").select("rating, respondido, created_at").eq("business_id", biz.id),
+        supabase.from("posts").select("created_at, status, tipo").eq("business_id", biz.id)
+          .order("created_at", { ascending: false }).limit(20),
+        supabase.from("agent_actions").select("output_data, created_at")
+          .eq("business_id", biz.id).eq("agent", "profile")
+          .order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      ]);
+
+      const reviews = reviewsRes.data || [];
+      const posts = postsRes.data || [];
+
+      const totalReviews = reviews.length;
       const avgRating = totalReviews
-        ? (reviews!.reduce((s, r) => s + (r.rating || 0), 0) / totalReviews).toFixed(1)
+        ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / totalReviews).toFixed(1)
         : "0";
       const respondedPct = totalReviews
-        ? Math.round(reviews!.filter(r => r.respondido).length / totalReviews * 100)
+        ? Math.round(reviews.filter(r => r.respondido).length / totalReviews * 100)
         : 0;
-      const postsThisMonth = posts?.filter(p => {
-        const d = new Date(p.created_at || 0);
-        const now = new Date();
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-      }).length || 0;
 
-      const userPrompt = `PERFIL ATUAL DO NEGÓCIO:
+      const now = new Date();
+      const postsThisMonth = posts.filter(p => {
+        const d = new Date(p.created_at || 0);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      }).length;
+
+      const prevScore = (prevAuditRes.data?.output_data as Record<string, unknown>)?.score || null;
+      const scoreTrend = prevScore ? `Score anterior: ${prevScore} — ` : "";
+
+      const userPrompt = `PERFIL COMPLETO DO NEGÓCIO:
 Nome: ${biz.nome}
 Nicho: ${biz.nicho}
-Cidade: ${biz.cidade}, ${biz.estado}
+Cidade: ${biz.cidade}, Estado: ${biz.estado}
+Anos de experiência: ${biz.anos_experiencia || "não informado"}
 Telefone: ${biz.whatsapp ? "preenchido" : "NÃO preenchido"}
-Website: ${biz.website_url ? biz.website_url : "NÃO preenchido"}
+Website: ${biz.website_url || "NÃO tem"}
 Logo: ${biz.logo_url ? "tem" : "NÃO tem"}
 Produtos/Serviços: ${biz.produtos || "NÃO preenchido"}
 Descrição atual: ${biz.diferenciais || "NÃO preenchida"}
-Tom de voz: ${biz.tom_de_voz || "não definido"}
 Público-alvo: ${biz.publico_alvo || "não definido"}
+Tom de voz: ${biz.tom_de_voz || "não definido"}
+Instagram: ${biz.instagram || "não tem"}
+GMB conectado: ${biz.gmb_location_id ? "sim" : "não"}
 
-ATIVIDADE:
+MÉTRICAS DE PERFORMANCE:
 Total de avaliações: ${totalReviews}
-Nota média: ${avgRating} ★
-% de avaliações respondidas: ${respondedPct}%
+Nota média: ${avgRating}★
+% respondidas: ${respondedPct}%
 Posts este mês: ${postsThisMonth}
-Tem integração GMB: ${biz.gmb_location_id ? "sim" : "não"}
+${scoreTrend}
 
-RETORNE EXATAMENTE este JSON (sem markdown):
+CONTEXTO COMPETITIVO:
+Nicho: ${biz.nicho}
+Região: ${biz.cidade}, ${biz.estado}
+Competitividade regional: ${ctx.competitividade_regiao || "MÉDIA"}
+Perfil do consumidor local: ${ctx.perfil_consumidor_local || "padrão brasileiro"}
+Palavras-chave que clientes usam: ${(ctx.palavras_chave_busca || []).join(", ")}
+
+Gere um diagnóstico ESPECÍFICO para este negócio nesta região.
+Cada otimização deve ser acionável em menos de 1 semana.
+
+Retorne EXATAMENTE este JSON (sem markdown):
 {
-  "score": <número 0-100>,
+  "score": <0-100>,
   "score_breakdown": {
-    "completude_perfil": <0-30 pontos>,
-    "avaliacoes": <0-30 pontos>,
-    "atividade_posts": <0-20 pontos>,
-    "engajamento": <0-20 pontos>
+    "relevancia": <0-40>,
+    "proeminencia": <0-40>,
+    "atividade": <0-20>
   },
   "nivel": "critico|ruim|regular|bom|otimo",
-  "diagnostico": "<2 frases diretas sobre o estado atual>",
-  "proxima_acao": "<A UMA coisa mais impactante a fazer AGORA>",
+  "diagnostico": "<2 frases diretas, específicas para este nicho e cidade>",
+  "proxima_acao": "<A UMA ação mais impactante, específica para este negócio agora>",
   "otimizacoes": [
     {
       "prioridade": 1,
       "impacto": "alto|medio|baixo",
-      "categoria": "avaliacoes|posts|fotos|descricao|contato|categorias",
-      "titulo": "<titulo curto>",
-      "o_que_fazer": "<instrução específica e acionável>",
-      "por_que_importa": "<impacto esperado no ranking>",
-      "tempo_estimado": "<ex: 5 minutos | 30 minutos>"
+      "categoria": "avaliacoes|posts|fotos|descricao|contato|categorias|horarios",
+      "titulo": "<título específico, não genérico>",
+      "o_que_fazer": "<instrução detalhada e específica para este nicho>",
+      "por_que_importa": "<impacto esperado com números quando possível>",
+      "tempo_estimado": "<ex: 15 minutos>"
     }
   ],
-  "descricao_otimizada": "<descrição de até 750 chars, otimizada para SEO local>",
-  "palavras_chave_locais": ["<6 termos que clientes usam para buscar este nicho na cidade>"],
-  "categorias_gmb_sugeridas": ["<categoria primária ideal>", "<2-3 categorias secundárias>"],
-  "alerta_critico": null
+  "descricao_otimizada": "<750 chars, palavras-chave naturais, cidade e estado incluídos, específica para o nicho>",
+  "palavras_chave_locais": ["<6-8 termos reais que clientes usam para buscar este nicho em ${biz.cidade}>"],
+  "categorias_gmb_sugeridas": ["<categoria primária ideal para o GMB>", "<2-3 secundárias>"],
+  "alerta_critico": ${totalReviews < 5 ? '"URGENTE: menos de 5 avaliações — prioridade máxima para coletar avaliações"' : "null"}
 }`;
 
       const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "google/gemini-3-flash-preview",
           messages: [
-            { role: "system", content: AGENT_SYSTEM_PROMPT },
+            { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: userPrompt },
           ],
-          temperature: 0.3,
+          temperature: 0.25,
         }),
       });
 
       const data = await res.json();
-      const content = data.choices?.[0]?.message?.content || "{}";
-      const parsed = JSON.parse(content.replace(/```json|```/g, "").trim());
+      const raw = data.choices?.[0]?.message?.content || "{}";
+      const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
 
       if (parsed.score) {
         await supabase.from("businesses")
-          .update({ score_materiais: parsed.score })
-          .eq("id", biz.id);
+          .update({ score_materiais: parsed.score }).eq("id", biz.id);
       }
 
       await supabase.from("agent_actions").insert({
@@ -170,6 +193,8 @@ RETORNE EXATAMENTE este JSON (sem markdown):
         output_data: {
           score: parsed.score,
           nivel: parsed.nivel,
+          prev_score: prevScore,
+          score_delta: prevScore ? parsed.score - (prevScore as number) : null,
           otimizacoes_count: parsed.otimizacoes?.length || 0,
           alerta: parsed.alerta_critico,
         },
