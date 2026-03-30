@@ -7,7 +7,7 @@ export default function Privacy() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      <Header darkLogo />
       <main className="container max-w-3xl py-24 md:py-32 space-y-8">
         <h1 className="text-3xl font-bold tracking-tight">Política de Privacidade</h1>
         <p className="text-sm text-muted-foreground">Última atualização: 29 de março de 2026</p>
