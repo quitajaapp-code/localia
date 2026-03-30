@@ -53,10 +53,10 @@ const features = [
 ];
 
 const niches = [
-  { name: "Restaurante", icon: MapPin, img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80" },
-  { name: "Clínica", icon: Shield, img: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80" },
-  { name: "Salão de Beleza", icon: Star, img: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" },
-  { name: "Academia", icon: Zap, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80" },
+  { name: "Restaurante", icon: MapPin, img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80&auto=format&fit=crop" },
+  { name: "Clínica", icon: Shield, img: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80&auto=format&fit=crop" },
+  { name: "Salão de Beleza", icon: Star, img: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80&auto=format&fit=crop" },
+  { name: "Academia", icon: Zap, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80&auto=format&fit=crop" },
 ];
 
 const testimonials = [
