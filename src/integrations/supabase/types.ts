@@ -1705,7 +1705,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      orchestration_history: {
+        Row: {
+          agents_run: Json | null
+          agents_triggered: Json | null
+          business_id: string | null
+          business_nome: string | null
+          business_state: Json | null
+          cidade: string | null
+          created_at: string | null
+          estado: string | null
+          id: string | null
+          nicho: string | null
+          results_summary: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_actions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       create_agent_cron_job: {
