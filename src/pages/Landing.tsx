@@ -365,19 +365,22 @@ export default function Landing() {
                  </p>
                  <div className="space-y-3">
                    {[
-                     "Domínio exclusivo: seunegocio.localai.app.br",
-                     "SEO local otimizado para Google Maps e busca",
-                     "Avaliações do Google exibidas em tempo real",
-                     "Atualizado automaticamente com seus posts",
-                     "WhatsApp e contato com 1 clique",
-                     "Funciona no celular, tablet e desktop",
-                   ].map((item, i) => (
+                      "Domínio exclusivo: seunegocio.localai.app.br",
+                      "Avaliações do Google exibidas em tempo real",
+                      "Atualizado automaticamente com seus posts",
+                      "WhatsApp e contato com 1 clique",
+                      "Funciona no celular, tablet e desktop",
+                    ].map((item, i) => (
                      <div key={i} className="flex items-center gap-3" style={{ fontSize: 14, color: "#94A3B8" }}>
-                       <Check size={14} style={{ color: "#22C55E", flexShrink: 0 }} />
-                       {item}
-                     </div>
-                   ))}
-                 </div>
+                        <Check size={14} style={{ color: "#22C55E", flexShrink: 0 }} />
+                        {item}
+                      </div>
+                    ))}
+                    <div className="flex items-center gap-3" style={{ fontSize: 14, color: "#94A3B8" }}>
+                      <Check size={14} style={{ color: "#22C55E", flexShrink: 0 }} />
+                      <Link to="/seo-local" style={{ color: "#818CF8", textDecoration: "underline", textUnderlineOffset: 3 }}>SEO local otimizado para Google Maps e busca</Link>
+                    </div>
+                  </div>
                  <div className="flex flex-col sm:flex-row items-start gap-4" style={{ marginTop: 32 }}>
                    <Link to="/demos" className="cta-primary inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "12px 24px", borderRadius: 10, fontWeight: 500, fontSize: 14, boxShadow: "0 0 30px rgba(99,102,241,0.3)" }}>
                      Ver exemplo de Mini Site <ArrowRight size={14} />
