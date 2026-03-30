@@ -421,7 +421,35 @@ export default function Landing() {
         <div className="text-center">
           <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>PREÇOS</span></Reveal>
           <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16 }}>Simples e transparente. Sem surpresas.</h2></Reveal>
-          <Reveal delay={120}><p style={{ fontSize: 16, color: "#64748B", marginTop: 8, marginBottom: 64 }}>14 dias grátis em qualquer plano. Sem cartão de crédito.</p></Reveal>
+          <Reveal delay={120}><p style={{ fontSize: 16, color: "#64748B", marginTop: 8, marginBottom: 24 }}>14 dias grátis em qualquer plano. Sem cartão de crédito.</p></Reveal>
+          <Reveal delay={140}>
+            <div className="flex items-center justify-center gap-3 mb-10">
+              <button
+                onClick={() => setAnnualPricing(false)}
+                className="rounded-full px-5 py-2 text-sm font-medium transition-all"
+                style={{
+                  background: annualPricing ? "rgba(255,255,255,0.04)" : "linear-gradient(135deg, #6366F1, #7C3AED)",
+                  color: annualPricing ? "#94A3B8" : "#FFFFFF",
+                  border: `1px solid ${annualPricing ? "rgba(255,255,255,0.08)" : "rgba(99,102,241,0.45)"}`,
+                  boxShadow: annualPricing ? "none" : "0 0 24px rgba(99,102,241,0.2)",
+                }}
+              >
+                Mensal
+              </button>
+              <button
+                onClick={() => setAnnualPricing(true)}
+                className="rounded-full px-5 py-2 text-sm font-medium transition-all"
+                style={{
+                  background: annualPricing ? "linear-gradient(135deg, #6366F1, #7C3AED)" : "rgba(255,255,255,0.04)",
+                  color: annualPricing ? "#FFFFFF" : "#94A3B8",
+                  border: `1px solid ${annualPricing ? "rgba(99,102,241,0.45)" : "rgba(255,255,255,0.08)"}`,
+                  boxShadow: annualPricing ? "0 0 24px rgba(99,102,241,0.2)" : "none",
+                }}
+              >
+                Anual
+              </button>
+            </div>
+          </Reveal>
         </div>
         <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto px-6 items-start">
           {plans.map((p, i) => (
@@ -429,7 +457,10 @@ export default function Landing() {
               <div className="plan-card" style={{ background: p.highlight ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${p.highlight ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.08)"}`, borderRadius: 16, padding: 28, boxShadow: p.highlight ? "0 0 60px rgba(99,102,241,0.15)" : "none" }}>
                 {p.highlight && <span style={{ display: "block", textAlign: "center", marginBottom: 16, background: "linear-gradient(135deg, #6366F1, #22D3EE)", color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: 999 }}>Mais popular</span>}
                 <div style={{ fontSize: 12, letterSpacing: "0.1em", color: "#64748B", fontWeight: 500, marginBottom: 16 }}>{p.name}</div>
-                <div className="font-heading" style={{ fontSize: 40, fontWeight: 700 }}>{p.price}<span style={{ fontSize: 16, fontWeight: 400, color: "#475569" }}>/mês</span></div>
+                <div className="font-heading" style={{ fontSize: 40, fontWeight: 700 }}>
+                  R${formatPrice(annualPricing ? p.annualPrice : p.monthlyPrice)}
+                  <span style={{ fontSize: 16, fontWeight: 400, color: "#475569" }}>/{annualPricing ? "ano" : "mês"}</span>
+                </div>
                 <p style={{ fontSize: 14, color: "#64748B", marginTop: 8, marginBottom: 24 }}>{p.desc}</p>
                 <div style={{ height: 1, background: "rgba(255,255,255,0.08)", marginBottom: 24 }} />
                 <div className="space-y-2">
@@ -437,7 +468,7 @@ export default function Landing() {
                     <div key={fi} className="flex items-center gap-2" style={{ fontSize: 14, color: "#94A3B8" }}><Check size={14} style={{ color: "#22C55E", flexShrink: 0 }} /> {f}</div>
                   ))}
                 </div>
-                <Link to="/pricing" className={p.highlight ? "cta-primary" : "cta-ghost"} style={{ display: "block", textAlign: "center", marginTop: 32, padding: "12px 0", borderRadius: 10, fontSize: 14, fontWeight: 500, ...(p.highlight ? { background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", boxShadow: "0 0 20px rgba(99,102,241,0.3)" } : { border: "1px solid rgba(255,255,255,0.2)", color: "#94A3B8" }) }}>Começar grátis</Link>
+                <Link to="/auth" className={p.highlight ? "cta-primary" : "cta-ghost"} style={{ display: "block", textAlign: "center", marginTop: 32, padding: "12px 0", borderRadius: 10, fontSize: 14, fontWeight: 500, ...(p.highlight ? { background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", boxShadow: "0 0 20px rgba(99,102,241,0.3)" } : { border: "1px solid rgba(255,255,255,0.2)", color: "#94A3B8" }) }}>Começar grátis</Link>
               </div>
             </Reveal>
           ))}
