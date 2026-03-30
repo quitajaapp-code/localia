@@ -53,10 +53,10 @@ const features = [
 ];
 
 const niches = [
-  { name: "Restaurante", icon: MapPin, img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80" },
-  { name: "Clínica", icon: Shield, img: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80" },
-  { name: "Salão de Beleza", icon: Star, img: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" },
-  { name: "Academia", icon: Zap, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80" },
+  { name: "Restaurante", icon: MapPin, img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80&auto=format&fit=crop" },
+  { name: "Clínica", icon: Shield, img: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80&auto=format&fit=crop" },
+  { name: "Salão de Beleza", icon: Star, img: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80&auto=format&fit=crop" },
+  { name: "Academia", icon: Zap, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80&auto=format&fit=crop" },
 ];
 
 const testimonials = [
@@ -396,7 +396,7 @@ export default function Landing() {
               <div style={{ position: "relative" }}>
                 <div style={{ position: "absolute", inset: -40, background: "radial-gradient(ellipse at center, rgba(99,102,241,0.15), transparent 70%)", pointerEvents: "none" }} />
                 <div style={{ border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, overflow: "hidden", boxShadow: "0 40px 80px -20px rgba(0,0,0,0.8), 0 0 60px rgba(99,102,241,0.08)", position: "relative" }}>
-                  <img src={demoPreview} alt="Exemplo de mini site — Estúdio Bela & Arte" style={{ width: "100%", display: "block" }} />
+                  <img src={demoPreview} alt="Exemplo de mini site — Estúdio Bela & Arte" width={600} height={900} loading="lazy" decoding="async" style={{ width: "100%", height: "auto", display: "block" }} />
                 </div>
                 <div style={{ position: "absolute", top: -12, right: -12, background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", fontSize: 10, fontWeight: 600, padding: "6px 12px", borderRadius: 999, boxShadow: "0 4px 16px rgba(99,102,241,0.4)", border: "1px solid rgba(255,255,255,0.2)" }}>
                   ✦ Incluso no Presença + Ads
@@ -418,7 +418,7 @@ export default function Landing() {
           {niches.map((n, i) => (
             <Reveal key={i} delay={i * 80}>
               <div className="niche-card" style={{ height: 280, borderRadius: 16, overflow: "hidden", position: "relative", cursor: "default" }}>
-                <img src={n.img} alt={n.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={n.img} alt={n.name} width={600} height={400} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(2,8,23,0.92) 0%, rgba(2,8,23,0.4) 50%, transparent 100%)" }} />
                 <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 20 }}>
                   <n.icon size={20} style={{ color: "#6366F1", marginBottom: 8 }} />
