@@ -13,6 +13,9 @@ import {
   MessageSquare,
   GitBranch,
   FileText,
+  Phone,
+  Settings,
+  PieChart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -28,6 +31,9 @@ const navItems = [
   { to: "/admin/inbox", label: "Inbox / Agentes", icon: MessageSquare },
   { to: "/admin/workflows", label: "Workflows", icon: GitBranch },
   { to: "/admin/templates", label: "Templates WhatsApp", icon: FileText },
+  { to: "/admin/whatsapp-inbox", label: "WA Atendimento", icon: Phone },
+  { to: "/admin/whatsapp-reports", label: "WA Relatórios", icon: PieChart },
+  { to: "/admin/whatsapp-settings", label: "WA Config", icon: Settings },
 ];
 
 export function AdminSidebar() {

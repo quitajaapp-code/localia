@@ -46,6 +46,8 @@ const AdminInbox = lazy(() => import("./pages/admin/AdminInbox"));
 const AdminWorkflows = lazy(() => import("./pages/admin/AdminWorkflows"));
 const AdminTemplates = lazy(() => import("./pages/admin/AdminTemplates"));
 const WhatsAppInbox = lazy(() => import("./pages/admin/WhatsAppInbox"));
+const WhatsAppSettings = lazy(() => import("./pages/admin/WhatsAppSettings"));
+const WhatsAppReports = lazy(() => import("./pages/admin/WhatsAppReports"));
 
 /* Onboarding */
 const OnboardingLayout = lazy(() => import("./pages/onboarding/OnboardingLayout"));
@@ -149,6 +151,8 @@ const App = () => (
                   <Route path="workflows" element={<AdminWorkflows />} />
                   <Route path="templates" element={<AdminTemplates />} />
                   <Route path="whatsapp-inbox" element={<WhatsAppInbox />} />
+                  <Route path="whatsapp-settings" element={<WhatsAppSettings />} />
+                  <Route path="whatsapp-reports" element={<WhatsAppReports />} />
                 </Route>
               </Route>
 
