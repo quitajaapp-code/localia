@@ -43,6 +43,7 @@ import Agents from "./pages/dashboard/Agents";
 import AlertHistory from "./pages/dashboard/AlertHistory";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import SeoLocal from "./pages/SeoLocal";
 
 const queryClient = new QueryClient();
 
