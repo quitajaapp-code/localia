@@ -79,19 +79,22 @@ export default function Blog() {
               <Link
                 key={i}
                 to={a.slug}
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 28, display: "flex", flexDirection: "column", gap: 12, transition: "all .25s ease" }}
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column", transition: "all .25s ease" }}
                 className="hover:border-indigo-500/40 hover:-translate-y-0.5"
               >
-                <span style={{ fontSize: 11, fontWeight: 500, color: "#818CF8", background: "rgba(99,102,241,0.12)", padding: "3px 10px", borderRadius: 999, alignSelf: "flex-start" }}>{a.category}</span>
-                <h3 className="font-heading" style={{ fontSize: 17, fontWeight: 600, lineHeight: 1.35 }}>{a.title}</h3>
-                <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6 }}>{a.summary}</p>
-                <div className="flex items-center justify-between" style={{ marginTop: "auto", paddingTop: 8 }}>
-                  <span className="flex items-center gap-1.5" style={{ fontSize: 12, color: "#475569" }}>
-                    <Calendar size={12} /> {a.date}
-                  </span>
-                  <span className="flex items-center gap-1" style={{ fontSize: 13, fontWeight: 500, color: "#818CF8" }}>
-                    Ler mais <ArrowRight size={13} />
-                  </span>
+                <img src={a.image} alt={a.title} width={600} height={338} loading="lazy" style={{ width: "100%", height: 200, objectFit: "cover" }} />
+                <div style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+                  <span style={{ fontSize: 11, fontWeight: 500, color: "#818CF8", background: "rgba(99,102,241,0.12)", padding: "3px 10px", borderRadius: 999, alignSelf: "flex-start" }}>{a.category}</span>
+                  <h3 className="font-heading" style={{ fontSize: 17, fontWeight: 600, lineHeight: 1.35 }}>{a.title}</h3>
+                  <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6 }}>{a.summary}</p>
+                  <div className="flex items-center justify-between" style={{ marginTop: "auto", paddingTop: 8 }}>
+                    <span className="flex items-center gap-1.5" style={{ fontSize: 12, color: "#475569" }}>
+                      <Calendar size={12} /> {a.date}
+                    </span>
+                    <span className="flex items-center gap-1" style={{ fontSize: 13, fontWeight: 500, color: "#818CF8" }}>
+                      Ler mais <ArrowRight size={13} />
+                    </span>
+                  </div>
                 </div>
               </Link>
             ))}
