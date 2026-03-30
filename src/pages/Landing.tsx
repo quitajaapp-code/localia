@@ -165,8 +165,7 @@ export default function Landing() {
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50, background: "rgba(2,8,23,0.85)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.06)", boxShadow: scrolled ? "0 8px 32px rgba(0,0,0,0.4)" : "none", transition: "box-shadow 0.3s ease" }}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" style={{ height: 64 }}>
           <Link to="/" className="flex items-center gap-2">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 2C8.48 2 4 6.48 4 12c0 7.5 10 14 10 14s10-6.5 10-14c0-5.52-4.48-10-10-10z" fill="#6366F1" /><circle cx="14" cy="11" r="4" fill="#020817" /></svg>
-            <span style={{ fontWeight: 700, fontSize: 20 }} className="font-heading">Local<span style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>AI</span></span>
+            <img src={localaiLogo} alt="LocalAI" className="h-7" />
           </Link>
           <div className="hidden md:flex gap-8">
             {[["Como funciona", "#como-funciona"], ["Recursos", "#recursos"], ["Preços", "#precos"]].map(([label, href]) => (
