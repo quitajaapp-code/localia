@@ -1,8 +1,10 @@
 import BlogArticleLayout from "@/components/blog/BlogArticleLayout";
+import heroImage from "@/assets/blog-seo-local-2026-hero.jpg";
 
 export default function SeoLocal2026() {
   return (
     <BlogArticleLayout title="Estratégias de SEO Local em 2026: Como Ranquear no Google Maps" category="SEO Local" date="28 de março de 2026">
+      <img src={heroImage} alt="Estratégias de SEO Local em 2026 - Mapa com pin, métricas de crescimento e Mini Site" width={1920} height={1080} style={{ borderRadius: 12, marginBottom: 32, width: "100%", height: "auto" }} />
       <p>Se você é dono de um restaurante, clínica, salão ou qualquer negócio local, provavelmente já percebeu: <strong>aparecer no Google Maps é mais importante do que ter um site bonito</strong>. Em 2026, o SEO Local continua sendo o canal mais eficiente para atrair clientes da sua região — e quem domina as primeiras posições leva a maior fatia.</p>
       <p>Neste artigo, vamos mostrar as estratégias que realmente funcionam hoje, sem enrolação e com dicas que você pode aplicar ainda esta semana.</p>
 
