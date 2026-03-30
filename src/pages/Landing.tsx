@@ -356,13 +356,13 @@ export default function Landing() {
             <Reveal>
               <div>
                 <span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>MINI SITE PROFISSIONAL</span>
-                <h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 16 }}>
-                  Seu negócio online em minutos.<br />
-                  <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Grátis no plano Presença + Ads.</span>
-                </h2>
-                <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 32 }}>
-                  Seu negócio ganha um site profissional com domínio exclusivo, otimizado para aparecer no Google. Atualizado automaticamente com seus posts e avaliações — sem precisar de desenvolvedor, designer ou agência.
-                </p>
+                 <h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 16 }}>
+                   Seu concorrente ainda não tem isso.<br />
+                   <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Grátis no plano mais vendido.</span>
+                 </h2>
+                 <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 32 }}>
+                   Um site profissional com domínio exclusivo, otimizado para SEO local, atualizado automaticamente com seus posts e avaliações — sem precisar de desenvolvedor, designer ou agência. Incluso no plano Presença + Ads.
+                 </p>
                 <div className="space-y-3">
                   {[
                     "Domínio exclusivo: seunegocio.localai.app.br",
