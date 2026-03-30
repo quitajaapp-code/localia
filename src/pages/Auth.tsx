@@ -14,7 +14,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Mail, Lock, User, Eye, EyeOff, Chrome, CheckCircle2, XCircle, Loader2, Phone } from "lucide-react";
-import localaiLogo from "@/assets/localai-logo.png";
+import localaiLogo from "@/assets/localai-lockup-horizontal.png";
 
 function translateError(msg: string): string {
   const map: Record<string, string> = {
