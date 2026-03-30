@@ -461,6 +461,9 @@ export default function Landing() {
                   R${formatPrice(annualPricing ? p.annualPrice : p.monthlyPrice)}
                   <span style={{ fontSize: 16, fontWeight: 400, color: "#475569" }}>/{annualPricing ? "ano" : "mês"}</span>
                 </div>
+                {annualPricing && (
+                  <span style={{ display: "inline-block", marginTop: 8, background: "rgba(34,197,94,0.15)", color: "#22C55E", fontSize: 12, fontWeight: 600, border: "1px solid rgba(34,197,94,0.3)", padding: "4px 12px", borderRadius: 999 }}>🎉 2 meses grátis</span>
+                )}
                 <p style={{ fontSize: 14, color: "#64748B", marginTop: 8, marginBottom: 24 }}>{p.desc}</p>
                 <div style={{ height: 1, background: "rgba(255,255,255,0.08)", marginBottom: 24 }} />
                 <div className="space-y-2">
