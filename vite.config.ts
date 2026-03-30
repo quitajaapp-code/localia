@@ -23,19 +23,5 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: "es2020",
     cssMinify: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react-dom')) return 'vendor';
-            if (id.includes('react-router-dom')) return 'vendor';
-            if (id.includes('recharts') || id.includes('d3-')) return 'charts';
-            if (id.includes('@radix-ui')) return 'ui';
-            if (id.includes('framer-motion')) return 'motion';
-            if (id.includes('@tanstack/react-query')) return 'query';
-          }
-        },
-      },
-    },
   },
 }));
