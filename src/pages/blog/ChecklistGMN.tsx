@@ -1,8 +1,10 @@
 import BlogArticleLayout from "@/components/blog/BlogArticleLayout";
+import heroImage from "@/assets/blog-checklist-gmn-hero.jpg";
 
 export default function ChecklistGMN() {
   return (
     <BlogArticleLayout title="Checklist Completo: Configure seu Google Meu Negócio do Jeito Certo" category="Google Meu Negócio" date="14 de março de 2026">
+      <img src={heroImage} alt="Checklist do Google Meu Negócio com itens marcados e mão de IA" width={1920} height={1080} style={{ borderRadius: 12, marginBottom: 32, width: "100%", height: "auto" }} />
       <p>O Google Meu Negócio (agora chamado Google Business Profile) é a ferramenta mais poderosa e gratuita para negócios locais. Mas <strong>a maioria dos donos de negócio preenche menos de 50% do perfil</strong> — e perde clientes para concorrentes que fazem o básico bem feito.</p>
       <p>Use este checklist para garantir que seu perfil está 100% otimizado.</p>
 
