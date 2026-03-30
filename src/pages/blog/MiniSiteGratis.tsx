@@ -1,8 +1,10 @@
 import BlogArticleLayout from "@/components/blog/BlogArticleLayout";
+import heroImage from "@/assets/blog-mini-site-hero.jpg";
 
 export default function MiniSiteGratis() {
   return (
     <BlogArticleLayout title="Mini Site Grátis: Por Que Ele Está Mudando o Jogo para Negócios Locais" category="Mini Site" date="22 de março de 2026">
+      <img src={heroImage} alt="Mini Site grátis de pizzaria com WhatsApp, avaliações e mapa no LocalAI" width={1920} height={1080} style={{ borderRadius: 12, marginBottom: 32, width: "100%", height: "auto" }} />
       <p>Você precisa de um site para seu negócio local? Sim. Ele precisa ser caro e complicado? <strong>Definitivamente não</strong>. Em 2026, o Mini Site está mudando a forma como negócios locais marcam presença online — e o melhor: pode ser totalmente grátis.</p>
 
       <h2>O que é um Mini Site?</h2>
