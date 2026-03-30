@@ -250,8 +250,8 @@ export default function Landing() {
               <div style={{ width: 200, background: "rgba(0,0,0,0.3)", borderRight: "1px solid rgba(255,255,255,0.06)", padding: 16, flexShrink: 0 }}>
                 <div className="flex items-center gap-2 mb-6"><MapPin size={16} style={{ color: "#6366F1" }} /><span className="font-heading" style={{ fontSize: 13 }}>LocalAI</span></div>
                 {sidebarItems.map((item, i) => (
-                  <div key={i} className="flex items-center gap-2" style={{ padding: "8px 12px", borderRadius: 8, fontSize: 13, marginBottom: 2, background: item.active ? "rgba(99,102,241,0.2)" : "transparent", color: item.active ? "#A5B4FC" : "#475569" }}>
-                    <item.icon size={14} style={{ color: item.active ? "#6366F1" : "#334155" }} />{item.label}
+                  <div key={i} className="flex items-center gap-2" style={{ padding: "8px 12px", borderRadius: 8, fontSize: 13, marginBottom: 2, background: item.active ? "rgba(99,102,241,0.2)" : "transparent", color: item.active ? "#A5B4FC" : "#8494A7" }}>
+                    <item.icon size={14} style={{ color: item.active ? "#6366F1" : "#64748B" }} />{item.label}
                   </div>
                 ))}
               </div>
