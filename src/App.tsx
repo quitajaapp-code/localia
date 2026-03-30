@@ -78,6 +78,14 @@ const App = () => (
              <Route path="/terms" element={<Terms />} />
              <Route path="/seo-local" element={<SeoLocal />} />
              <Route path="/blog" element={<Blog />} />
+             <Route path="/blog/estrategias-seo-local-2026" element={<SeoLocal2026 />} />
+             <Route path="/blog/ia-responde-avaliacoes-negativas" element={<IaAvaliacoesNegativas />} />
+             <Route path="/blog/mini-site-gratis-negocios-locais" element={<MiniSiteGratis />} />
+             <Route path="/blog/erros-google-ads-restaurantes-2026" element={<ErrosGoogleAds />} />
+             <Route path="/blog/checklist-google-meu-negocio" element={<ChecklistGMN />} />
+             <Route path="/blog/caso-real-40-porcento-ligacoes" element={<CasoReal40Porcento />} />
+             <Route path="/blog/postar-4-vezes-por-semana" element={<Postar4Vezes />} />
+             <Route path="/blog/lgpd-seguranca-google-meu-negocio" element={<LgpdSeguranca />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="/onboarding" element={<OnboardingLayout />}>
