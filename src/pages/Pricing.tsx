@@ -119,9 +119,15 @@ const Pricing = () => {
     }
   };
 
-  const getPrice = (monthly: number) => {
-    if (annual) return Math.round(monthly * 12 * 0.8);
-    return monthly;
+  const annualPrices: Record<string, number> = {
+    price_presenca: 970,
+    price_ads: 1970,
+    price_agencia: 3970,
+  };
+
+  const getPrice = (plan: typeof plans[0]) => {
+    if (annual) return annualPrices[plan.id] || Math.round(plan.monthlyPrice * 12 * 0.8);
+    return plan.monthlyPrice;
   };
 
   return (
