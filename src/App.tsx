@@ -44,6 +44,7 @@ import AlertHistory from "./pages/dashboard/AlertHistory";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import SeoLocal from "./pages/SeoLocal";
+import Blog from "./pages/Blog";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
              <Route path="/terms" element={<Terms />} />
              <Route path="/seo-local" element={<SeoLocal />} />
+             <Route path="/blog" element={<Blog />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="/onboarding" element={<OnboardingLayout />}>

@@ -644,10 +644,11 @@ export default function Landing() {
            <div>
              <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Recursos</span>
              <div className="flex flex-col gap-2">
-               <Link to="/seo-local" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Estratégias de SEO Local</Link>
-               <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
-               <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
-             </div>
+                <Link to="/seo-local" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Estratégias de SEO Local</Link>
+                <Link to="/blog" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Blog</Link>
+                <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
+                <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
+              </div>
            </div>
            <div>
              <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Empresa</span>
