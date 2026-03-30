@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Mail, Lock, User, Eye, EyeOff, Chrome, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Chrome, CheckCircle2, XCircle, Loader2, Phone } from "lucide-react";
 import localaiLogo from "@/assets/localai-logo.png";
 
 function translateError(msg: string): string {
