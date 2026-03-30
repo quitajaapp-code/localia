@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import demoPreview from "@/assets/demo-salao-preview.webp";
+import localaiLogo from "@/assets/localai-logo.png";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   MapPin, Star, TrendingUp, Bot, Zap, BarChart3,
