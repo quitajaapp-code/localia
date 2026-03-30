@@ -207,7 +207,7 @@ export default function Landing() {
             </div>
           </Reveal>
           <Reveal delay={350}>
-            <p style={{ marginTop: 16, fontSize: 13, color: "#475569" }}>
+            <p style={{ marginTop: 16, fontSize: 13, color: "#8494A7" }}>
               14 dias grátis · Sem cartão de crédito · Setup em 5 minutos
             </p>
           </Reveal>
@@ -225,7 +225,7 @@ export default function Landing() {
           <Reveal delay={450}>
             <div className="flex items-center justify-center gap-6 flex-wrap" style={{ marginTop: 24 }}>
               {["Integrado com Google", "Conformidade com LGPD", "IA treinada para tom brasileiro"].map((t) => (
-                <span key={t} style={{ fontSize: 12, color: "#475569", display: "flex", alignItems: "center", gap: 6 }}>
+                <span key={t} style={{ fontSize: 12, color: "#8494A7", display: "flex", alignItems: "center", gap: 6 }}>
                   <Check size={12} style={{ color: "#22C55E" }} /> {t}
                 </span>
               ))}
@@ -243,7 +243,7 @@ export default function Landing() {
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#EF4444" }} />
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#F59E0B" }} />
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#22C55E" }} />
-              <div style={{ flex: 1, maxWidth: 280, margin: "0 auto", height: 24, borderRadius: 6, background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#475569" }}>app.localai.com.br</div>
+              <div style={{ flex: 1, maxWidth: 280, margin: "0 auto", height: 24, borderRadius: 6, background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#8494A7" }}>app.localai.com.br</div>
             </div>
             {/* Desktop dashboard */}
             <div className="hidden md:flex" style={{ background: "#0F172A", height: 480 }}>
@@ -263,7 +263,7 @@ export default function Landing() {
                 <div className="grid grid-cols-4 gap-3" style={{ marginTop: 16 }}>
                   {metricCards.map((m, i) => (
                     <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 12 }}>
-                      <div className="flex items-center gap-1" style={{ marginBottom: 4 }}><m.icon size={14} style={{ color: "#6366F1" }} /><span style={{ fontSize: 10, color: "#475569" }}>{m.label}</span></div>
+                      <div className="flex items-center gap-1" style={{ marginBottom: 4 }}><m.icon size={14} style={{ color: "#6366F1" }} /><span style={{ fontSize: 10, color: "#8494A7" }}>{m.label}</span></div>
                       <div style={{ fontSize: 20, fontWeight: 600 }}>{m.value}</div>
                       <span style={{ fontSize: 10, color: m.yellow ? "#F59E0B" : "#22C55E" }}>{m.change}</span>
                     </div>
@@ -287,7 +287,7 @@ export default function Landing() {
               <div className="grid grid-cols-2 gap-3">
                 {metricCards.map((m, i) => (
                   <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 12 }}>
-                    <div className="flex items-center gap-1 mb-1"><m.icon size={14} style={{ color: "#6366F1" }} /><span style={{ fontSize: 10, color: "#475569" }}>{m.label}</span></div>
+                    <div className="flex items-center gap-1 mb-1"><m.icon size={14} style={{ color: "#6366F1" }} /><span style={{ fontSize: 10, color: "#8494A7" }}>{m.label}</span></div>
                     <div style={{ fontSize: 18, fontWeight: 600 }}>{m.value}</div>
                   </div>
                 ))}
@@ -300,10 +300,10 @@ export default function Landing() {
       {/* Logos */}
       <section style={{ paddingTop: 48, paddingBottom: 48, position: "relative", zIndex: 10 }}>
         <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)" }} />
-        <div className="text-center" style={{ marginTop: 32 }}><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#475569" }}>INTEGRADO COM</span></div>
+        <div className="text-center" style={{ marginTop: 32 }}><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#8494A7" }}>INTEGRADO COM</span></div>
         <div className="flex justify-center gap-12 items-center flex-wrap" style={{ marginTop: 32 }}>
           {["Google", "Google Ads", "Claude AI", "Stripe"].map((name) => (
-            <span key={name} className="logo-text" style={{ fontSize: 22, fontWeight: 700, color: "rgba(255,255,255,0.2)", cursor: "default", userSelect: "none" }}>{name}</span>
+            <span key={name} className="logo-text" style={{ fontSize: 22, fontWeight: 700, color: "rgba(255,255,255,0.4)", cursor: "default", userSelect: "none" }}>{name}</span>
           ))}
         </div>
         <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)", marginTop: 32 }} />
@@ -322,7 +322,7 @@ export default function Landing() {
                 <span style={{ position: "absolute", top: -10, right: 16, fontSize: 96, fontWeight: 800, color: "rgba(99,102,241,0.06)", lineHeight: 1 }}>{s.num}</span>
                 <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(99,102,241,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}><s.icon size={22} style={{ color: "#6366F1" }} /></div>
                 <h3 className="font-heading" style={{ fontSize: 18, fontWeight: 600, marginTop: 16, marginBottom: 12 }}>{s.title}</h3>
-                <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.7 }}>{s.desc}</p>
+                <p style={{ fontSize: 14, color: "#8494A7", lineHeight: 1.7 }}>{s.desc}</p>
               </div>
             </Reveal>
           ))}
@@ -334,7 +334,7 @@ export default function Landing() {
         <div className="text-center">
           <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>RECURSOS</span></Reveal>
           <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 16 }}>Tudo que um gestor de marketing faz. Automaticamente.</h2></Reveal>
-          <Reveal delay={100}><p style={{ fontSize: 16, color: "#64748B", marginBottom: 64, maxWidth: 560, margin: "0 auto 64px" }}>Você não precisa postar, responder ou gerenciar Ads. A IA faz tudo enquanto você cuida do seu negócio.</p></Reveal>
+          <Reveal delay={100}><p style={{ fontSize: 16, color: "#8494A7", marginBottom: 64, maxWidth: 560, margin: "0 auto 64px" }}>Você não precisa postar, responder ou gerenciar Ads. A IA faz tudo enquanto você cuida do seu negócio.</p></Reveal>
         </div>
         <div className="grid md:grid-cols-2 gap-4 max-w-5xl mx-auto px-6">
           {features.map((f, i) => (
@@ -342,7 +342,7 @@ export default function Landing() {
               <div className="feature-card" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 24 }}>
                 <div style={{ width: 42, height: 42, borderRadius: 10, background: "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(34,211,238,0.1))", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}><f.icon size={20} style={{ color: "#818CF8" }} /></div>
                 <h3 className="font-heading" style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>{f.title}</h3>
-                <p style={{ fontSize: 13, color: "#64748B", lineHeight: 1.6 }}>{f.desc}</p>
+                <p style={{ fontSize: 13, color: "#8494A7", lineHeight: 1.6 }}>{f.desc}</p>
               </div>
             </Reveal>
           ))}
@@ -360,7 +360,7 @@ export default function Landing() {
                    Seu concorrente ainda não tem isso.<br />
                    <span style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Grátis no plano mais vendido.</span>
                  </h2>
-                 <p style={{ fontSize: 16, color: "#64748B", lineHeight: 1.7, marginBottom: 32 }}>
+                 <p style={{ fontSize: 16, color: "#8494A7", lineHeight: 1.7, marginBottom: 32 }}>
                    Um site profissional com domínio exclusivo, <Link to="/seo-local" style={{ color: "#818CF8", textDecoration: "underline", textUnderlineOffset: 3 }}>otimizado para SEO local</Link>, atualizado automaticamente com seus posts e avaliações — sem precisar de desenvolvedor, designer ou agência. Incluso no plano Presença + Ads.
                  </p>
                  <div className="space-y-3">
@@ -412,7 +412,7 @@ export default function Landing() {
         <div className="text-center">
           <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>PARA QUALQUER NEGÓCIO LOCAL</span></Reveal>
           <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 16 }}>Do restaurante à clínica. Do salão à academia.</h2></Reveal>
-          <Reveal delay={100}><p style={{ fontSize: 16, color: "#64748B", marginBottom: 64, maxWidth: 480, margin: "0 auto 64px" }}>A IA se adapta ao vocabulário e público do seu segmento. Já atendemos mais de 40 nichos diferentes.</p></Reveal>
+          <Reveal delay={100}><p style={{ fontSize: 16, color: "#8494A7", marginBottom: 64, maxWidth: 480, margin: "0 auto 64px" }}>A IA se adapta ao vocabulário e público do seu segmento. Já atendemos mais de 40 nichos diferentes.</p></Reveal>
         </div>
         <div className="grid grid-cols-2 gap-4 max-w-5xl mx-auto px-6">
           {niches.map((n, i) => (
@@ -448,7 +448,7 @@ export default function Landing() {
                   <div style={{ width: 40, height: 40, borderRadius: "50%", background: t.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 600, color: "#fff", flexShrink: 0 }}>{t.initial}</div>
                   <div>
                     <div className="font-heading" style={{ fontSize: 14, fontWeight: 600 }}>{t.name}</div>
-                    <div style={{ fontSize: 12, color: "#64748B" }}>{t.sub}</div>
+                    <div style={{ fontSize: 12, color: "#8494A7" }}>{t.sub}</div>
                   </div>
                 </div>
               </div>
@@ -462,14 +462,14 @@ export default function Landing() {
         <div className="text-center">
           <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>RESULTADOS REAIS</span></Reveal>
           <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16, marginBottom: 16 }}>Números que falam por si</h2></Reveal>
-          <Reveal delay={100}><p style={{ fontSize: 16, color: "#64748B", marginBottom: 64, maxWidth: 520, margin: "0 auto 64px" }}>Dados agregados de negócios que usam o LocalAI nos últimos 12 meses.</p></Reveal>
+          <Reveal delay={100}><p style={{ fontSize: 16, color: "#8494A7", marginBottom: 64, maxWidth: 520, margin: "0 auto 64px" }}>Dados agregados de negócios que usam o LocalAI nos últimos 12 meses.</p></Reveal>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto px-6">
           {resultStats.map((s, i) => (
             <Reveal key={i} delay={i * 100}>
               <div style={{ textAlign: "center", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "32px 16px" }}>
                 <div className="font-heading" style={{ fontSize: 36, fontWeight: 800, background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{s.value}</div>
-                <p style={{ fontSize: 13, color: "#64748B", marginTop: 8, lineHeight: 1.5 }}>{s.label}</p>
+                <p style={{ fontSize: 13, color: "#8494A7", marginTop: 8, lineHeight: 1.5 }}>{s.label}</p>
               </div>
             </Reveal>
           ))}
@@ -496,7 +496,7 @@ export default function Landing() {
                     <ChevronDown size={16} style={{ color: "#6366F1", flexShrink: 0, transition: "transform 0.3s ease", transform: openFaq === i ? "rotate(180deg)" : "rotate(0)" }} />
                   </button>
                   <div className={`faq-content ${openFaq === i ? "open" : ""}`}>
-                    <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.7 }}>{item.a}</p>
+                    <p style={{ fontSize: 14, color: "#8494A7", lineHeight: 1.7 }}>{item.a}</p>
                   </div>
                 </div>
               </Reveal>
@@ -510,7 +510,7 @@ export default function Landing() {
         <div className="text-center">
           <Reveal><span style={{ fontSize: 11, letterSpacing: "0.15em", color: "#6366F1", fontWeight: 600 }}>PREÇOS</span></Reveal>
           <Reveal delay={80}><h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", marginTop: 16 }}>Simples e transparente. Sem surpresas.</h2></Reveal>
-          <Reveal delay={120}><p style={{ fontSize: 16, color: "#64748B", marginTop: 8, marginBottom: 24 }}>14 dias grátis em qualquer plano. Sem cartão de crédito.</p></Reveal>
+          <Reveal delay={120}><p style={{ fontSize: 16, color: "#8494A7", marginTop: 8, marginBottom: 24 }}>14 dias grátis em qualquer plano. Sem cartão de crédito.</p></Reveal>
           <Reveal delay={140}>
             <div className="flex items-center justify-center gap-3 mb-10">
               <button
@@ -545,15 +545,15 @@ export default function Landing() {
             <Reveal key={i} delay={i * 100}>
               <div className="plan-card" style={{ background: p.highlight ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${p.highlight ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.08)"}`, borderRadius: 16, padding: 28, boxShadow: p.highlight ? "0 0 60px rgba(99,102,241,0.15)" : "none" }}>
                 {p.highlight && <span style={{ display: "block", textAlign: "center", marginBottom: 16, background: "linear-gradient(135deg, #6366F1, #22D3EE)", color: "#fff", fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: 999 }}>Mais popular</span>}
-                <div style={{ fontSize: 12, letterSpacing: "0.1em", color: "#64748B", fontWeight: 500, marginBottom: 16 }}>{p.name}</div>
+                <div style={{ fontSize: 12, letterSpacing: "0.1em", color: "#8494A7", fontWeight: 500, marginBottom: 16 }}>{p.name}</div>
                 <div className="font-heading" style={{ fontSize: 40, fontWeight: 700 }}>
                   R${formatPrice(annualPricing ? p.annualPrice : p.monthlyPrice)}
-                  <span style={{ fontSize: 16, fontWeight: 400, color: "#475569" }}>/{annualPricing ? "ano" : "mês"}</span>
+                  <span style={{ fontSize: 16, fontWeight: 400, color: "#8494A7" }}>/{annualPricing ? "ano" : "mês"}</span>
                 </div>
                 {annualPricing && (
                   <span style={{ display: "inline-block", marginTop: 8, background: "rgba(34,197,94,0.15)", color: "#22C55E", fontSize: 12, fontWeight: 600, border: "1px solid rgba(34,197,94,0.3)", padding: "4px 12px", borderRadius: 999 }}>🎉 2 meses grátis</span>
                 )}
-                <p style={{ fontSize: 14, color: "#64748B", marginTop: 8, marginBottom: 24 }}>{p.desc}</p>
+                <p style={{ fontSize: 14, color: "#8494A7", marginTop: 8, marginBottom: 24 }}>{p.desc}</p>
                 <div style={{ height: 1, background: "rgba(255,255,255,0.08)", marginBottom: 24 }} />
                 <div className="space-y-2">
                   {p.features.map((f, fi) => (
@@ -588,7 +588,7 @@ export default function Landing() {
                 { icon: Users, text: "Sem fidelidade" },
                 { icon: CreditCard, text: "14 dias grátis sem cartão" },
               ].map((seal, i) => (
-                <div key={i} className="flex items-center gap-2" style={{ fontSize: 13, color: "#64748B" }}>
+                <div key={i} className="flex items-center gap-2" style={{ fontSize: 13, color: "#8494A7" }}>
                   <seal.icon size={14} style={{ color: "#6366F1" }} />
                   {seal.text}
                 </div>
@@ -611,12 +611,12 @@ export default function Landing() {
         <div className="max-w-3xl mx-auto px-6 text-center" style={{ background: "radial-gradient(ellipse at center, rgba(99,102,241,0.12) 0%, transparent 70%)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 24, padding: 64, position: "relative" }}>
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, #6366F1, #22D3EE, transparent)", animation: "border-glow 3s ease-in-out infinite" }} />
           <h2 className="font-heading" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 700, marginBottom: 16 }}>Pronto para receber mais ligações e clientes do Google?</h2>
-          <p style={{ fontSize: 16, color: "#64748B", marginBottom: 40 }}>14 dias grátis. Sem cartão de crédito. Cancele quando quiser. Garantia de resultados em 90 dias.</p>
+          <p style={{ fontSize: 16, color: "#8494A7", marginBottom: 40 }}>14 dias grátis. Sem cartão de crédito. Cancele quando quiser. Garantia de resultados em 90 dias.</p>
           <div className="flex justify-center gap-4 flex-wrap">
             <Link to="/auth" className="cta-primary inline-flex items-center gap-2" style={{ background: "linear-gradient(135deg, #6366F1, #7C3AED)", color: "#fff", padding: "14px 28px", borderRadius: 10, fontWeight: 600, fontSize: 16, boxShadow: "0 0 40px rgba(99,102,241,0.35), 0 4px 16px rgba(0,0,0,0.3)" }}>Comece grátis agora — sem risco <ArrowRight size={16} /></Link>
             <a href="mailto:contato@localai.com.br" className="cta-ghost inline-flex items-center" style={{ border: "1px solid rgba(255,255,255,0.15)", color: "#94A3B8", padding: "14px 28px", borderRadius: 10, fontSize: 16 }}>Falar com a equipe</a>
           </div>
-          <div className="flex justify-center items-center gap-6 flex-wrap" style={{ marginTop: 32, fontSize: 13, color: "#334155" }}>
+          <div className="flex justify-center items-center gap-6 flex-wrap" style={{ marginTop: 32, fontSize: 13, color: "#8494A7" }}>
             <span className="flex items-center gap-1.5">🔒 Pagamento seguro via Stripe</span>
             <span className="flex items-center gap-1.5">🛡️ Conformidade com LGPD</span>
           </div>
@@ -631,40 +631,40 @@ export default function Landing() {
               <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><path d="M14 2C8.48 2 4 6.48 4 12c0 7.5 10 14 10 14s10-6.5 10-14c0-5.52-4.48-10-10-10z" fill="#6366F1" /><circle cx="14" cy="11" r="4" fill="#020817" /></svg>
               <span className="font-heading" style={{ fontWeight: 700, fontSize: 18 }}>Local<span style={{ background: "linear-gradient(135deg, #6366F1, #22D3EE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>AI</span></span>
             </Link>
-            <p style={{ fontSize: 13, color: "#334155", marginTop: 8, maxWidth: 220 }}>Automação de marketing local com IA para negócios brasileiros.</p>
+            <p style={{ fontSize: 13, color: "#8494A7", marginTop: 8, maxWidth: 220 }}>Automação de marketing local com IA para negócios brasileiros.</p>
           </div>
            <div>
-             <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Produto</span>
+             <span style={{ fontSize: 12, fontWeight: 600, color: "#8494A7", marginBottom: 12, display: "block" }}>Produto</span>
              <div className="flex flex-col gap-2">
                {[["Como funciona", "#como-funciona"], ["Recursos", "#recursos"], ["Preços", "#precos"]].map(([label, href]) => (
-                 <a key={label} href={href} className="nav-link" style={{ fontSize: 13, color: "#475569" }}>{label}</a>
+                 <a key={label} href={href} className="nav-link" style={{ fontSize: 13, color: "#8494A7" }}>{label}</a>
                ))}
              </div>
            </div>
            <div>
-             <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Recursos</span>
+             <span style={{ fontSize: 12, fontWeight: 600, color: "#8494A7", marginBottom: 12, display: "block" }}>Recursos</span>
              <div className="flex flex-col gap-2">
-                <Link to="/seo-local" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Estratégias de SEO Local</Link>
-                <Link to="/blog" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Blog</Link>
-                <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
-                <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
+                <Link to="/seo-local" style={{ fontSize: 13, color: "#8494A7" }} className="hover:text-foreground transition-colors">Estratégias de SEO Local</Link>
+                <Link to="/blog" style={{ fontSize: 13, color: "#8494A7" }} className="hover:text-foreground transition-colors">Blog</Link>
+                <Link to="/privacy" style={{ fontSize: 13, color: "#8494A7" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
+                <Link to="/terms" style={{ fontSize: 13, color: "#8494A7" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
               </div>
            </div>
            <div>
-             <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Empresa</span>
+             <span style={{ fontSize: 12, fontWeight: 600, color: "#8494A7", marginBottom: 12, display: "block" }}>Empresa</span>
              <div className="flex flex-col gap-2">
-               <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
-               <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
-               <a href="mailto:contato@localai.com.br" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Contato</a>
+               <Link to="/terms" style={{ fontSize: 13, color: "#8494A7" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
+               <Link to="/privacy" style={{ fontSize: 13, color: "#8494A7" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
+               <a href="mailto:contato@localai.com.br" style={{ fontSize: 13, color: "#8494A7" }} className="hover:text-foreground transition-colors">Contato</a>
              </div>
            </div>
         </div>
         <div style={{ textAlign: "center", marginTop: 40, paddingTop: 32, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-          <div className="flex justify-center gap-6 flex-wrap" style={{ fontSize: 12, color: "#334155", marginBottom: 16 }}>
+          <div className="flex justify-center gap-6 flex-wrap" style={{ fontSize: 12, color: "#8494A7", marginBottom: 16 }}>
             <Link to="/privacy" className="hover:text-foreground transition-colors">Política de Privacidade</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Termos de Uso</Link>
           </div>
-          <p style={{ fontSize: 13, color: "#334155" }}>© 2026 LocalAI. Todos os direitos reservados.</p>
+          <p style={{ fontSize: 13, color: "#8494A7" }}>© 2026 LocalAI. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>
