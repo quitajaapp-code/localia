@@ -50,7 +50,7 @@ export default function Postar4Vezes() {
       <ul>
         <li><strong>Use imagens reais</strong> — fotos do seu espaço, equipe e produtos</li>
         <li><strong>Inclua CTA</strong> — "Agende", "Ligue", "Peça pelo WhatsApp"</li>
-        <li><strong>Seja específico</strong> — "promoção de 20% em cortes masculinos" > "temos promoção"</li>
+        <li><strong>Seja específico</strong> — "promoção de 20% em cortes masculinos" é melhor que "temos promoção"</li>
         <li><strong>Varie os formatos</strong> — dica, promoção, bastidores, depoimento</li>
         <li><strong>Mantenha o tom de voz</strong> — a IA do LocalAI aprende e mantém consistência</li>
       </ul>
