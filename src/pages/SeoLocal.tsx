@@ -67,7 +67,7 @@ export default function SeoLocal() {
   return (
     <div style={{ background: "#020817", color: "#F8FAFC", minHeight: "100vh" }}>
       <style>{`
-        .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+        .reveal{opacity:1;transform:translateY(0);transition:opacity .65s ease,transform .65s ease}
         .reveal.show{opacity:1;transform:translateY(0)}
         .cta-primary{transition:all .25s ease}.cta-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(99,102,241,.45),0 4px 20px rgba(0,0,0,.4)!important}
         .cta-ghost{transition:all .25s ease}.cta-ghost:hover{color:#F8FAFC!important;border-color:rgba(255,255,255,.3)!important}
