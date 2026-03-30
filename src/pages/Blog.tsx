@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { useEffect } from "react";
 import { ArrowRight, Calendar, Tag } from "lucide-react";
 import imgSeo from "@/assets/blog-seo-local-2026-hero.jpg";
 import imgAvaliacoes from "@/assets/blog-ia-avaliacoes-hero.jpg";
@@ -24,7 +24,40 @@ const articles = [
 const categories = ["SEO Local", "Google Meu Negócio", "Google Ads", "Mini Site", "Dicas para Donos", "Casos de Sucesso"];
 
 export default function Blog() {
-  usePageTitle("Blog | LocalAI");
+  useEffect(() => {
+    document.title = "Blog de Marketing Local com IA | LocalAI";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute("content", "Dicas práticas de SEO Local, Google Meu Negócio, Google Ads e automação com IA para donos de negócios locais no Brasil. Artigos atualizados em 2026.");
+
+    let scriptEl = document.getElementById("blog-list-schema") as HTMLScriptElement;
+    if (!scriptEl) {
+      scriptEl = document.createElement("script");
+      scriptEl.id = "blog-list-schema";
+      scriptEl.type = "application/ld+json";
+      document.head.appendChild(scriptEl);
+    }
+    scriptEl.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Blog LocalAI",
+      "description": "Dicas práticas de SEO Local, Google Meu Negócio, Google Ads e automação com IA para negócios locais.",
+      "url": "https://localai.app.br/blog",
+      "publisher": { "@type": "Organization", "name": "LocalAI", "url": "https://localai.app.br" },
+      "blogPost": articles.map(a => ({
+        "@type": "BlogPosting",
+        "headline": a.title,
+        "description": a.summary,
+        "url": `https://localai.app.br${a.slug}`
+      }))
+    });
+
+    return () => { scriptEl?.remove(); };
+  }, []);
 
   return (
     <div style={{ background: "#020817", color: "#F8FAFC", minHeight: "100vh" }}>
