@@ -45,6 +45,7 @@ const AdminCRM = lazy(() => import("./pages/admin/AdminCRM"));
 const AdminInbox = lazy(() => import("./pages/admin/AdminInbox"));
 const AdminWorkflows = lazy(() => import("./pages/admin/AdminWorkflows"));
 const AdminTemplates = lazy(() => import("./pages/admin/AdminTemplates"));
+const WhatsAppInbox = lazy(() => import("./pages/admin/WhatsAppInbox"));
 
 /* Onboarding */
 const OnboardingLayout = lazy(() => import("./pages/onboarding/OnboardingLayout"));
