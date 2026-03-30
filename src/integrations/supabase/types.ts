@@ -1626,6 +1626,196 @@ export type Database = {
           },
         ]
       }
+      whatsapp_connections: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          last_sync_at: string | null
+          meta_business_id: string | null
+          status: Database["public"]["Enums"]["whatsapp_connection_status"]
+          twilio_account_sid: string | null
+          twilio_phone_number: string | null
+          twilio_webhook_url: string | null
+          updated_at: string
+          user_id: string
+          whatsapp_business_account_id: string | null
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          meta_business_id?: string | null
+          status?: Database["public"]["Enums"]["whatsapp_connection_status"]
+          twilio_account_sid?: string | null
+          twilio_phone_number?: string | null
+          twilio_webhook_url?: string | null
+          updated_at?: string
+          user_id: string
+          whatsapp_business_account_id?: string | null
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          meta_business_id?: string | null
+          status?: Database["public"]["Enums"]["whatsapp_connection_status"]
+          twilio_account_sid?: string | null
+          twilio_phone_number?: string | null
+          twilio_webhook_url?: string | null
+          updated_at?: string
+          user_id?: string
+          whatsapp_business_account_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_connections_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: true
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_messages: {
+        Row: {
+          business_id: string
+          connection_id: string
+          content: string | null
+          created_at: string
+          delivered_at: string | null
+          direction: Database["public"]["Enums"]["whatsapp_direction"]
+          error_message: string | null
+          from_number: string | null
+          id: string
+          media_urls: string[] | null
+          message_type: Database["public"]["Enums"]["whatsapp_message_type"]
+          meta_message_id: string | null
+          metadata: Json | null
+          read_at: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["whatsapp_message_status"]
+          to_number: string | null
+          twilio_sid: string | null
+        }
+        Insert: {
+          business_id: string
+          connection_id: string
+          content?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          direction: Database["public"]["Enums"]["whatsapp_direction"]
+          error_message?: string | null
+          from_number?: string | null
+          id?: string
+          media_urls?: string[] | null
+          message_type?: Database["public"]["Enums"]["whatsapp_message_type"]
+          meta_message_id?: string | null
+          metadata?: Json | null
+          read_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["whatsapp_message_status"]
+          to_number?: string | null
+          twilio_sid?: string | null
+        }
+        Update: {
+          business_id?: string
+          connection_id?: string
+          content?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          direction?: Database["public"]["Enums"]["whatsapp_direction"]
+          error_message?: string | null
+          from_number?: string | null
+          id?: string
+          media_urls?: string[] | null
+          message_type?: Database["public"]["Enums"]["whatsapp_message_type"]
+          meta_message_id?: string | null
+          metadata?: Json | null
+          read_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["whatsapp_message_status"]
+          to_number?: string | null
+          twilio_sid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_messages_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_meta_templates: {
+        Row: {
+          body_content: string
+          business_id: string
+          category: string
+          created_at: string
+          footer_content: string | null
+          header_content: string | null
+          header_type: string | null
+          id: string
+          language: string
+          meta_template_id: string | null
+          name: string
+          status: Database["public"]["Enums"]["whatsapp_template_status"]
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          body_content: string
+          business_id: string
+          category?: string
+          created_at?: string
+          footer_content?: string | null
+          header_content?: string | null
+          header_type?: string | null
+          id?: string
+          language?: string
+          meta_template_id?: string | null
+          name: string
+          status?: Database["public"]["Enums"]["whatsapp_template_status"]
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          body_content?: string
+          business_id?: string
+          category?: string
+          created_at?: string
+          footer_content?: string | null
+          header_content?: string | null
+          header_type?: string | null
+          id?: string
+          language?: string
+          meta_template_id?: string | null
+          name?: string
+          status?: Database["public"]["Enums"]["whatsapp_template_status"]
+          updated_at?: string
+          variables?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_meta_templates_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_templates: {
         Row: {
           ativo: boolean
@@ -1658,6 +1848,56 @@ export type Database = {
           variaveis?: string[] | null
         }
         Relationships: []
+      }
+      whatsapp_webhook_logs: {
+        Row: {
+          body: Json | null
+          connection_id: string | null
+          created_at: string
+          error_message: string | null
+          headers: Json | null
+          id: string
+          method: string | null
+          processed: boolean
+          response_body: Json | null
+          response_status: number | null
+          url: string | null
+        }
+        Insert: {
+          body?: Json | null
+          connection_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          headers?: Json | null
+          id?: string
+          method?: string | null
+          processed?: boolean
+          response_body?: Json | null
+          response_status?: number | null
+          url?: string | null
+        }
+        Update: {
+          body?: Json | null
+          connection_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          headers?: Json | null
+          id?: string
+          method?: string | null
+          processed?: boolean
+          response_body?: Json | null
+          response_status?: number | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_webhook_logs_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_connections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workflows: {
         Row: {
@@ -1763,6 +2003,28 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      whatsapp_connection_status:
+        | "pending"
+        | "active"
+        | "suspended"
+        | "disconnected"
+      whatsapp_direction: "inbound" | "outbound"
+      whatsapp_message_status:
+        | "queued"
+        | "sent"
+        | "delivered"
+        | "read"
+        | "failed"
+      whatsapp_message_type:
+        | "text"
+        | "image"
+        | "video"
+        | "audio"
+        | "document"
+        | "template"
+        | "location"
+        | "contact"
+      whatsapp_template_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1891,6 +2153,31 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      whatsapp_connection_status: [
+        "pending",
+        "active",
+        "suspended",
+        "disconnected",
+      ],
+      whatsapp_direction: ["inbound", "outbound"],
+      whatsapp_message_status: [
+        "queued",
+        "sent",
+        "delivered",
+        "read",
+        "failed",
+      ],
+      whatsapp_message_type: [
+        "text",
+        "image",
+        "video",
+        "audio",
+        "document",
+        "template",
+        "location",
+        "contact",
+      ],
+      whatsapp_template_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
