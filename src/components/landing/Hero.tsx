@@ -112,58 +112,20 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Right — Dashboard card */}
+        {/* Right — Dashboard preview */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.25, ease }}
           className="relative mx-auto w-full max-w-sm lg:max-w-none hidden md:block"
         >
-          <div className="rounded-2xl bg-card border border-border/60 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <span className="font-heading font-semibold text-sm">Dashboard LocalAI</span>
-              </div>
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-success/10 text-success font-medium flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-success" />
-                Online
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-2.5">
-              <MetricMini icon={MapPin} label="Views Maps" value="2.340" change="+18%" delay={0.5} />
-              <MetricMini icon={MousePointerClick} label="Cliques site" value="487" change="+12%" delay={0.6} />
-              <MetricMini icon={Phone} label="Ligações" value="68" change="+24%" delay={0.7} />
-              <MetricMini icon={Route} label="Pedidos rota" value="153" change="+9%" delay={0.8} />
-            </div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9, duration: 0.5 }}
-              className="flex items-center gap-4 p-3.5 rounded-xl bg-muted/50"
-            >
-              <div className="relative w-11 h-11 shrink-0">
-                <svg viewBox="0 0 36 36" className="w-11 h-11 -rotate-90">
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(var(--border))" strokeWidth="3" />
-                  <motion.circle
-                    cx="18" cy="18" r="15" fill="none" stroke="hsl(var(--success))" strokeWidth="3"
-                    strokeDasharray="94.25"
-                    initial={{ strokeDashoffset: 94.25 }}
-                    animate={{ strokeDashoffset: 18.85 }}
-                    transition={{ delay: 1.1, duration: 1.2, ease }}
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold">80</span>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Score de Eficiência</p>
-                <p className="text-xs text-muted-foreground">Excelente! Máxima eficiência</p>
-              </div>
-            </motion.div>
-          </div>
+          <img
+            src={dashboardPreview}
+            alt="Dashboard LocalAI com métricas de Views, Ligações, Rotas, Nota e Agentes IA ativos"
+            width={1280}
+            height={800}
+            className="rounded-2xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)] border border-border/40 w-full h-auto"
+          />
         </motion.div>
       </div>
     </section>
