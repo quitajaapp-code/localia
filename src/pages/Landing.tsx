@@ -622,7 +622,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 48, paddingBottom: 48, position: "relative", zIndex: 10 }}>
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto px-6">
+        <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto px-6">
           <div>
             <Link to="/" className="flex items-center gap-2">
               <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><path d="M14 2C8.48 2 4 6.48 4 12c0 7.5 10 14 10 14s10-6.5 10-14c0-5.52-4.48-10-10-10z" fill="#6366F1" /><circle cx="14" cy="11" r="4" fill="#020817" /></svg>
