@@ -189,6 +189,7 @@ const Auth = () => {
     if (!emailValid) return toast({ title: "Email inválido", variant: "destructive" });
     if (!passwordValid) return toast({ title: "Senha deve ter no mínimo 8 caracteres", variant: "destructive" });
     if (mode === "signup" && !passwordsMatch) return toast({ title: "As senhas não coincidem", variant: "destructive" });
+    if (mode === "signup" && !whatsappValid) return toast({ title: "WhatsApp inválido. Use o formato +55 (XX) XXXXX-XXXX", variant: "destructive" });
 
     setLoading(true);
     try {
