@@ -1,0 +1,1 @@
+ALTER VIEW public.orchestration_history SET (security_invoker = on);
