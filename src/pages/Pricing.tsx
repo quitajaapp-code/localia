@@ -224,7 +224,7 @@ const Pricing = () => {
                   </div>
                   {annual && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      equivale a R${Math.round((plan.monthlyPrice * 12 * 0.8) / 12)}/mês
+                      equivale a R${Math.round(getPrice(plan) / 12)}/mês
                     </p>
                   )}
                 </div>
