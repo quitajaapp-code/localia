@@ -630,23 +630,31 @@ export default function Landing() {
             </Link>
             <p style={{ fontSize: 13, color: "#334155", marginTop: 8, maxWidth: 220 }}>Automação de marketing local com IA para negócios brasileiros.</p>
           </div>
-          <div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Produto</span>
-            <div className="flex flex-col gap-2">
-              {[["Como funciona", "#como-funciona"], ["Recursos", "#recursos"], ["Preços", "#precos"]].map(([label, href]) => (
-                <a key={label} href={href} className="nav-link" style={{ fontSize: 13, color: "#475569" }}>{label}</a>
-              ))}
-            </div>
-          </div>
-          <div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Empresa</span>
-            <div className="flex flex-col gap-2">
-              <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
-              <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
-              <span style={{ fontSize: 13, color: "#475569", cursor: "default" }}>Blog</span>
-              <a href="mailto:contato@localai.com.br" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Contato</a>
-            </div>
-          </div>
+           <div>
+             <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Produto</span>
+             <div className="flex flex-col gap-2">
+               {[["Como funciona", "#como-funciona"], ["Recursos", "#recursos"], ["Preços", "#precos"]].map(([label, href]) => (
+                 <a key={label} href={href} className="nav-link" style={{ fontSize: 13, color: "#475569" }}>{label}</a>
+               ))}
+             </div>
+           </div>
+           <div>
+             <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Recursos</span>
+             <div className="flex flex-col gap-2">
+               <Link to="/seo-local" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Estratégias de SEO Local</Link>
+               <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
+               <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
+             </div>
+           </div>
+           <div>
+             <span style={{ fontSize: 12, fontWeight: 600, color: "#64748B", marginBottom: 12, display: "block" }}>Empresa</span>
+             <div className="flex flex-col gap-2">
+               <Link to="/terms" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Termos de Uso</Link>
+               <Link to="/privacy" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Política de Privacidade</Link>
+               <span style={{ fontSize: 13, color: "#475569", cursor: "default" }}>Blog</span>
+               <a href="mailto:contato@localai.com.br" style={{ fontSize: 13, color: "#475569" }} className="hover:text-foreground transition-colors">Contato</a>
+             </div>
+           </div>
         </div>
         <div style={{ textAlign: "center", marginTop: 40, paddingTop: 32, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
           <div className="flex justify-center gap-6 flex-wrap" style={{ fontSize: 12, color: "#334155", marginBottom: 16 }}>
