@@ -66,6 +66,7 @@ const WebsitePage = lazy(() => import("./pages/dashboard/Website"));
 const AiOptimizer = lazy(() => import("./pages/dashboard/AiOptimizer"));
 const Agents = lazy(() => import("./pages/dashboard/Agents"));
 const AlertHistory = lazy(() => import("./pages/dashboard/AlertHistory"));
+const WhatsAppPage = lazy(() => import("./pages/dashboard/WhatsApp"));
 
 const queryClient = new QueryClient();
 
