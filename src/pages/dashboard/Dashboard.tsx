@@ -288,7 +288,7 @@ export default function Dashboard() {
 
       {/* GMB Metrics */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3">Métricas Google Meu Negócio</h2>
+        <h2 className="text-lg font-bold text-foreground mb-3">Métricas Google Meu Negócio</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard icon={Map} label="Visualizações no Maps" value={1247} change={12} />
           <MetricCard icon={MousePointerClick} label="Cliques no site" value={328} change={8} />
