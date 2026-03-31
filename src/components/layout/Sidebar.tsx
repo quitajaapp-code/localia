@@ -115,7 +115,7 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
       )}
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-sidebar-border">
+      <div className="px-4 py-4 border-t border-sidebar-border shrink-0">
         <p className="text-xs text-sidebar-foreground/40 text-center">LocalAI v1.0</p>
       </div>
     </div>
