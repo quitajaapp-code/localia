@@ -568,7 +568,7 @@ const Auth = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full border-border text-foreground font-medium hover:bg-muted"
                 onClick={handleGoogle}
                 disabled={googleLoading}
               >
@@ -576,7 +576,11 @@ const Auth = () => {
                   <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground" />
                 ) : (
                   <>
-                    <Chrome className="h-4 w-4 mr-2" />
+                    <img
+                      src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                      alt="Google"
+                      className="h-4 w-4 mr-2"
+                    />
                     Continuar com Google
                   </>
                 )}

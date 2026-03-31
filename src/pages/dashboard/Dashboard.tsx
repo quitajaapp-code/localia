@@ -299,7 +299,7 @@ export default function Dashboard() {
 
       {/* Ads Metrics */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3">Métricas Google Ads</h2>
+        <h2 className="text-lg font-bold text-foreground mb-3">Métricas Google Ads</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard icon={DollarSign} label="Gasto da semana" value={150} change={0} changeLabel="de R$ 600 total" />
           <MetricCard icon={MousePointerClick} label="Cliques nos anúncios" value={214} change={22} />
