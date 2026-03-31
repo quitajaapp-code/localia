@@ -35,7 +35,7 @@ export function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar negativeReviewCount={negativeCount} onReviewsSeen={clearCount} unreadAlerts={unreadAlerts} />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto md:ml-64">
         <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
           <Outlet />
         </div>
