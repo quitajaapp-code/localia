@@ -70,6 +70,7 @@ const AiOptimizer = lazy(() => import("./pages/dashboard/AiOptimizer"));
 const Agents = lazy(() => import("./pages/dashboard/Agents"));
 const AlertHistory = lazy(() => import("./pages/dashboard/AlertHistory"));
 const WhatsAppPage = lazy(() => import("./pages/dashboard/WhatsApp"));
+const CompetitorsPage = lazy(() => import("./pages/dashboard/Competitors"));
 
 const queryClient = new QueryClient();
 
@@ -136,6 +137,7 @@ const App = () => (
                   <Route path="agents" element={<Agents />} />
                   <Route path="agents/alerts" element={<AlertHistory />} />
                   <Route path="whatsapp" element={<WhatsAppPage />} />
+                  <Route path="competitors" element={<CompetitorsPage />} />
                 </Route>
               </Route>
 
