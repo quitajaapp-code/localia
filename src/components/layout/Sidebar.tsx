@@ -58,7 +58,7 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
           const showNegativeBadge = item.to === "/dashboard/reviews" && negativeReviewCount > 0;
           const showAlertBadge = item.to === "/dashboard/agents" && unreadAlerts > 0;
