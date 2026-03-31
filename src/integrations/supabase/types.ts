@@ -764,6 +764,147 @@ export type Database = {
           },
         ]
       }
+      competitor_keywords: {
+        Row: {
+          competitor_id: string
+          created_at: string
+          id: string
+          keyword: string
+          ranking_position: number | null
+          search_volume: number | null
+        }
+        Insert: {
+          competitor_id: string
+          created_at?: string
+          id?: string
+          keyword: string
+          ranking_position?: number | null
+          search_volume?: number | null
+        }
+        Update: {
+          competitor_id?: string
+          created_at?: string
+          id?: string
+          keyword?: string
+          ranking_position?: number | null
+          search_volume?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitor_keywords_competitor_id_fkey"
+            columns: ["competitor_id"]
+            isOneToOne: false
+            referencedRelation: "competitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competitor_metrics: {
+        Row: {
+          avg_response_time_hours: number | null
+          competitor_id: string
+          created_at: string
+          id: string
+          rating: number | null
+          raw_data: Json | null
+          recent_reviews_count: number | null
+          response_rate: number | null
+          snapshot_date: string
+          total_reviews: number | null
+        }
+        Insert: {
+          avg_response_time_hours?: number | null
+          competitor_id: string
+          created_at?: string
+          id?: string
+          rating?: number | null
+          raw_data?: Json | null
+          recent_reviews_count?: number | null
+          response_rate?: number | null
+          snapshot_date?: string
+          total_reviews?: number | null
+        }
+        Update: {
+          avg_response_time_hours?: number | null
+          competitor_id?: string
+          created_at?: string
+          id?: string
+          rating?: number | null
+          raw_data?: Json | null
+          recent_reviews_count?: number | null
+          response_rate?: number | null
+          snapshot_date?: string
+          total_reviews?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitor_metrics_competitor_id_fkey"
+            columns: ["competitor_id"]
+            isOneToOne: false
+            referencedRelation: "competitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competitor_profiles: {
+        Row: {
+          address: string | null
+          business_id: string
+          category: string | null
+          created_at: string
+          google_place_id: string | null
+          id: string
+          is_active: boolean
+          latitude: number | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          price_level: number | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_id: string
+          category?: string | null
+          created_at?: string
+          google_place_id?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          price_level?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_id?: string
+          category?: string | null
+          created_at?: string
+          google_place_id?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          price_level?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitor_profiles_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           assigned_agent: string | null
@@ -2199,6 +2340,16 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_competitor_score: {
+        Args: { p_business_id: string }
+        Returns: {
+          avg_competitor_rating: number
+          avg_competitor_response_rate: number
+          avg_competitor_reviews: number
+          business_score: number
+          competitor_count: number
+        }[]
+      }
       create_agent_cron_job: {
         Args: {
           p_anon_key: string
