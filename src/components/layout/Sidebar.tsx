@@ -51,7 +51,7 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Logo */}
       <div className="flex items-center px-6 py-5 border-b border-sidebar-border">
         <img src={localaiLogo} alt="LocalAI" className="h-8" />
