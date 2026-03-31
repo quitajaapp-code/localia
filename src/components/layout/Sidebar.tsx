@@ -102,7 +102,7 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
 
       {/* Admin Link */}
       {isAdmin && (
-        <div className="px-3 py-2 border-t border-sidebar-border">
+        <div className="px-3 py-3 border-t border-sidebar-border shrink-0">
           <NavLink
             to="/admin"
             onClick={() => setMobileOpen(false)}
