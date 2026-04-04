@@ -142,6 +142,9 @@ const App = () => (
                   <Route path="competitors" element={<CompetitorsPage />} />
                   <Route path="benchmark" element={<BenchmarkPage />} />
                 </Route>
+                <Route path="/agency" element={<DashboardLayout />}>
+                  <Route index element={<AgencyDashboard />} />
+                </Route>
               </Route>
 
               <Route element={<ProtectedAdminRoute />}>
