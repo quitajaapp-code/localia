@@ -107,9 +107,24 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
         })}
       </nav>
 
-      {/* Admin Link */}
-      {isAdmin && (
-        <div className="px-3 py-3 border-t border-sidebar-border shrink-0">
+      {/* Agency + Admin Links */}
+      <div className="px-3 py-3 border-t border-sidebar-border shrink-0 space-y-1">
+        {isAgency && (
+          <NavLink
+            to="/agency"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
+              location.pathname.startsWith("/agency")
+                ? "bg-sidebar-accent text-sidebar-primary-foreground"
+                : "text-primary/80 hover:text-primary hover:bg-sidebar-accent/50"
+            )}
+          >
+            <Building2 className="h-5 w-5 shrink-0" />
+            <span>Painel Agência</span>
+          </NavLink>
+        )}
+        {isAdmin && (
           <NavLink
             to="/admin"
             onClick={() => setMobileOpen(false)}
@@ -118,8 +133,8 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
             <ShieldCheck className="h-5 w-5 shrink-0" />
             <span>Painel Admin</span>
           </NavLink>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Footer */}
       <div className="px-4 py-4 border-t border-sidebar-border shrink-0">
