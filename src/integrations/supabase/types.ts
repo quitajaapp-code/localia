@@ -599,6 +599,171 @@ export type Database = {
           },
         ]
       }
+      benchmark_competitors: {
+        Row: {
+          address: string | null
+          business_id: string
+          category: string | null
+          created_at: string
+          google_place_id: string | null
+          id: string
+          is_active: boolean
+          latitude: number | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          posts_last_30_days: number | null
+          price_level: number | null
+          rating: number | null
+          response_rate: number | null
+          review_count: number | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_id: string
+          category?: string | null
+          created_at?: string
+          google_place_id?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          posts_last_30_days?: number | null
+          price_level?: number | null
+          rating?: number | null
+          response_rate?: number | null
+          review_count?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_id?: string
+          category?: string | null
+          created_at?: string
+          google_place_id?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          posts_last_30_days?: number | null
+          price_level?: number | null
+          rating?: number | null
+          response_rate?: number | null
+          review_count?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "benchmark_competitors_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      benchmark_insights: {
+        Row: {
+          business_id: string
+          created_at: string
+          data_context: Json | null
+          description: string | null
+          id: string
+          insight_type: Database["public"]["Enums"]["benchmark_insight_type"]
+          recommended_action: string | null
+          severity: Database["public"]["Enums"]["benchmark_severity"]
+          status: Database["public"]["Enums"]["benchmark_insight_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          data_context?: Json | null
+          description?: string | null
+          id?: string
+          insight_type: Database["public"]["Enums"]["benchmark_insight_type"]
+          recommended_action?: string | null
+          severity?: Database["public"]["Enums"]["benchmark_severity"]
+          status?: Database["public"]["Enums"]["benchmark_insight_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          data_context?: Json | null
+          description?: string | null
+          id?: string
+          insight_type?: Database["public"]["Enums"]["benchmark_insight_type"]
+          recommended_action?: string | null
+          severity?: Database["public"]["Enums"]["benchmark_severity"]
+          status?: Database["public"]["Enums"]["benchmark_insight_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "benchmark_insights_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      benchmark_metrics_history: {
+        Row: {
+          competitor_id: string
+          created_at: string
+          id: string
+          posts_last_30_days: number | null
+          rating: number | null
+          raw_data: Json | null
+          response_rate: number | null
+          review_count: number | null
+          snapshot_date: string
+        }
+        Insert: {
+          competitor_id: string
+          created_at?: string
+          id?: string
+          posts_last_30_days?: number | null
+          rating?: number | null
+          raw_data?: Json | null
+          response_rate?: number | null
+          review_count?: number | null
+          snapshot_date?: string
+        }
+        Update: {
+          competitor_id?: string
+          created_at?: string
+          id?: string
+          posts_last_30_days?: number | null
+          rating?: number | null
+          raw_data?: Json | null
+          response_rate?: number | null
+          review_count?: number | null
+          snapshot_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "benchmark_metrics_history_competitor_id_fkey"
+            columns: ["competitor_id"]
+            isOneToOne: false
+            referencedRelation: "benchmark_competitors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       businesses: {
         Row: {
           ads_customer_id: string | null
@@ -2382,6 +2547,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      benchmark_insight_status: "new" | "reviewed" | "implemented"
+      benchmark_insight_type:
+        | "gap_rating"
+        | "opportunity_content"
+        | "ad_strategy"
+      benchmark_severity: "low" | "medium" | "high" | "critical"
       internal_wa_conn_status: "active" | "inactive" | "suspended"
       internal_wa_conv_status: "open" | "pending" | "closed" | "archived"
       internal_wa_direction: "inbound" | "outbound"
@@ -2539,6 +2710,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      benchmark_insight_status: ["new", "reviewed", "implemented"],
+      benchmark_insight_type: [
+        "gap_rating",
+        "opportunity_content",
+        "ad_strategy",
+      ],
+      benchmark_severity: ["low", "medium", "high", "critical"],
       internal_wa_conn_status: ["active", "inactive", "suspended"],
       internal_wa_conv_status: ["open", "pending", "closed", "archived"],
       internal_wa_direction: ["inbound", "outbound"],
