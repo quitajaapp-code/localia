@@ -2005,6 +2005,48 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          grace_period_end: string | null
+          id: string
+          plan_type: Database["public"]["Enums"]["plan_type"]
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          grace_period_end?: string | null
+          id?: string
+          plan_type?: Database["public"]["Enums"]["plan_type"]
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          grace_period_end?: string | null
+          id?: string
+          plan_type?: Database["public"]["Enums"]["plan_type"]
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       template_usage: {
         Row: {
           canal: string
@@ -2529,6 +2571,7 @@ export type Database = {
           competitor_count: number
         }[]
       }
+      check_access_status: { Args: { p_user_id: string }; Returns: boolean }
       create_agent_cron_job: {
         Args: {
           p_anon_key: string
@@ -2592,6 +2635,13 @@ export type Database = {
       internal_wa_msg_type: "text" | "image" | "audio" | "document"
       internal_wa_priority: "low" | "normal" | "high" | "urgent"
       internal_wa_template_cat: "sales" | "support" | "onboarding"
+      plan_type: "starter" | "pro" | "agency_10"
+      subscription_status:
+        | "active"
+        | "past_due"
+        | "canceled"
+        | "unpaid"
+        | "trialing"
       whatsapp_connection_status:
         | "pending"
         | "active"
@@ -2756,6 +2806,14 @@ export const Constants = {
       internal_wa_msg_type: ["text", "image", "audio", "document"],
       internal_wa_priority: ["low", "normal", "high", "urgent"],
       internal_wa_template_cat: ["sales", "support", "onboarding"],
+      plan_type: ["starter", "pro", "agency_10"],
+      subscription_status: [
+        "active",
+        "past_due",
+        "canceled",
+        "unpaid",
+        "trialing",
+      ],
       whatsapp_connection_status: [
         "pending",
         "active",
