@@ -143,10 +143,12 @@ const App = () => (
                   <Route path="whatsapp" element={<WhatsAppPage />} />
                   <Route path="competitors" element={<CompetitorsPage />} />
                   <Route path="benchmark" element={<BenchmarkPage />} />
+                  <Route path="billing" element={<BillingPage />} />
                 </Route>
                 <Route path="/agency" element={<DashboardLayout />}>
                   <Route index element={<AgencyDashboard />} />
                 </Route>
+                <Route path="/billing/overdue" element={<OverduePage />} />
               </Route>
 
               <Route element={<ProtectedAdminRoute />}>
