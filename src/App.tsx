@@ -139,6 +139,7 @@ const App = () => (
                   <Route path="agents/alerts" element={<AlertHistory />} />
                   <Route path="whatsapp" element={<WhatsAppPage />} />
                   <Route path="competitors" element={<CompetitorsPage />} />
+                  <Route path="benchmark" element={<BenchmarkPage />} />
                 </Route>
               </Route>
 
