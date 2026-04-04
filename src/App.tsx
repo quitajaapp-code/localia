@@ -73,6 +73,8 @@ const WhatsAppPage = lazy(() => import("./pages/dashboard/WhatsApp"));
 const CompetitorsPage = lazy(() => import("./pages/dashboard/Competitors"));
 const BenchmarkPage = lazy(() => import("./pages/dashboard/BenchmarkPage"));
 const AgencyDashboard = lazy(() => import("./pages/agency/AgencyDashboard"));
+const BillingPage = lazy(() => import("./pages/dashboard/BillingPage"));
+const OverduePage = lazy(() => import("./pages/billing/OverduePage"));
 
 const queryClient = new QueryClient();
 
