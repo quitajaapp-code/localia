@@ -47,6 +47,7 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAdmin } = useAdmin();
+  const { isAgency } = useAgencyContext();
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";
