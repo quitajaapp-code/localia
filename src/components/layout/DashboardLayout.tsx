@@ -4,11 +4,14 @@ import { useNegativeReviewAlert } from "@/hooks/useNegativeReviewAlert";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useAgency, AgencyContext } from "@/hooks/useAgency";
 
 export function DashboardLayout() {
   const { negativeCount, clearCount } = useNegativeReviewAlert();
   const { user } = useAuth();
   const [unreadAlerts, setUnreadAlerts] = useState(0);
+  const agency = useAgency();
+  const [selectedBusinessId, setSelectedBusinessId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -33,13 +36,23 @@ export function DashboardLayout() {
   }, [user]);
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar negativeReviewCount={negativeCount} onReviewsSeen={clearCount} unreadAlerts={unreadAlerts} />
-      <main className="flex-1 overflow-auto md:ml-64">
-        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+    <AgencyContext.Provider
+      value={{
+        isAgency: agency.isAgency,
+        selectedBusinessId,
+        setSelectedBusinessId,
+        clients: agency.clients,
+        maxClients: agency.maxClients,
+      }}
+    >
+      <div className="flex min-h-screen bg-background">
+        <Sidebar negativeReviewCount={negativeCount} onReviewsSeen={clearCount} unreadAlerts={unreadAlerts} />
+        <main className="flex-1 overflow-auto md:ml-64">
+          <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </AgencyContext.Provider>
   );
 }

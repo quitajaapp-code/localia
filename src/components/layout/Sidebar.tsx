@@ -14,10 +14,13 @@ import {
   Sparkles,
   Bot,
   MessageCircle,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useAdmin } from "@/hooks/useAdmin";
+import { useAgencyContext } from "@/hooks/useAgency";
+import { BusinessSwitcher } from "@/components/agency/BusinessSwitcher";
 import localaiLogo from "@/assets/localai-logo.png";
 
 const navItems = [
@@ -44,6 +47,7 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAdmin } = useAdmin();
+  const { isAgency } = useAgencyContext();
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";
@@ -56,6 +60,9 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
       <div className="flex items-center px-6 py-5 border-b border-sidebar-border shrink-0">
         <img src={localaiLogo} alt="LocalAI" className="h-8" />
       </div>
+
+      {/* Agency Switcher */}
+      {isAgency && <BusinessSwitcher />}
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
@@ -100,9 +107,24 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
         })}
       </nav>
 
-      {/* Admin Link */}
-      {isAdmin && (
-        <div className="px-3 py-3 border-t border-sidebar-border shrink-0">
+      {/* Agency + Admin Links */}
+      <div className="px-3 py-3 border-t border-sidebar-border shrink-0 space-y-1">
+        {isAgency && (
+          <NavLink
+            to="/agency"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
+              location.pathname.startsWith("/agency")
+                ? "bg-sidebar-accent text-sidebar-primary-foreground"
+                : "text-primary/80 hover:text-primary hover:bg-sidebar-accent/50"
+            )}
+          >
+            <Building2 className="h-5 w-5 shrink-0" />
+            <span>Painel Agência</span>
+          </NavLink>
+        )}
+        {isAdmin && (
           <NavLink
             to="/admin"
             onClick={() => setMobileOpen(false)}
@@ -111,8 +133,8 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
             <ShieldCheck className="h-5 w-5 shrink-0" />
             <span>Painel Admin</span>
           </NavLink>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Footer */}
       <div className="px-4 py-4 border-t border-sidebar-border shrink-0">
