@@ -767,6 +767,7 @@ export type Database = {
       businesses: {
         Row: {
           ads_customer_id: string | null
+          agency_id: string | null
           anos_experiencia: string | null
           cidade: string | null
           config_posts: Json | null
@@ -802,6 +803,7 @@ export type Database = {
         }
         Insert: {
           ads_customer_id?: string | null
+          agency_id?: string | null
           anos_experiencia?: string | null
           cidade?: string | null
           config_posts?: Json | null
@@ -837,6 +839,7 @@ export type Database = {
         }
         Update: {
           ads_customer_id?: string | null
+          agency_id?: string | null
           anos_experiencia?: string | null
           cidade?: string | null
           config_posts?: Json | null
@@ -870,7 +873,15 @@ export type Database = {
           website_url?: string | null
           whatsapp?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "businesses_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       campaigns: {
         Row: {
@@ -1869,6 +1880,7 @@ export type Database = {
           created_at: string | null
           email: string | null
           id: string
+          max_clients_allowed: number
           nome: string | null
           notif_settings: Json | null
           plano: string | null
@@ -1880,6 +1892,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
+          max_clients_allowed?: number
           nome?: string | null
           notif_settings?: Json | null
           plano?: string | null
@@ -1891,6 +1904,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
+          max_clients_allowed?: number
           nome?: string | null
           notif_settings?: Json | null
           plano?: string | null
@@ -2533,6 +2547,20 @@ export type Database = {
         Args: { plain_text: string; secret_key: string }
         Returns: string
       }
+      get_agency_clients: {
+        Args: { p_agency_user_id: string }
+        Returns: {
+          avg_rating: number
+          business_id: string
+          business_name: string
+          cidade: string
+          estado: string
+          gmb_connected: boolean
+          nicho: string
+          pending_reviews: number
+          review_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2540,13 +2568,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      link_business_to_agency: {
+        Args: { p_agency_user_id: string; p_business_id: string }
+        Returns: Json
+      }
       remove_agent_cron_job: {
         Args: { p_job_name: string }
         Returns: undefined
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "agency"
       benchmark_insight_status: "new" | "reviewed" | "implemented"
       benchmark_insight_type:
         | "gap_rating"
@@ -2709,7 +2741,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "agency"],
       benchmark_insight_status: ["new", "reviewed", "implemented"],
       benchmark_insight_type: [
         "gap_rating",
