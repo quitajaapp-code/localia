@@ -14,10 +14,13 @@ import {
   Sparkles,
   Bot,
   MessageCircle,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useAdmin } from "@/hooks/useAdmin";
+import { useAgencyContext } from "@/hooks/useAgency";
+import { BusinessSwitcher } from "@/components/agency/BusinessSwitcher";
 import localaiLogo from "@/assets/localai-logo.png";
 
 const navItems = [
