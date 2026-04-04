@@ -73,6 +73,8 @@ const WhatsAppPage = lazy(() => import("./pages/dashboard/WhatsApp"));
 const CompetitorsPage = lazy(() => import("./pages/dashboard/Competitors"));
 const BenchmarkPage = lazy(() => import("./pages/dashboard/BenchmarkPage"));
 const AgencyDashboard = lazy(() => import("./pages/agency/AgencyDashboard"));
+const BillingPage = lazy(() => import("./pages/dashboard/BillingPage"));
+const OverduePage = lazy(() => import("./pages/billing/OverduePage"));
 
 const queryClient = new QueryClient();
 
@@ -141,10 +143,12 @@ const App = () => (
                   <Route path="whatsapp" element={<WhatsAppPage />} />
                   <Route path="competitors" element={<CompetitorsPage />} />
                   <Route path="benchmark" element={<BenchmarkPage />} />
+                  <Route path="billing" element={<BillingPage />} />
                 </Route>
                 <Route path="/agency" element={<DashboardLayout />}>
                   <Route index element={<AgencyDashboard />} />
                 </Route>
+                <Route path="/billing/overdue" element={<OverduePage />} />
               </Route>
 
               <Route element={<ProtectedAdminRoute />}>

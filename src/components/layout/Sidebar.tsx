@@ -15,6 +15,7 @@ import {
   Bot,
   MessageCircle,
   Building2,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -34,6 +35,7 @@ const navItems = [
   { to: "/dashboard/materials", label: "Materiais", icon: FolderOpen },
   { to: "/dashboard/report", label: "Relatório", icon: BarChart3 },
   { to: "/dashboard/website", label: "Meu Site", icon: Globe, badge: "Novo" },
+  { to: "/dashboard/billing", label: "Assinatura", icon: CreditCard },
   { to: "/dashboard/settings", label: "Configurações", icon: Settings },
 ];
 

@@ -1,10 +1,12 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { useNegativeReviewAlert } from "@/hooks/useNegativeReviewAlert";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useAgency, AgencyContext } from "@/hooks/useAgency";
+import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
+import { GracePeriodBanner } from "@/components/billing/GracePeriodBanner";
 
 export function DashboardLayout() {
   const { negativeCount, clearCount } = useNegativeReviewAlert();
@@ -12,6 +14,7 @@ export function DashboardLayout() {
   const [unreadAlerts, setUnreadAlerts] = useState(0);
   const agency = useAgency();
   const [selectedBusinessId, setSelectedBusinessId] = useState<string | null>(null);
+  const sub = useSubscriptionStatus();
 
   useEffect(() => {
     if (!user) return;
@@ -35,6 +38,11 @@ export function DashboardLayout() {
     return () => clearInterval(interval);
   }, [user]);
 
+  // Redirect to overdue page if access expired
+  if (!sub.isLoading && !sub.hasAccess && sub.status !== "no_subscription" && sub.status !== "trial_profile") {
+    return <Navigate to="/billing/overdue" replace />;
+  }
+
   return (
     <AgencyContext.Provider
       value={{
@@ -48,6 +56,7 @@ export function DashboardLayout() {
       <div className="flex min-h-screen bg-background">
         <Sidebar negativeReviewCount={negativeCount} onReviewsSeen={clearCount} unreadAlerts={unreadAlerts} />
         <main className="flex-1 overflow-auto md:ml-64">
+          <GracePeriodBanner />
           <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
             <Outlet />
           </div>
