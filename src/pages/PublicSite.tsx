@@ -698,7 +698,7 @@ export default function PublicSite() {
           <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>{config.hero.titulo.split(' ').slice(0, 4).join(' ')}</p>
           {config.contato.endereco && <p style={{ fontSize: 13, color: fgSec, marginBottom: 16 }}>{config.contato.endereco.split(',')[0]}</p>}
           <p style={{ fontSize: 12, color: fgSec, marginBottom: 24 }}>© {new Date().getFullYear()} {config.hero.titulo.split(' ').slice(0, 3).join(' ')}. Todos os direitos reservados.</p>
-          <a href="https://localai.app" target="_blank" rel="noopener" style={{ fontSize: 11, color: fgSec, opacity: 0.4, textDecoration: 'none' }}>Criado com LocalAI</a>
+          <a href="https://localai.app.br" target="_blank" rel="noopener" style={{ fontSize: 11, color: fgSec, opacity: 0.4, textDecoration: 'none' }}>Criado com LocalAI</a>
         </div>
       </footer>
     </div>
