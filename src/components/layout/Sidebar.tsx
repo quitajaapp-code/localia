@@ -15,6 +15,7 @@ import {
   Bot,
   MessageCircle,
   Building2,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
