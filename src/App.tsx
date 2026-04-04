@@ -71,6 +71,7 @@ const Agents = lazy(() => import("./pages/dashboard/Agents"));
 const AlertHistory = lazy(() => import("./pages/dashboard/AlertHistory"));
 const WhatsAppPage = lazy(() => import("./pages/dashboard/WhatsApp"));
 const CompetitorsPage = lazy(() => import("./pages/dashboard/Competitors"));
+const BenchmarkPage = lazy(() => import("./pages/dashboard/BenchmarkPage"));
 
 const queryClient = new QueryClient();
 
