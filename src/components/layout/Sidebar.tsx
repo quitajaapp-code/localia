@@ -61,6 +61,9 @@ export function Sidebar({ negativeReviewCount = 0, onReviewsSeen, unreadAlerts =
         <img src={localaiLogo} alt="LocalAI" className="h-8" />
       </div>
 
+      {/* Agency Switcher */}
+      {isAgency && <BusinessSwitcher />}
+
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
